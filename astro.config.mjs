@@ -1,5 +1,6 @@
 // @ts-check
 import { defineConfig, fontProviders } from 'astro/config'
+import icon from 'astro-icon'
 
 // 静的サイト (adapter なし)。dist/ をそのまま Cloudflare Workers の static assets で配る (wrangler.jsonc)。
 // URL は末尾スラッシュ + ディレクトリ形式 (/posts/<slug>/ → dist/posts/<slug>/index.html)。
@@ -9,6 +10,9 @@ export default defineConfig({
 	site: 'https://aiken.prism-hu.org',
 	output: 'static',
 	trailingSlash: 'always',
+	// アイコン。<Icon name="simple-icons:x" /> の形で使う (astro-icon/components)。ビルド時に SVG として埋め込まれる。
+	// セットは @iconify-json/<名前> を足すと増やせる (いまは各サービスのロゴの simple-icons だけ)
+	integrations: [icon()],
 	build: {
 		format: 'directory',
 	},

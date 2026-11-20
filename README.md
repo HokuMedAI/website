@@ -125,7 +125,8 @@ order: 10
 ## その他の設定
 
 サイト名、Discord の招待リンク、X のアカウント名、Instagram、Google カレンダー、フォームの Turnstile の site key は `src/lib/site.ts` に
-まとめてある。Instagram は、URL を入れるとお問い合わせページに出る（空のあいだは出ない）。
+まとめてある。Instagram は、URL を入れるとお問い合わせページとフッターに出る（空のあいだは出ない）。
+フッターの「リンク」に並べる関連先（`RELATED_LINKS`）と GitHub の URL も同じファイルにある。
 
 トップページの文章（About・Activities・Join Us）は `src/components/landing/` に直接書いてある。
 

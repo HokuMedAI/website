@@ -1,7 +1,24 @@
 ---
-import { PRISM_HU_URL, SITE_NAME, SITE_NAME_EN } from '../lib/site'
+import { Icon } from 'astro-icon/components'
+import {
+	GITHUB_URL,
+	INSTAGRAM_URL,
+	RELATED_LINKS,
+	SITE_NAME,
+	SITE_NAME_EN,
+	X_ACCOUNT,
+} from '../lib/site'
 
 const year = new Date().getFullYear()
+
+// 外部へのリンク。SNS → GitHub → 関連先の順。Instagram は URL が入るまで出さない。
+// icon は各サービスのロゴ (simple-icons のアイコン名)
+const externalLinks: { label: string; href: string; icon?: string }[] = [
+	{ label: 'X', href: `https://x.com/${X_ACCOUNT}`, icon: 'x' },
+	...(INSTAGRAM_URL ? [{ label: 'Instagram', href: INSTAGRAM_URL, icon: 'instagram' }] : []),
+	{ label: 'GitHub', href: GITHUB_URL, icon: 'github' },
+	...RELATED_LINKS,
+]
 ---
 
 <footer class="site-footer">
@@ -14,9 +31,15 @@ const year = new Date().getFullYear()
 			<a href="/#research">研究内容</a>
 			<a href="/members/">メンバー紹介</a>
 			<a href="/contact/">お問い合わせ</a>
-			<a href={PRISM_HU_URL} target="_blank" rel="noopener noreferrer">
-				PRISM-HU
-			</a>
+		</nav>
+		<nav class="external" aria-label="リンク">
+			<span class="external-label">リンク</span>
+			{externalLinks.map((link) => (
+				<a href={link.href} target="_blank" rel="noopener noreferrer">
+					{link.icon && <Icon name={`simple-icons:${link.icon}`} aria-hidden="true" />}
+					{link.label}
+				</a>
+			))}
 		</nav>
 		<div class="copyright">
 			© {year} {SITE_NAME_EN}
@@ -60,6 +83,47 @@ const year = new Date().getFullYear()
 		font-weight: 700;
 	}
 
+	/* 外部へのリンクは、団体名とメニューの次の行に並べる */
+	.external {
+		width: 100%;
+		display: flex;
+		align-items: center;
+		gap: 8px 10px;
+		flex-wrap: wrap;
+		font-size: 13px;
+		font-weight: 700;
+	}
+
+	.external-label {
+		margin-right: 6px;
+		font-family: var(--font-en);
+		font-weight: 900;
+		letter-spacing: 0.08em;
+		color: var(--teal-strong);
+	}
+
+	.external a {
+		display: inline-flex;
+		align-items: center;
+		gap: 7px;
+		padding: 5px 14px;
+		border-radius: var(--radius-pill);
+		background: var(--teal-tint);
+		color: var(--teal-ink);
+		transition: background 0.2s;
+	}
+
+	.external a :global(svg) {
+		width: 14px;
+		height: 14px;
+		flex: none;
+	}
+
+	.external a:hover {
+		background: var(--teal-line);
+		color: var(--teal-ink);
+	}
+
 	/* 団体名とリンクで 1 行を使うので、著作権表示は次の行へ送る */
 	.copyright {
 		width: 100%;
@@ -74,8 +138,15 @@ const year = new Date().getFullYear()
 			gap: 16px;
 		}
 
-		.links {
+		.links,
+		.external {
 			justify-content: center;
+		}
+
+		.external-label {
+			width: 100%;
+			margin-right: 0;
+			text-align: center;
 		}
 
 		.copyright {

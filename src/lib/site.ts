@@ -17,8 +17,17 @@ export const PRISM_HU_URL = 'https://prism-hu.org/'
 /** X (旧 Twitter) のアカウント名 (@ は付けない)。共有されたときのカードに、サイトのアカウントとして出る */
 export const X_ACCOUNT = 'HU_med_ai'
 
-/** Instagram のアカウントの URL。空のあいだは、お問い合わせページに Instagram を出さない */
-export const INSTAGRAM_URL = ''
+/** Instagram のアカウントの URL。空のあいだは、お問い合わせページとフッターに Instagram を出さない */
+export const INSTAGRAM_URL = 'https://www.instagram.com/hu_med_ai/'
+
+/** GitHub の organization */
+export const GITHUB_URL = 'https://github.com/HokuMedAI'
+
+/** フッターの「リンク」に、SNS・GitHub の後ろに並べる関連先 */
+export const RELATED_LINKS = [
+	{ label: 'PRISM-HU', href: PRISM_HU_URL },
+	{ label: '北海道大学医学部', href: 'https://www.med.hokudai.ac.jp/' },
+] as const
 
 /**
  * お問い合わせフォームの Turnstile (Cloudflare の bot 対策) の site key。公開してよい値。

@@ -2,7 +2,7 @@
 /**
  * 連絡先 1 つぶんのカード。ロゴ・名前・短い説明 (slot) と、そのサービスを別のタブで開くボタン。
  */
-import BrandIcon from './BrandIcon.astro'
+import { Icon } from 'astro-icon/components'
 
 interface Props {
 	icon: 'discord' | 'instagram'
@@ -18,7 +18,7 @@ const { icon, title, action, href, tone = 'teal' } = Astro.props
 
 <li class:list={['card', `tone-${tone}`]}>
 	<div class="icon">
-		<BrandIcon name={icon} />
+		<Icon name={`simple-icons:${icon}`} aria-hidden="true" />
 	</div>
 	<div class="text">
 		<h2 lang="en">{title}</h2>
