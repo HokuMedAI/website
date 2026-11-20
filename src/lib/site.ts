@@ -59,7 +59,7 @@ export const CATEGORIES = [
 		children: [
 			{ slug: 'study', label: '勉強会' },
 			{ slug: 'lecture', label: '定期レクチャー' },
-			{ slug: 'meeting', label: 'ミーティング' },
+			{ slug: 'meeting', label: '研究ミーティング' },
 		],
 	},
 ] as const
