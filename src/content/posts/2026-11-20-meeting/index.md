@@ -4,6 +4,7 @@ date: 2026-11-20
 category: meeting
 tags: [the-leader-has-spoken]
 authors: [enda, fugu]
+thumbnail: ./photo.jpg
 ---
 
 ## 開催概要
