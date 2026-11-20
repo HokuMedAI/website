@@ -46,6 +46,6 @@
   partner: 順天堂大学 小児外科
   scope: 学外
   summary: 先天性肺気道奇形（CPAM）の切除標本の病理画像から、炎症細胞の密度と分布をヒートマップにして、手術時の月齢や組織型との関係を調べます。
-  image: ./research/cpam-he-whole-slide.jpg
-  imageAlt: ヘマトキシリン・エオジン染色した肺の切除標本の全体像（低倍率）
+  image: ./research/cpam-tissue-map.png
+  imageAlt: 5 枚の標本それぞれについて、小領域を組織の種類（含気のある肺胞、うっ血した肺胞、気道・嚢胞の上皮、疎な間質、出血、線維筋性の壁、リンパ組織、組織の辺縁）ごとに色分けして並べた図
   order: 50
