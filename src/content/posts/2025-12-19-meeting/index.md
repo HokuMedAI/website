@@ -1,10 +1,10 @@
 ---
-title: 12月定期ミーティング
+title: 12月研究ミーティング
 date: 2025-12-19
 category: meeting
 tags: [the-leader-has-spoken]
 authors: [yamada]
-description: 12月定期ミーティング開催しました
+description: 12月研究ミーティング開催しました
 ---
 
 ## 開催概要

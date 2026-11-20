@@ -42,20 +42,14 @@ export const GOOGLE_CALENDAR_ID =
 
 /**
  * 記事のカテゴリ。記事の frontmatter の category には、子を持たないもの
- * (feature / report / mokumoku / seminar / meeting) の slug を書く。
+ * (feature / study / lecture / meeting) の slug を書く。
  * 親 (activity) の一覧ページは子の記事をまとめて出す
  */
 export const CATEGORIES = [
 	{
 		slug: 'feature',
 		label: '特集',
-		description: '技術解説や研究紹介など、読み物として書いた記事',
-		children: [],
-	},
-	{
-		slug: 'report',
-		label: 'レポート',
-		description: '学会・イベントへの参加報告',
+		description: '技術解説や研究紹介、学会・イベントの報告など、読み物として書いた記事',
 		children: [],
 	},
 	{
@@ -63,15 +57,15 @@ export const CATEGORIES = [
 		label: '活動日誌',
 		description: 'ふだんの活動の記録',
 		children: [
-			{ slug: 'mokumoku', label: 'もくもく会' },
-			{ slug: 'seminar', label: '勉強会' },
+			{ slug: 'study', label: '勉強会' },
+			{ slug: 'lecture', label: '定期レクチャー' },
 			{ slug: 'meeting', label: 'ミーティング' },
 		],
 	},
 ] as const
 
 /** 記事に付けられるカテゴリ (子を持たないもの) */
-export const POST_CATEGORIES = ['feature', 'report', 'mokumoku', 'seminar', 'meeting'] as const
+export const POST_CATEGORIES = ['feature', 'study', 'lecture', 'meeting'] as const
 export type PostCategory = (typeof POST_CATEGORIES)[number]
 
 /** 部員の区分。マスコットは部員の一覧の最後に並び、人数には数えない */

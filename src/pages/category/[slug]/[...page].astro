@@ -42,7 +42,7 @@ type Props = InferGetStaticPropsType<typeof getStaticPaths>
 
 const { category, views, page, totalPages } = Astro.props
 const basePath = categoryHref(category.slug)
-// 読み物のカテゴリ（特集・レポート）は、大きめのカードで見せる
+// 読み物のカテゴリ（特集）は、大きめのカードで見せる
 const isReading = kindOf(category.slug) === 'reading'
 const pageLabel = String(page).padStart(2, '0')
 const description = category.description ?? `「${category.label}」の記事一覧です。`

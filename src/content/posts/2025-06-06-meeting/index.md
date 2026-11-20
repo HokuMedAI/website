@@ -1,9 +1,9 @@
 ---
-title: ６月定期ミーティング①
+title: 6月研究ミーティング①
 date: 2025-06-06
 category: meeting
 authors: [yamada]
-description: ６月の定期ミーティング①
+description: 6月の研究ミーティング①
 ---
 
 ## 開催概要

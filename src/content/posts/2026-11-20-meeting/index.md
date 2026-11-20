@@ -1,5 +1,5 @@
 ---
-title: 11月定期ミーティング
+title: 11月研究ミーティング
 date: 2026-11-20
 category: meeting
 tags: [the-leader-has-spoken]

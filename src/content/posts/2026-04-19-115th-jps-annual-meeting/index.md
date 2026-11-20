@@ -1,7 +1,7 @@
 ---
 title: 本研究会の山田篤司が第115回日本病理学会総会で学部学生ポスター優秀賞を受賞しました。
 date: 2026-04-19
-category: report
+category: feature
 tags: [academic-conference]
 authors: [murakami]
 description: 本研究会の山田篤司が第115回日本病理学会総会において学部学生ポスター優秀賞を受賞しました。

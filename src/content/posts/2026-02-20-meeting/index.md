@@ -1,10 +1,10 @@
 ---
-title: 2026年2月定期研究ミーティング
+title: 2026年2月研究ミーティング
 date: 2026-02-20
 category: meeting
 tags: [the-leader-has-spoken]
 authors: [enda]
-description: 2026年2月定期ミーティング開催しました
+description: 2026年2月研究ミーティング開催しました
 thumbnail: ./feature.jpg
 ---
 

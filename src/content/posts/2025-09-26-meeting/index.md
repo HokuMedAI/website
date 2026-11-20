@@ -1,9 +1,9 @@
 ---
-title: ９月第２回定期ミーティング
+title: 9月第2回研究ミーティング
 date: 2025-09-26
 category: meeting
 authors: [yamada]
-description: ９月第２回定期ミーティングを開催しました
+description: 9月第2回研究ミーティングを開催しました
 thumbnail: ./feature.jpg
 ---
 

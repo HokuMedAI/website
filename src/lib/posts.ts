@@ -23,7 +23,7 @@ export type AuthorEntry = CollectionEntry<'authors'>
 /** 一覧 1 ページあたりの件数。3 列・2 列のどちらでも端数が出ない数にしてある */
 export const POSTS_PER_PAGE = 18
 
-/** 一覧の先頭に大きく出す読み物 (特集・レポート) の本数 */
+/** 一覧の先頭に大きく出す読み物 (特集) の本数 */
 export const PICKUP_COUNT = 3
 
 /** RSS に載せる本数 */

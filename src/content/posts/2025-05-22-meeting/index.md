@@ -1,9 +1,9 @@
 ---
-title: 5月定例ミーティング
+title: 5月研究ミーティング
 date: 2025-05-22
 category: meeting
 authors: [yamada]
-description: ５月の定例ミーティングを行いました
+description: 5月の研究ミーティングを行いました
 ---
 
 ## 開催概要

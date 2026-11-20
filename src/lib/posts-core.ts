@@ -54,7 +54,7 @@ export function categoryScope(slug: string, tree: Category[] = CATEGORY_TREE): s
 
 /**
  * 記事の体裁。カードや見出しの色味・大きさが変わる。
- * - reading … 読み物。子を持たない最上位カテゴリ (特集・レポート)
+ * - reading … 読み物。子を持たない最上位カテゴリ (特集)
  * - log … 短い記録。子を持つカテゴリ (活動日誌) とその配下
  */
 export type PostKind = 'reading' | 'log'

@@ -2,7 +2,7 @@
 /**
  * 記事一覧。新しい順に並べ、18 件ごとにページを分ける。
  * /posts/ が 1 ページ目、2 ページ目以降は /posts/page/<n>/（page には "page/2" の形で入る）。
- * 1 ページ目だけ、読み物（特集・レポート）の新しいものを先頭に大きく出す。
+ * 1 ページ目だけ、読み物（特集）の新しいものを先頭に大きく出す。
  */
 import type { GetStaticPaths, InferGetStaticPropsType } from 'astro'
 import Base from '../../layouts/Base.astro'
@@ -44,7 +44,7 @@ const pageLabel = String(page).padStart(2, '0')
 
 <Base
 	title={page > 1 ? `記事（${page} ページ目）` : '記事'}
-	description="北医AI研の特集・レポートと、ふだんの活動の記録です。"
+	description="北医AI研の特集と、ふだんの活動の記録です。"
 >
 	<PostsShell
 		crumbs={[
@@ -53,14 +53,14 @@ const pageLabel = String(page).padStart(2, '0')
 		]}
 	>
 		<PageHead index={pageLabel} en="Articles" ja="記事">
-			<p>特集・レポートと、ふだんの活動の記録です。</p>
+			<p>特集と、ふだんの活動の記録です。</p>
 		</PageHead>
 		<CategoryNav active="all" />
 
 		<div class="posts-body">
 			{isEmpty ? (
 				<EmptyState title="まだ記事がありません">
-					<p>活動の記録やレポートを、これから載せていきます。</p>
+					<p>活動の記録や特集を、これから載せていきます。</p>
 				</EmptyState>
 			) : (
 				<>

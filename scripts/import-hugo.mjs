@@ -12,17 +12,17 @@
  *
  * 例:
  *   node scripts/import-hugo.mjs ~/src/github.com/HokuMedAI/hokumedai.github.io --dry-run
- *   node scripts/import-hugo.mjs ~/src/github.com/HokuMedAI/hokumedai.github.io --only 2025-06-11-mokumoku
+ *   node scripts/import-hugo.mjs ~/src/github.com/HokuMedAI/hokumedai.github.io --only 2025-06-11-study
  *   node scripts/import-hugo.mjs ~/src/github.com/HokuMedAI/hokumedai.github.io
  *
  * 取り込む対象:
- *   content/activities/{mokumoku,meeting,seminar}/<dir>/index.md → category: mokumoku / meeting / seminar
- *   content/articles/<dir>/index.md                              → category: report
+ *   content/activities/{mokumoku,meeting,seminar}/<dir>/index.md → category: study / meeting / lecture
+ *   content/articles/<dir>/index.md                              → category: feature
  *   `draft: true` と `_index.md` は除く。旧サイト repo は読むだけで何も書かない。
  *
  * 書き出す先:
  *   src/content/posts/<slug>/index.md と、同じディレクトリの画像。
- *   slug は「front matter の date の日本時間の日付 + 種別」（2025-06-11-mokumoku）。
+ *   slug は「front matter の date の日本時間の日付 + 種別」（2025-06-11-study）。
  *   articles は「日付 + 旧フォルダ名」（2026-04-19-115th-jps-annual-meeting）。
  *   既に同じ slug のディレクトリがあれば触らずに飛ばす（この repo で直した記事を潰さない）。
  *   何度流してもよい。作り直すときだけ --force。
@@ -66,10 +66,10 @@ const POSTS_DIR = path.join(CONTENT_DIR, 'posts')
 
 /** content/ 配下のセクション → category。kind があれば slug は「日付-kind」、無ければ「日付-旧フォルダ名」 */
 const SECTIONS = [
-	{ dir: 'activities/mokumoku', category: 'mokumoku', kind: 'mokumoku' },
+	{ dir: 'activities/mokumoku', category: 'study', kind: 'study' },
 	{ dir: 'activities/meeting', category: 'meeting', kind: 'meeting' },
-	{ dir: 'activities/seminar', category: 'seminar', kind: 'seminar' },
-	{ dir: 'articles', category: 'report', kind: null },
+	{ dir: 'activities/seminar', category: 'lecture', kind: 'lecture' },
+	{ dir: 'articles', category: 'feature', kind: null },
 ]
 /** 旧サイトの著者キー → authors.yaml の id（綴りの直しと、部員のファイル名に合わせた読み替え） */
 const AUTHOR_ID_FIX = {

@@ -1,10 +1,10 @@
 ---
-title: 3月第1回定期ミーティング
+title: 3月第1回研究ミーティング
 date: 2026-03-13
 category: meeting
 tags: [the-leader-has-spoken]
 authors: [hokumedai, yamada]
-description: 3月第1回定期ミーティングを実施しました
+description: 3月第1回研究ミーティングを実施しました
 thumbnail: ./feature.jpg
 ---
 

@@ -1,5 +1,5 @@
 ---
-title: 10月第2回定例ミーティング
+title: 10月第2回研究ミーティング
 date: 2025-10-31
 category: meeting
 authors: [yamada]

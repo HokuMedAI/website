@@ -1,5 +1,5 @@
 ---
-title: 4月定期ミーティング
+title: 4月研究ミーティング
 date: 2026-04-02
 category: meeting
 tags: [the-leader-has-spoken]
