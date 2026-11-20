@@ -19,8 +19,8 @@
 - サイト内リンクは必ず末尾スラッシュ付きで書く（`/posts/`、`/members/`、`/#about`）
 - 色・角丸・影は `src/styles/tokens.css` の変数を使う。コンポーネントに生の値を書かない
 - 部員の学年と期は入学年度から計算する（`src/lib/members.ts`）。年度替わりに部員データを直さなくてよい
-- トップページの元デザインは `_docs/landing-source.html`（学生が Claude Design で作った書き出し
-  `_docs/北医AI研究会HP_261118.html` を展開したもの）
+- トップページの元デザインは `,docs/landing-source.html`（学生が Claude Design で作った書き出し
+  `,docs/北医AI研究会HP_261118.html` を展開したもの）。`,docs/` は ken の手元のメモ置き場で、git には入れない
 
 ## 開発
 

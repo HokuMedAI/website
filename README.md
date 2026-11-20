@@ -144,7 +144,6 @@ worker/                   お問い合わせフォームを受ける Worker（in
 wrangler.jsonc            Cloudflare Workers の設定（assets・Worker・レート制限）
 scripts/import-hugo.mjs   旧サイト（Hugo）の記事の取り込み
 test/                     src/lib/ と worker/ の単体テスト
-_docs/                    元デザインとメモ
 ```
 
 ## 公開
