@@ -3,7 +3,7 @@
 export const SITE_NAME = '北海道大学医学部AI研究会'
 /** 通称。ナビなど短く出したい所で使う */
 export const SITE_SHORT_NAME = '北医AI研'
-export const SITE_NAME_EN = 'Hokkaido University Medical AI Society'
+export const SITE_NAME_EN = 'Hokkaido University School of Medicine AI Study Club'
 export const SITE_DESCRIPTION =
 	'通称「北医AI研」。北海道大学医学部の学生を中心に、AIの医療応用を学び、研究する学生団体です。'
 
