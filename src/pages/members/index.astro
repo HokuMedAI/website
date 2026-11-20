@@ -32,13 +32,11 @@ const students = members
 	.map((m) => ({ member: m, grade: gradeOf(m.data.entryYear) }))
 	.sort((a, b) => (b.grade ?? 0) - (a.grade ?? 0) || byOrder(a.member, b.member))
 
-// 学年ごとに色を替えて、同じ学年がひとかたまりに見えるようにする
-const grades = [...new Set(students.map((s) => s.grade))]
-const toneOf = (grade: number | null) => (grades.indexOf(grade) % 2 === 0 ? 'teal' : 'violet')
+// カードの色は性別で決める (男 = 青、女 = ピンク。入っていない人は青)
+const toneOf = (member: Member) => (member.data.gender === '女' ? 'violet' : 'teal')
 
-// マスコット。部員の一覧の最後に、最後の学年とは違う色で並べる
+// マスコット。部員の一覧の最後に並べる
 const mascots = members.filter((m) => m.data.group === 'マスコット').sort(byOrder)
-const mascotTone = grades.length % 2 === 0 ? 'teal' : 'violet'
 
 // 顧問 → メンターの順
 const staff = members
@@ -69,13 +67,13 @@ const staff = members
 					<div class="band" aria-hidden="true" />
 					<ul class="grid">
 						{students.map(({ member, grade }, i) => (
-							<MemberCard member={member} grade={grade} tone={toneOf(grade)} index={i} />
+							<MemberCard member={member} grade={grade} tone={toneOf(member)} index={i} />
 						))}
 						{mascots.map((member, i) => (
 							<MemberCard
 								member={member}
 								grade={null}
-								tone={mascotTone}
+								tone={toneOf(member)}
 								index={students.length + i}
 							/>
 						))}

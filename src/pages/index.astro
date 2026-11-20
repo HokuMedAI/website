@@ -23,9 +23,9 @@ const hasPosts = posts.length > 0
 
 const students = members.filter((m) => m.data.group === '部員')
 
-/** 部員の学科 (省略は医学科)。人数の多い順 */
+/** 部員の学科 (省略は医学科)。人数の多い順。学生でない部員 (肩書きのある人) は数えない */
 const departmentCounts = new Map<string, number>()
-for (const m of students) {
+for (const m of students.filter((s) => !s.data.position)) {
 	const department = m.data.department || DEFAULT_DEPARTMENT
 	departmentCounts.set(department, (departmentCounts.get(department) ?? 0) + 1)
 }

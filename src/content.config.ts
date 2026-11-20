@@ -45,6 +45,10 @@ const members = defineCollection({
 			department: z.string().optional(),
 			// 役職 (部長・副部長など)
 			role: z.string().optional(),
+			// 肩書き。学生でない部員 (研修医など)。入れると、カードに学科・学年の代わりに出る
+			position: z.string().optional(),
+			// 性別。部員のカードの色を決める (男 = 青、女 = ピンク。省略は青)
+			gender: z.enum(['男', '女']).optional(),
 			// 所属。顧問・メンターのみ
 			affiliation: z.string().optional(),
 			// 顔写真 (任意)。./photos/xxx.jpg のように書く

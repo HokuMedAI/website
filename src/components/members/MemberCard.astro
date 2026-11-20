@@ -4,6 +4,7 @@
  * その下に学科と学年・期・名前が並ぶ。
  * 写真が無いあいだは、枠に人物のシルエットを出す。コメントは Markdown の本文で、空の人は吹き出しを出さない。
  * マスコットは、枠に絵の全体を収め、番号と学科・学年の代わりに「マスコット」と出す。
+ * 学生でない部員 (肩書きのある人。研修医など) は、学科・学年の代わりに肩書きを出す。
  */
 import { Image } from 'astro:assets'
 import { render, type CollectionEntry } from 'astro:content'
@@ -14,14 +15,14 @@ interface Props {
 	member: CollectionEntry<'members'>
 	/** 学年。入学年度が無い人は null */
 	grade: number | null
-	/** 色。同じ学年を同じ色にして、ひとかたまりに見せる */
+	/** 色。男性は青、女性はピンク */
 	tone: 'teal' | 'violet'
 	/** 一覧の中での位置 (0 始まり)。枠の番号と、傾き・上下のずらしを決める */
 	index: number
 }
 
 const { member, grade, tone, index } = Astro.props
-const { name, photo, role, entryYear } = member.data
+const { name, photo, role, entryYear, position } = member.data
 
 const isMascot = member.data.group === 'マスコット'
 
@@ -83,6 +84,8 @@ const { Content } = hasComment ? await render(member) : { Content: null }
 			<div class="member-affil">
 				{isMascot ? (
 					<span>マスコット</span>
+				) : position ? (
+					<span>{position}</span>
 				) : (
 					<>
 						<span>{department}</span>
