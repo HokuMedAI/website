@@ -169,13 +169,16 @@ test/                     src/lib/ と worker/ の単体テスト
 
 master への push で `.github/workflows/site.yml` が検査・テスト・ビルドをして、Cloudflare Workers へデプロイする
 （`dist/` の static assets と、お問い合わせフォームを受ける Worker `worker/index.ts`。設定は `wrangler.jsonc`）。
-PR では検査とビルドまで。
+PR では検査とビルドまで。デプロイが済むと、CI が Discord に「デプロイ完了」とコミットの一覧を流す
+（repo の Webhook で push の時点に流すと、まだ古いサイトが出ているうちに届くので、そちらは使わない）。
+検査・テスト・ビルド・デプロイのどこかで落ちたときは「デプロイ失敗」と流れ、リンク先がその実行のログになる。
 
 必要なもの:
 
 - GitHub の secrets（Settings → Secrets and variables → Actions）:
   `CLOUDFLARE_API_TOKEN`（Account: Workers Scripts: Edit）、`CLOUDFLARE_ACCOUNT_ID`、
-  `DISCORD_WEBHOOK_URL`（お問い合わせフォームの届け先。下の「お問い合わせフォーム」）
+  `DISCORD_WEBHOOK_URL`（お問い合わせフォームの届け先。下の「お問い合わせフォーム」）、
+  `DISCORD_DEPLOY_WEBHOOK_URL`（デプロイ完了の知らせを流す Webhook の URL。末尾に `/github` を付けない）
 - 公開ドメインは `aiken.prism-hu.org`（`astro.config.mjs` の `site`）。Cloudflare のダッシュボードで Worker `prism-aiken` の
   カスタムドメインに紐づける（`workers.dev` の URL は止めてあるので、紐づけるまで外からは見えない）
 

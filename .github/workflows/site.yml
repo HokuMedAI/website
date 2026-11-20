@@ -5,7 +5,8 @@ name: site
 # Worker 名・assets・binding の設定はルートの wrangler.jsonc。
 # paths フィルタは付けない: このサイトは src/content/ の Markdown と YAML が中身なので、それだけの変更でもデプロイする。
 # 必要な secrets: CLOUDFLARE_API_TOKEN (Account: Workers Scripts: Edit) / CLOUDFLARE_ACCOUNT_ID /
-# DISCORD_WEBHOOK_URL (お問い合わせフォームの届け先。デプロイのたびに Worker の secret として入れ直す)
+# DISCORD_WEBHOOK_URL (お問い合わせフォームの届け先。デプロイのたびに Worker の secret として入れ直す) /
+# DISCORD_DEPLOY_WEBHOOK_URL (デプロイ完了の知らせを流す Webhook。CI だけが使い、Worker には入れない)
 on:
   push:
     branches: [master]
@@ -59,3 +60,29 @@ jobs:
             DISCORD_WEBHOOK_URL
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+
+      # デプロイが済んでから Discord に知らせる。repo の Webhook は push の時点で流れるので、まだ古いサイトが出ているうちに
+      # 通知が届いてしまう (だからそちらは止めてある)。途中のどこか (検査・テスト・ビルド・デプロイ) で落ちたときは、
+      # 失敗として知らせる (リンク先はこの実行のログ)。知らせるのに失敗しても、ジョブの成否は変えない
+      - name: Notify Discord
+        if: ${{ !cancelled() && github.event_name == 'push' && github.ref == 'refs/heads/master' }}
+        continue-on-error: true
+        env:
+          DISCORD_DEPLOY_WEBHOOK_URL: ${{ secrets.DISCORD_DEPLOY_WEBHOOK_URL }}
+          JOB_STATUS: ${{ job.status }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          jq --arg status "$JOB_STATUS" --arg run "$RUN_URL" '{
+            embeds: [{
+              title: (if $status == "success" then "デプロイ完了" else "デプロイ失敗" end + ": aiken.prism-hu.org"),
+              url: (if $status == "success" then "https://aiken.prism-hu.org/" else $run end),
+              color: (if $status == "success" then 3066993 else 15158332 end),
+              description: (
+                [.commits[:10][] | "[`\(.id[:7])`](\(.url)) \(.message | split("\n")[0][:100]) - \(.author.username // .author.name)"]
+                + (if (.commits | length) > 10 then ["ほか \((.commits | length) - 10) 件"] else [] end)
+                | join("\n")
+              )
+            }],
+            allowed_mentions: { parse: [] }
+          }' "$GITHUB_EVENT_PATH" |
+            curl -fsS -H 'Content-Type: application/json' -d @- "$DISCORD_DEPLOY_WEBHOOK_URL"
