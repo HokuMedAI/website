@@ -1,0 +1,107 @@
+---
+/**
+ * カテゴリ別の記事一覧。site.ts の CATEGORIES にある全カテゴリ（親も子も）について作る。
+ * 親カテゴリ（活動日誌）は、子カテゴリの記事もまとめて出す。記事が無いカテゴリは空表示になる。
+ * /category/<slug>/ が 1 ページ目、2 ページ目以降は /category/<slug>/page/<n>/。
+ */
+import type { GetStaticPaths, InferGetStaticPropsType } from 'astro'
+import Base from '../../../layouts/Base.astro'
+import CategoryNav from '../../../components/posts/CategoryNav.astro'
+import EmptyState from '../../../components/posts/EmptyState.astro'
+import PageHead from '../../../components/posts/PageHead.astro'
+import Pager from '../../../components/posts/Pager.astro'
+import PostGrid from '../../../components/posts/PostGrid.astro'
+import PostsShell from '../../../components/posts/PostsShell.astro'
+import {
+	POSTS_PATH,
+	POSTS_PER_PAGE,
+	categoryHref,
+	categoryPath,
+	englishLabel,
+	flattenCategories,
+	getPostViews,
+	inCategory,
+	kindOf,
+	pageParam,
+	paginate,
+} from '../../../lib/posts'
+
+export const getStaticPaths = (async () => {
+	const views = await getPostViews()
+	return flattenCategories().flatMap((category) =>
+		paginate(inCategory(views, category.slug), POSTS_PER_PAGE).map(
+			({ items, page, totalPages }) => ({
+				params: { slug: category.slug, page: pageParam(page) },
+				props: { category, views: items, page, totalPages },
+			})
+		)
+	)
+}) satisfies GetStaticPaths
+
+type Props = InferGetStaticPropsType<typeof getStaticPaths>
+
+const { category, views, page, totalPages } = Astro.props
+const basePath = categoryHref(category.slug)
+// 読み物のカテゴリ（特集・レポート）は、大きめのカードで見せる
+const isReading = kindOf(category.slug) === 'reading'
+const pageLabel = String(page).padStart(2, '0')
+const description = category.description ?? `「${category.label}」の記事一覧です。`
+---
+
+<Base
+	title={page > 1 ? `${category.label}（${page} ページ目）` : category.label}
+	description={description}
+>
+	<PostsShell
+		crumbs={[
+			{ label: 'ホーム', href: '/' },
+			{ label: '記事', href: POSTS_PATH },
+			...categoryPath(category.slug).map((item) => ({
+				label: item.label,
+				href: categoryHref(item.slug),
+			})),
+		]}
+	>
+		<PageHead
+			index={pageLabel}
+			en={englishLabel(category.slug, 'Category')}
+			ja={category.label}
+			tone={isReading ? 'violet' : 'teal'}
+		>
+			{category.description && <p>{category.description}</p>}
+		</PageHead>
+		<CategoryNav active={category.slug} />
+
+		<div class="posts-body">
+			{views.length === 0 ? (
+				<EmptyState
+					title={`「${category.label}」の記事はまだありません`}
+					action={{ label: 'すべての記事を見る', href: POSTS_PATH }}
+				>
+					<p>ほかのカテゴリの記事は、記事一覧から読めます。</p>
+				</EmptyState>
+			) : (
+				<>
+					<PostGrid
+						views={views}
+						layout={isReading ? 'reading' : 'log'}
+						lead={isReading && page === 1}
+					/>
+					<Pager basePath={basePath} page={page} totalPages={totalPages} />
+				</>
+			)}
+		</div>
+	</PostsShell>
+</Base>
+
+<style>
+	.posts-body {
+		margin-top: 48px;
+	}
+
+	@media (max-width: 600px) {
+		.posts-body {
+			margin-top: 36px;
+		}
+	}
+</style>

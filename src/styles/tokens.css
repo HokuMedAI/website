@@ -1,0 +1,172 @@
+/*
+ * デザイントークン。元デザイン（_docs/landing-source.html）で使われている値を名前付きにしたもの。
+ * 色・角丸・影はここから取り、コンポーネントに生の値を書かない。
+ */
+:root {
+	/* ブランド（青緑） */
+	--teal: #00b4b8;
+	--teal-strong: #00898c; /* 白地の上の小さな文字用 */
+	--teal-ink: #0d4b50; /* 見出し・濃い文字・太い枠線 */
+	--teal-tint: #eafcfc; /* 薄い面 */
+	--teal-line: #cdf4f4; /* 枠線 */
+	--teal-ghost: #c6f0f1; /* 見出しの後ろの輪郭文字 */
+
+	/* アクセント（すみれ色） */
+	--violet: #ee82ee;
+	--violet-strong: #b23fb2; /* リンク・強調文字 */
+	--violet-hover: #e35fe3;
+	--violet-tint: #fdefff;
+	--violet-line: #f8d8f8;
+	--violet-ghost: #f7dcf7;
+
+	/* 文字 */
+	--text: #10454a;
+	--text-mid: #3c6f73;
+	--text-soft: #5c8d90;
+	--text-faint: #7fa8ab;
+	--on-teal: #f2ffff; /* 青緑の面の上の本文 */
+	--highlight: #f8ff80; /* 青緑の面の上の強調 */
+
+	/* 面 */
+	--surface: #fff;
+	--paper: #fffdfa;
+	--paper-edge: #f7efe2;
+
+	/* 影（すべて濃い青緑の透過） */
+	--shadow-sm: 0 6px 16px rgba(9, 80, 84, 0.14);
+	--shadow-md: 0 14px 36px rgba(9, 80, 84, 0.08);
+	--shadow-lg: 0 26px 60px rgba(9, 80, 84, 0.28);
+	--shadow-hard-teal: 8px 8px 0 var(--teal);
+	--shadow-hard-violet: 8px 8px 0 var(--violet);
+	--shadow-hard-ink: 8px 8px 0 var(--teal-ink);
+
+	/* 角丸 */
+	--radius-pill: 999px;
+	--radius-card: 36px;
+	--radius-card-sm: 28px;
+	--radius-section: 80px;
+	--radius-leaf: 120px 40px 120px 40px; /* 対角だけ大きく丸めた葉っぱ形 */
+
+	/* 書体。実体は astro.config.mjs の fonts で読み込む */
+	--font-jp: var(--font-body), 'Hiragino Maru Gothic ProN', 'Hiragino Sans', sans-serif;
+	--font-en: var(--font-display), var(--font-body), sans-serif;
+
+	/* レイアウト */
+	--content-width: 1060px;
+	--gutter: 28px;
+
+	--ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+	--ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+	/* ---- ここから下はランディング移植時の追記（既存の名前と値は変えていない） ---- */
+
+	/* 数字カードのすみれ色（--violet と --violet-strong の中間） */
+	--violet-mid: #c44fc4;
+
+	/* メンバー紹介（雑誌風の紙面）の水玉・帯・罫線 */
+	--dot-teal-bg: #d3f5f5;
+	--dot-teal: #8fe0e2;
+	--dot-violet-bg: #fbe3fb;
+	--dot-violet: #f2b2f2;
+	--band-teal: #d8f5f6;
+	--band-dot: #9fe4e6;
+	--paper-grid: #e2f6f6;
+	--paper-ink: #7fb9bb; /* 紙面の端の小さな英字 */
+
+	/* 影（追加分） */
+	--shadow-nav: 0 10px 30px rgba(9, 80, 84, 0.18);
+	--shadow-button: 0 12px 26px rgba(9, 80, 84, 0.22);
+	--shadow-float: 0 14px 30px rgba(9, 80, 84, 0.2);
+	--shadow-paper: 0 8px 22px rgba(13, 75, 80, 0.18);
+	--shadow-violet: 0 22px 50px rgba(238, 130, 238, 0.32);
+	--shadow-violet-sm: 0 6px 14px rgba(238, 130, 238, 0.4);
+	--shadow-text: 0 6px 20px rgba(9, 80, 84, 0.18); /* 青緑の面の上の大見出し */
+	--shadow-hard-teal-sm: 6px 6px 0 var(--teal);
+	--shadow-hard-violet-sm: 6px 6px 0 var(--violet);
+	--shadow-hard-ink-sm: 6px 6px 0 var(--teal-ink);
+
+	/* 角丸（追加分） */
+	--radius-card-lg: 44px; /* コラム・写真のマーキー */
+	--radius-card-md: 32px; /* 数字カード・写真・Join の内側の枠 */
+	--radius-panel: 56px; /* Join の大きな面 */
+	--radius-frame: 18px; /* メンバーカードの中の枠 */
+	--radius-chip: 20px; /* 番号バッジ・ナビの項目 */
+	--radius-leaf-sm: 120px 32px 120px 32px;
+
+	/* 見出しの出現アニメーションのイージング */
+	--ease-reveal: cubic-bezier(0.45, 0, 0.2, 1);
+}
+
+@media (max-width: 640px) {
+	:root {
+		--gutter: 16px;
+		--radius-section: 44px;
+		--radius-card: 28px;
+	}
+}
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+html {
+	scroll-behavior: smooth;
+	scroll-padding-top: 96px;
+}
+
+body {
+	margin: 0;
+	overflow-x: hidden;
+	background: var(--teal);
+	color: var(--text);
+	font-family: var(--font-jp);
+	line-height: 1.8;
+	-webkit-font-smoothing: antialiased;
+}
+
+a {
+	color: var(--violet-strong);
+	text-decoration: none;
+}
+
+a:hover {
+	color: var(--violet);
+}
+
+img {
+	max-width: 100%;
+}
+
+::selection {
+	background: var(--violet);
+	color: #fff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	html {
+		scroll-behavior: auto;
+	}
+}
+
+/*
+ * ページ遷移: ブラウザ標準のクロスドキュメント View Transitions (SPA ルーターは使わない)。
+ * 遷移は普通のページ読み込みのまま、新旧ページを短くクロスフェードしてハードリロードっぽさを消す。
+ * ナビ (SiteNav.astro の view-transition-name: site-nav) は別レイヤーにして動かさない。
+ * 未対応ブラウザ (Firefox 等) と prefers-reduced-motion: reduce では通常の遷移になるだけ
+ */
+@media (prefers-reduced-motion: no-preference) {
+	@view-transition {
+		navigation: auto;
+	}
+	::view-transition-old(root),
+	::view-transition-new(root) {
+		animation-duration: 180ms;
+	}
+	::view-transition-group(site-nav),
+	::view-transition-old(site-nav),
+	::view-transition-new(site-nav) {
+		animation: none;
+	}
+}

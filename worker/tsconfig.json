@@ -1,0 +1,13 @@
+{
+	// Worker (worker/index.ts) の型検査用。サイト側 (ルートの tsconfig.json) とは分ける:
+	// wrangler が生成する worker-configuration.d.ts は Workers のランタイムの型 (Request・Element など) を
+	// グローバルに宣言するので、サイトと同じ検査に混ぜるとブラウザ向けの <script> の DOM の型を壊す。
+	// こちらは DOM を入れず、ランタイムの型は生成ファイルから取る。検査は `pnpm exec tsc -p worker`
+	"extends": "astro/tsconfigs/strict",
+	"compilerOptions": {
+		"lib": ["ESNext"],
+		"types": ["./worker-configuration.d.ts"]
+	},
+	"include": ["./**/*.ts"],
+	"exclude": []
+}

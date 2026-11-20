@@ -1,0 +1,100 @@
+---
+/**
+ * 存在しない URL に出すページ。
+ */
+import Base from '../layouts/Base.astro'
+import PageHead from '../components/posts/PageHead.astro'
+import PostsShell from '../components/posts/PostsShell.astro'
+import { POSTS_PATH } from '../lib/posts'
+---
+
+<Base title="ページが見つかりません" description="お探しのページは見つかりませんでした。" noindex>
+	<PostsShell>
+		<div class="notfound">
+			<PageHead index="404" en="Not Found" ja="ページが見つかりません" ghost="404" tone="violet">
+				<p>
+					お探しのページは、移動したか、削除された可能性があります。URL
+					をお確かめのうえ、下のリンクからお進みください。
+				</p>
+			</PageHead>
+			<div class="notfound__actions">
+				<a class="notfound__btn notfound__btn--solid" href="/">
+					トップページへ
+				</a>
+				<a class="notfound__btn" href={POSTS_PATH}>
+					記事一覧を見る
+				</a>
+			</div>
+		</div>
+	</PostsShell>
+</Base>
+
+<style>
+	.notfound {
+		min-height: 36vh;
+	}
+
+	.notfound__actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 12px;
+		margin-top: 36px;
+	}
+
+	.notfound__btn {
+		display: inline-flex;
+		align-items: center;
+		padding: 16px 32px;
+		border-radius: var(--radius-pill);
+		background: var(--teal-tint);
+		color: var(--teal-ink);
+		font-size: 16px;
+		font-weight: 700;
+		line-height: 1.4;
+		transition:
+			background 0.2s,
+			transform 0.2s var(--ease-out);
+	}
+
+	.notfound__btn:hover {
+		background: var(--teal-line);
+		color: var(--teal-ink);
+		transform: translateY(-2px);
+	}
+
+	.notfound__btn--solid {
+		background: var(--teal-ink);
+		color: #fff;
+	}
+
+	.notfound__btn--solid:hover {
+		background: var(--teal-strong);
+		color: #fff;
+	}
+
+	.notfound__btn:focus-visible {
+		outline: 3px solid var(--violet);
+		outline-offset: 3px;
+	}
+
+	@media (max-width: 600px) {
+		.notfound__actions {
+			margin-top: 28px;
+		}
+
+		.notfound__btn {
+			padding: 14px 24px;
+			font-size: 15px;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.notfound__btn {
+			transition: none;
+		}
+
+		.notfound__btn:hover {
+			transform: none;
+		}
+	}
+</style>

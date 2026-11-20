@@ -1,0 +1,85 @@
+---
+import { PRISM_HU_URL, SITE_NAME, SITE_NAME_EN } from '../lib/site'
+
+const year = new Date().getFullYear()
+---
+
+<footer class="site-footer">
+	<div class="inner">
+		<div class="name">{SITE_NAME}</div>
+		<nav class="links" aria-label="フッターメニュー">
+			<a href="/#about">研究会について</a>
+			<a href="/#activity">活動内容</a>
+			<a href="/posts/">記事</a>
+			<a href="/#research">研究内容</a>
+			<a href="/members/">メンバー紹介</a>
+			<a href="/contact/">お問い合わせ</a>
+			<a href={PRISM_HU_URL} target="_blank" rel="noopener noreferrer">
+				PRISM-HU
+			</a>
+		</nav>
+		<div class="copyright">
+			© {year} {SITE_NAME_EN}
+		</div>
+	</div>
+</footer>
+
+<style>
+	.site-footer {
+		position: relative;
+		background: var(--surface);
+		border-radius: var(--radius-section) var(--radius-section) 0 0;
+		padding: 34px var(--gutter) 46px;
+		text-align: center;
+		line-height: 1.5;
+	}
+
+	.inner {
+		max-width: var(--content-width);
+		margin: 0 auto;
+		border-top: 2px solid var(--teal-tint);
+		padding-top: 30px;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		gap: 12px 20px;
+		flex-wrap: wrap;
+	}
+
+	.name {
+		font-weight: 900;
+		font-size: 16px;
+		color: var(--teal-ink);
+	}
+
+	.links {
+		display: flex;
+		gap: 10px 20px;
+		flex-wrap: wrap;
+		font-size: 14px;
+		font-weight: 700;
+	}
+
+	/* 団体名とリンクで 1 行を使うので、著作権表示は次の行へ送る */
+	.copyright {
+		width: 100%;
+		text-align: left;
+		font-size: 13px;
+		color: var(--text-faint);
+	}
+
+	@media (max-width: 640px) {
+		.inner {
+			flex-direction: column;
+			gap: 16px;
+		}
+
+		.links {
+			justify-content: center;
+		}
+
+		.copyright {
+			text-align: center;
+		}
+	}
+</style>

@@ -1,0 +1,104 @@
+---
+/**
+ * お問い合わせ。連絡先 (Discord・Instagram) のカードと、お問い合わせフォームを並べる。
+ * Instagram は、src/lib/site.ts の URL が空のあいだは出さない。フォームは常に出す。
+ */
+import Base from '../../layouts/Base.astro'
+import ContactCard from '../../components/contact/ContactCard.astro'
+import ContactForm from '../../components/contact/ContactForm.astro'
+import SectionHead from '../../components/landing/SectionHead.astro'
+import Crumbs from '../../components/members/Crumbs.astro'
+import { DISCORD_INVITE_URL, INSTAGRAM_URL, SITE_SHORT_NAME } from '../../lib/site'
+---
+
+<Base
+	title="お問い合わせ"
+	description={`${SITE_SHORT_NAME}への見学・入会の相談や、活動についての質問の連絡先です。`}
+>
+	<div class="contact-page">
+		<Crumbs crumbs={[{ label: 'ホーム', href: '/' }, { label: 'お問い合わせ' }]} />
+
+		<section class="sheet">
+			<div class="inner">
+				<SectionHead as="h1" en="Contact" ja="お問い合わせ" />
+
+				<p class="intro">見学・入会の相談や、活動についての質問を受け付けています。</p>
+
+				<ul class="cards">
+					<ContactCard
+						icon="discord"
+						title="Discord"
+						action="Discord で連絡する"
+						href={DISCORD_INVITE_URL}
+					>
+						見学・入会の相談、質問はこちらが一番早く届きます。
+					</ContactCard>
+					{INSTAGRAM_URL && (
+						<ContactCard
+							icon="instagram"
+							title="Instagram"
+							action="Instagram を見る"
+							href={INSTAGRAM_URL}
+							tone="violet"
+						>
+							{SITE_SHORT_NAME}の Instagram アカウントです。
+						</ContactCard>
+					)}
+				</ul>
+
+				<ContactForm />
+			</div>
+		</section>
+	</div>
+</Base>
+
+<style>
+	/* 白い面。四隅を丸め、下はフッターとの間に青緑の地を残す */
+	.sheet {
+		position: relative;
+		overflow-x: clip; /* 見出しの後ろの大きな英字が横にはみ出すのを切る */
+		margin-bottom: 72px;
+		background: var(--surface);
+		border-radius: var(--radius-section);
+		padding: 84px var(--gutter) 96px;
+	}
+
+	.inner {
+		max-width: var(--content-width);
+		margin: 0 auto;
+	}
+
+	.intro {
+		margin: 18px 0 0;
+		max-width: 44em;
+		font-size: 19px;
+		line-height: 2.1;
+		color: var(--text-mid);
+	}
+
+	.cards {
+		list-style: none;
+		margin: 36px 0 0;
+		padding: 0;
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr));
+		gap: 20px;
+	}
+
+	@media (max-width: 640px) {
+		.sheet {
+			margin-bottom: 48px;
+			padding: 52px var(--gutter) 64px;
+		}
+
+		.intro {
+			font-size: 16px;
+			line-height: 2;
+		}
+
+		.cards {
+			margin-top: 28px;
+			gap: 16px;
+		}
+	}
+</style>

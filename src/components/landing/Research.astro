@@ -1,0 +1,255 @@
+---
+import { Image } from 'astro:assets'
+import type { CollectionEntry } from 'astro:content'
+import SectionHead from './SectionHead.astro'
+
+type Research = CollectionEntry<'research'>
+
+interface Props {
+	num: string
+	/** order の小さい順 */
+	research: Research[]
+}
+
+const { num, research } = Astro.props
+
+const SCOPE_LABEL: Record<Research['data']['scope'], string> = {
+	学内: '北大共同研究',
+	学外: '学外共同研究',
+}
+
+const isExternal = (url: string) => /^https?:\/\//.test(url)
+
+/** カードの最大幅 (2 枚並びのとき)。画像はこの幅と、その 2 倍 (高精細な画面用) を用意する */
+const THUMB_WIDTH = 520
+---
+
+<section id="research" class="research">
+	<div class="inner">
+		<SectionHead num={num} en="Research" ja="研究内容" tone="teal" />
+
+		<p class="intro">
+			病理画像解析を中心に、北海道大学の各教室や学外の研究機関と共同研究を進めています。
+		</p>
+
+		<div class="cards">
+			{research.map((r) => (
+				<article class="card">
+					{r.data.image && (
+						<div class="thumb">
+							<Image
+								src={r.data.image}
+								alt={r.data.imageAlt ?? ''}
+								widths={[THUMB_WIDTH, Math.min(THUMB_WIDTH * 2, r.data.image.width)]}
+								sizes={`(max-width: 640px) 100vw, ${THUMB_WIDTH}px`}
+								loading="lazy"
+							/>
+						</div>
+					)}
+					<div class="body">
+						<div class="chips">
+							{r.data.label && <span class="chip label">{r.data.label}</span>}
+							<span class:list={['chip', 'scope', r.data.scope === '学外' && 'outside']}>
+								{SCOPE_LABEL[r.data.scope]}
+							</span>
+						</div>
+						<h3>{r.data.title}</h3>
+						{r.data.partner && (
+							<div class="partner">
+								<span class="partner-label">共同研究先</span>
+								<span>{r.data.partner}</span>
+							</div>
+						)}
+						{r.data.summary && <p class="summary">{r.data.summary}</p>}
+						{r.data.url && (
+							<a
+								class="more"
+								href={r.data.url}
+								target={isExternal(r.data.url) ? '_blank' : undefined}
+								rel={isExternal(r.data.url) ? 'noopener noreferrer' : undefined}
+							>
+								くわしく →
+							</a>
+						)}
+					</div>
+				</article>
+			))}
+		</div>
+	</div>
+</section>
+
+<style>
+	.research {
+		position: relative;
+		background: var(--teal);
+		border-radius: var(--radius-section) var(--radius-section) 0 0;
+		/* 下は同じ青緑の地の Join が続く。余白は Join の上の余白に任せる */
+		padding: 84px var(--gutter) 20px;
+		overflow-x: clip;
+	}
+
+	.inner {
+		max-width: var(--content-width);
+		margin: 0 auto;
+	}
+
+	.intro {
+		margin: 18px 0 0;
+		max-width: 44em;
+		font-size: 19px;
+		line-height: 2.1;
+		color: var(--on-teal);
+	}
+
+	.cards {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: 20px;
+		margin-top: 40px;
+	}
+
+	/* 1 段に 3 枚。端数の段は広がって埋めるが、1 枚だけ残っても半分の幅までに抑える */
+	.card {
+		position: relative;
+		flex: 1 1 300px;
+		max-width: calc(50% - 10px);
+		min-width: 0;
+		display: flex;
+		flex-direction: column;
+		background: var(--surface);
+		border-radius: var(--radius-card);
+		overflow: hidden;
+	}
+
+	.thumb {
+		aspect-ratio: 16 / 10;
+		background: var(--teal-tint);
+		overflow: hidden;
+	}
+
+	.thumb :global(img) {
+		display: block;
+		width: 100%;
+		height: 100%;
+		max-width: none;
+		max-height: none;
+		object-fit: cover;
+	}
+
+	.body {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		padding: 32px;
+	}
+
+	.chips {
+		display: flex;
+		gap: 8px;
+		flex-wrap: wrap;
+	}
+
+	.chip {
+		display: inline-block;
+		font-size: 13px;
+		font-weight: 700;
+		line-height: 1.45;
+		padding: 7px 14px;
+		border-radius: var(--radius-pill);
+	}
+
+	.chip.label {
+		background: var(--teal-tint);
+		color: var(--teal-strong);
+	}
+
+	.chip.scope {
+		padding: 5px 12px;
+		border: 2px solid var(--teal-line);
+		color: var(--teal-strong);
+	}
+
+	.chip.scope.outside {
+		border-color: var(--violet-line);
+		color: var(--violet-strong);
+	}
+
+	h3 {
+		margin: 16px 0 0;
+		font-size: 21px;
+		font-weight: 900;
+		line-height: 1.5;
+		color: var(--teal-ink);
+		text-wrap: pretty;
+	}
+
+	.partner {
+		margin-top: 12px;
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		gap: 2px 10px;
+		font-size: 15px;
+		font-weight: 700;
+		line-height: 1.6;
+		color: var(--text-mid);
+	}
+
+	.partner-label {
+		font-size: 12px;
+		letter-spacing: 0.06em;
+		color: var(--text-faint);
+	}
+
+	.summary {
+		margin: 12px 0 0;
+		font-size: 15px;
+		line-height: 2;
+		color: var(--text-soft);
+	}
+
+	.more {
+		margin-top: auto;
+		padding-top: 16px;
+		font-size: 15px;
+		font-weight: 700;
+	}
+
+	/* リンクがあるカードは全体をクリックできるようにする */
+	.more::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+	}
+
+	@media (max-width: 640px) {
+		.research {
+			padding: 60px var(--gutter) 16px;
+		}
+
+		.intro {
+			font-size: 16px;
+			line-height: 2;
+		}
+
+		.cards {
+			gap: 14px;
+			margin-top: 30px;
+		}
+
+		.card {
+			flex-basis: 100%;
+			max-width: none;
+		}
+
+		.body {
+			padding: 24px 22px 26px;
+		}
+
+		h3 {
+			font-size: 19px;
+		}
+	}
+</style>

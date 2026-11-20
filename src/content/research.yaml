@@ -1,0 +1,51 @@
+# 研究テーマの一覧。トップページの Research に order の小さい順で並ぶ。
+# 画像は src/content/research/ に置き、./research/<ファイル名> で指す。
+# 共同研究先のデータを含む画像は、載せてよいかを確かめてから足す
+
+- id: meningioma-sft
+  title: 髄膜腫と孤在性線維性腫瘍（SFT）の病理画像解析
+  label: 病理画像
+  partner: 北海道大学 腫瘍病理学教室
+  scope: 学内
+  summary: 髄膜腫と孤在性線維性腫瘍（SFT）は組織像がよく似ていて、確定に使う STAT6 免疫染色は実施できる施設が限られます。病理基盤モデルで標本全体の画像（WSI）から特徴を取り出し、形態だけで両者を見分ける方法を検討しています。第115回日本病理学会総会などで発表しました。
+  image: ./research/meningioma-sft-pipeline.png
+  imageAlt: 全スライド画像をパッチに分け、病理基盤モデル CONCH v1.5 で特徴量を取り出し、集約して線形分類器で評価するまでの流れを示した模式図
+  order: 10
+
+- id: hamster-pneumonia
+  title: ハムスター肺炎モデルの病理画像解析
+  label: 病理画像
+  partner: 北海道大学 腫瘍病理学教室
+  scope: 学内
+  summary: SARS-CoV-2 を感染させたハムスターの肺の病理標本を病理基盤モデルで解析し、炎症の広がりを数値にします。変異株による病態の違いを、病理医の主観によらず定量的に比べることが目的です。第8回日本メディカルAI学会などで発表しました。
+  image: ./research/hamster-lung-inflammation-heatmap.jpg
+  imageAlt: ハムスターの肺の病理標本全体に、小領域ごとの炎症スコアをヒートマップとして重ねた図。右下は一部を拡大し、領域ごとのスコアの数値を示している（図中のラベルは BA2 day5）
+  order: 20
+
+- id: hcc
+  title: 肝細胞癌（HCC）の病理画像解析
+  label: 病理画像
+  partner: 北海道大学 第一外科
+  scope: 学内
+  summary: 第一外科と共同で、肝細胞癌（HCC）の病理画像の解析に取り組んでいます。
+  order: 30
+
+- id: antibody-if
+  title: 抗体反応の免疫蛍光（IF）画像解析
+  label: 蛍光画像
+  partner: 北海道大学 神経内科
+  scope: 学内
+  summary: 神経内科と共同で、蛍光抗体反応（免疫蛍光, IF）の細胞画像の解析に取り組んでいます。
+  image: ./research/immunofluorescence-cells-merge.jpg
+  imageAlt: 抗体陽性例の免疫蛍光像。細胞の核を青、タグを付けた抗原タンパク質を赤、ヒト IgG を緑で撮り、重ね合わせた画像
+  order: 40
+
+- id: cpam
+  title: 先天性肺気道奇形（CPAM）の病理画像解析
+  label: 病理画像
+  partner: 順天堂大学 小児外科
+  scope: 学外
+  summary: 先天性肺気道奇形（CPAM）の切除標本の病理画像から、炎症細胞の密度と分布をヒートマップにして、手術時の月齢や組織型との関係を調べます。
+  image: ./research/cpam-he-whole-slide.jpg
+  imageAlt: ヘマトキシリン・エオジン染色した肺の切除標本の全体像（低倍率）
+  order: 50

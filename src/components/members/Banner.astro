@@ -1,0 +1,179 @@
+---
+/**
+ * 紙面の特集の帯。「MEET THE TEAM!」の見出しと部員の人数、右に VOL. と年度の丸いバッジ。
+ */
+interface Props {
+	/** 部員の人数。0 なら出さない */
+	count: number
+	/** 紙面の号数 (2 桁) */
+	volume: string
+	/** 年度 */
+	year: number
+}
+
+const { count, volume, year } = Astro.props
+---
+
+<div class="banner">
+	<div class="banner-text">
+		<span class="banner-kicker">SPECIAL FEATURE</span>
+		<div class="banner-title">
+			<div class="banner-en">MEET THE TEAM!</div>
+			{count > 0 && <div class="banner-count">部員{count}人</div>}
+		</div>
+	</div>
+	<div class="banner-badge">
+		<span class="banner-vol">VOL.{volume}</span>
+		<span class="banner-year">{year}</span>
+		<span class="banner-note">新メンバー募集中</span>
+	</div>
+</div>
+
+<style>
+	.banner {
+		position: relative;
+		margin-top: 40px;
+		background-color: var(--violet);
+		background-image: radial-gradient(rgba(255, 255, 255, 0.4) 2px, transparent 2.3px);
+		background-size: 16px 16px;
+		border: 3px solid var(--teal-ink);
+		border-radius: var(--radius-card);
+		padding: 20px 30px;
+		box-shadow: var(--shadow-hard-ink);
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
+		align-items: center;
+		gap: 16px 24px;
+	}
+
+	.banner-text {
+		min-width: 0;
+	}
+
+	.banner-kicker {
+		display: inline-block;
+		background: var(--teal-ink);
+		color: #fff;
+		font-family: var(--font-en);
+		font-size: 12px;
+		font-weight: 800;
+		line-height: 1.45;
+		letter-spacing: 0.18em;
+		padding: 7px 14px;
+		border-radius: var(--radius-pill);
+	}
+
+	.banner-title {
+		margin-top: 10px;
+		display: flex;
+		align-items: center;
+		gap: 10px 18px;
+		flex-wrap: wrap;
+	}
+
+	.banner-en {
+		font-family: var(--font-en);
+		font-size: clamp(28px, 3.6vw, 44px);
+		font-weight: 800;
+		line-height: 0.95;
+		letter-spacing: -0.01em;
+		color: #fff;
+		text-shadow: 3px 3px 0 var(--teal-ink);
+		transform: rotate(-2deg);
+		transform-origin: left;
+	}
+
+	.banner-count {
+		background: var(--surface);
+		padding: 4px 10px;
+		border-radius: 8px;
+		font-size: 16px;
+		font-weight: 900;
+		line-height: 1.45;
+		color: var(--teal-ink);
+	}
+
+	.banner-badge {
+		flex: none;
+		width: 96px;
+		height: 96px;
+		border-radius: 50%;
+		background: var(--surface);
+		border: 3px solid var(--teal-ink);
+		transform: rotate(12deg);
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		text-align: center;
+		box-shadow: var(--shadow-hard-teal-sm);
+	}
+
+	.banner-vol {
+		font-family: var(--font-en);
+		font-size: 11px;
+		font-weight: 800;
+		line-height: 1.45;
+		letter-spacing: 0.12em;
+		color: var(--violet-strong);
+	}
+
+	.banner-year {
+		font-family: var(--font-en);
+		font-size: 26px;
+		font-weight: 800;
+		line-height: 1;
+		color: var(--teal-ink);
+	}
+
+	.banner-note {
+		margin-top: 2px;
+		font-size: 10px;
+		font-weight: 900;
+		line-height: 1.45;
+		color: var(--teal-strong);
+	}
+
+	@media (max-width: 640px) {
+		.banner {
+			margin-top: 30px;
+			padding: 16px 16px 18px 18px;
+			border-radius: var(--radius-card-sm);
+			box-shadow: var(--shadow-hard-ink-sm);
+			flex-wrap: nowrap;
+			gap: 10px;
+		}
+
+		.banner-kicker {
+			font-size: 10px;
+			padding: 5px 11px;
+		}
+
+		.banner-en {
+			font-size: 26px;
+		}
+
+		.banner-count {
+			font-size: 14px;
+		}
+
+		.banner-badge {
+			width: 78px;
+			height: 78px;
+			box-shadow: 4px 4px 0 var(--teal);
+		}
+
+		.banner-vol {
+			font-size: 9px;
+		}
+
+		.banner-year {
+			font-size: 21px;
+		}
+
+		.banner-note {
+			font-size: 8px;
+		}
+	}
+</style>

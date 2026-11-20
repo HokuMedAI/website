@@ -1,0 +1,430 @@
+/*
+ * 記事本文（Markdown の出力）の組版。<div class="prose"> の中に効く。
+ * Markdown が出す要素にはページの scoped style が届かないので、ここに置く。
+ * 色・角丸は tokens.css の変数。--radius-image / --radius-thumb / --font-mono は PostsShell.astro が定義する
+ * （無いときのために var() の第 2 引数で既定値を持たせてある）。
+ */
+.prose {
+	/* 1 行は全角 40 字まで */
+	max-width: 40em;
+	font-size: 17px;
+	line-height: 2.05;
+	letter-spacing: 0.02em;
+	color: var(--text);
+	overflow-wrap: anywhere;
+	line-break: strict;
+	text-wrap: pretty;
+}
+
+.prose > :first-child {
+	margin-top: 0;
+}
+
+.prose > :last-child {
+	margin-bottom: 0;
+}
+
+/* ---------- 段落 ---------- */
+.prose p {
+	margin: 1.5em 0 0;
+}
+
+/* ---------- 見出し ---------- */
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4,
+.prose h5,
+.prose h6 {
+	color: var(--teal-ink);
+	font-weight: 900;
+	letter-spacing: 0.02em;
+	text-wrap: balance;
+	word-break: auto-phrase;
+	scroll-margin-top: 96px;
+}
+
+/* 本文中の h1 は、ページの h1（記事タイトル）と競らないよう h2 と同じ見た目にする */
+.prose h1,
+.prose h2 {
+	position: relative;
+	margin: 2.6em 0 0;
+	padding-bottom: 0.55em;
+	font-size: 1.47em;
+	line-height: 1.5;
+}
+
+.prose h1::after,
+.prose h2::after {
+	content: '';
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	height: 5px;
+	border-radius: var(--radius-pill);
+	/* 左の 64px だけすみれ色、残りは淡い青緑の線 */
+	background: linear-gradient(
+		90deg,
+		var(--violet) 0,
+		var(--violet) 64px,
+		var(--teal-line) 64px,
+		var(--teal-line) 100%
+	);
+}
+
+.prose h3 {
+	position: relative;
+	margin: 2.3em 0 0;
+	padding-left: 1.05em;
+	font-size: 1.24em;
+	line-height: 1.6;
+}
+
+.prose h3::before {
+	content: '';
+	position: absolute;
+	left: 0;
+	top: 0.5em;
+	width: 0.6em;
+	height: 0.6em;
+	border-radius: 50%;
+	background: var(--teal);
+}
+
+.prose h4,
+.prose h5,
+.prose h6 {
+	margin: 2em 0 0;
+	font-size: 1.06em;
+	line-height: 1.7;
+	color: var(--teal-strong);
+}
+
+.prose :is(h1, h2) + :is(p, ul, ol) {
+	margin-top: 1.2em;
+}
+
+.prose :is(h3, h4, h5, h6) + :is(p, ul, ol) {
+	margin-top: 0.7em;
+}
+
+/* ---------- リンク・強調 ---------- */
+.prose a {
+	color: var(--violet-strong);
+	font-weight: 700;
+	text-decoration: underline;
+	text-decoration-color: var(--violet-line);
+	text-decoration-thickness: 2px;
+	text-underline-offset: 0.3em;
+	transition: text-decoration-color 0.2s;
+}
+
+.prose a:hover {
+	color: var(--violet-strong);
+	text-decoration-color: var(--violet);
+}
+
+.prose strong,
+.prose b {
+	font-weight: 700;
+	color: var(--teal-ink);
+	/* 蛍光ペン風の下線 */
+	background: linear-gradient(transparent 68%, var(--violet-line) 68%);
+}
+
+.prose a strong,
+.prose a b {
+	color: inherit;
+	background: none;
+}
+
+.prose em {
+	font-style: normal;
+	font-weight: 700;
+	color: var(--violet-strong);
+}
+
+.prose del,
+.prose s {
+	color: var(--text-soft);
+	text-decoration-color: var(--text-faint);
+	text-decoration-thickness: 2px;
+}
+
+.prose mark {
+	padding: 0 0.15em;
+	background: var(--highlight);
+	color: inherit;
+}
+
+/* ---------- リスト ---------- */
+.prose ul,
+.prose ol {
+	margin: 1.5em 0 0;
+	padding-left: 1.6em;
+}
+
+.prose li {
+	margin: 0.35em 0 0;
+	padding-left: 0.2em;
+}
+
+.prose li > ul,
+.prose li > ol {
+	margin-top: 0.35em;
+}
+
+.prose li > p {
+	margin-top: 0.35em;
+}
+
+.prose ul > li::marker {
+	color: var(--teal);
+}
+
+.prose ul ul > li::marker {
+	color: var(--violet);
+}
+
+.prose ol > li::marker {
+	font-family: var(--font-en);
+	font-weight: 800;
+	color: var(--teal-strong);
+}
+
+/* ---------- 引用 ---------- */
+.prose blockquote {
+	position: relative;
+	margin: 2em 0 0;
+	padding: 1.3em 1.6em 1.3em 3.4em;
+	border-radius: var(--radius-image, 28px);
+	background: var(--teal-tint);
+	color: var(--text-mid);
+	font-size: 0.97em;
+}
+
+.prose blockquote::before {
+	content: '“';
+	position: absolute;
+	left: 0.36em;
+	top: 0.08em;
+	font-family: var(--font-en);
+	font-size: 3.6em;
+	font-weight: 800;
+	line-height: 1;
+	color: var(--teal);
+}
+
+.prose blockquote > :first-child {
+	margin-top: 0;
+}
+
+/* ---------- コード・整形済みテキスト ---------- */
+.prose code {
+	padding: 0.15em 0.45em;
+	border-radius: 8px;
+	background: var(--teal-tint);
+	color: var(--teal-ink);
+	font-family: var(--font-mono, ui-monospace, Menlo, Consolas, monospace);
+	font-size: 0.88em;
+	letter-spacing: 0;
+	line-break: anywhere;
+}
+
+/*
+ * <pre>。コードブロック（```）と、HTML で直接書いた <pre> の両方がここを通る。
+ * 等幅で、折り返さない。段より長い行は、この枠の中だけ横にスクロールする。
+ * アスキーアートが縦に間延びしないよう、行間は詰めてある。
+ *
+ * コードブロックは構文ハイライト（Shiki）が <pre class="astro-code" style="background-color:…; color:…"> の形で出し、
+ * 地と地の文の色を style 属性で指定してくる。サイトの配色にそろえるため、その 2 つだけ !important で上書きする
+ * （style 属性に勝つ手段がほかに無い）。単語ごとの色は中の <span> の style に付いているので、そのまま生きる。
+ */
+.prose pre {
+	margin: 2em 0 0;
+	padding: 1.3em 1.5em;
+	overflow-x: auto;
+	border-radius: var(--radius-thumb, 22px);
+	background: var(--code-bg, var(--teal-ink)) !important;
+	color: var(--teal-tint) !important;
+	font-family: var(--font-mono, ui-monospace, Menlo, Consolas, monospace);
+	font-size: 14px;
+	line-height: 1.25;
+	letter-spacing: 0;
+	tab-size: 2;
+	white-space: pre;
+	overflow-wrap: normal;
+	word-break: normal;
+	line-break: auto;
+	-webkit-overflow-scrolling: touch;
+}
+
+/* 言語を指定したコードブロック（```python など）は、読みやすいよう行間を広げる */
+.prose pre.astro-code:not([data-language='plaintext']) {
+	line-height: 1.7;
+}
+
+.prose pre:focus-visible {
+	outline: 3px solid var(--violet);
+	outline-offset: 3px;
+}
+
+.prose pre code {
+	padding: 0;
+	border-radius: 0;
+	background: none;
+	color: inherit;
+	font-size: inherit;
+	line-break: auto;
+	white-space: inherit;
+}
+
+/* ---------- 画像・図 ---------- */
+
+/*
+ * 画像は段の幅いっぱいまで広がる（元の大きさより引き伸ばしはしない）。角は丸める。
+ * 縦長の画像が画面を何枚ぶんも占めないよう、高さには上限を置く（比率は保つ）。
+ * 文章と同じ段落に書かれていても、画像は行を分けて中央に置く。
+ */
+.prose img,
+.prose video {
+	display: block;
+	width: auto;
+	max-width: 100%;
+	height: auto;
+	max-height: min(86vh, 760px);
+	margin: 0.8em auto;
+	border-radius: var(--radius-image, 28px);
+}
+
+.prose > p:first-child > img:first-child {
+	margin-top: 0;
+}
+
+.prose > p:last-child > img:last-child {
+	margin-bottom: 0;
+}
+
+.prose figure {
+	margin: 2.2em 0 0;
+}
+
+.prose figcaption {
+	margin-top: 0.8em;
+	font-size: 0.82em;
+	line-height: 1.8;
+	text-align: center;
+	color: var(--text-soft);
+}
+
+.prose iframe {
+	max-width: 100%;
+	border: 0;
+}
+
+/* ---------- 表 ---------- */
+
+/*
+ * 表は中身の幅に合わせ、段より広いときは表の枠の中だけ横にスクロールする
+ * （display: block にしているのは、table のままだと overflow が効かないため）。
+ */
+.prose table {
+	display: block;
+	width: fit-content;
+	max-width: 100%;
+	margin: 2em 0 0;
+	overflow-x: auto;
+	border: 2px solid var(--teal-line);
+	border-radius: var(--radius-thumb, 22px);
+	border-collapse: collapse;
+	font-size: 0.88em;
+	line-height: 1.8;
+	-webkit-overflow-scrolling: touch;
+}
+
+.prose th,
+.prose td {
+	padding: 0.7em 1.1em;
+	border: 0;
+	border-bottom: 2px solid var(--teal-tint);
+	text-align: left;
+	vertical-align: top;
+}
+
+.prose th {
+	background: var(--teal-tint);
+	color: var(--teal-ink);
+	font-weight: 700;
+	white-space: nowrap;
+}
+
+/*
+ * セルの中は文節の切れ目で折り返し、短い語を途中で割らない
+ * （長い文の列に押されて、ほかの列が 1〜2 文字幅まで細くなるのを防ぐ）
+ */
+.prose td {
+	min-width: 5em;
+	overflow-wrap: break-word;
+	word-break: auto-phrase;
+}
+
+.prose tbody tr:last-child > * {
+	border-bottom: 0;
+}
+
+/* ---------- 区切り線 ---------- */
+.prose hr {
+	width: 96px;
+	height: 5px;
+	margin: 3em auto 0;
+	border: 0;
+	border-radius: var(--radius-pill);
+	background: var(--teal-line);
+}
+
+@media (max-width: 640px) {
+	.prose {
+		font-size: 16px;
+		line-height: 1.95;
+	}
+
+	.prose h1,
+	.prose h2 {
+		font-size: 1.36em;
+	}
+
+	.prose h3 {
+		font-size: 1.18em;
+	}
+
+	.prose ul,
+	.prose ol {
+		padding-left: 1.4em;
+	}
+
+	.prose blockquote {
+		padding: 1.1em 1.2em 1.1em 2.7em;
+	}
+
+	.prose blockquote::before {
+		left: 0.24em;
+		font-size: 3em;
+	}
+
+	.prose pre {
+		padding: 1.1em 1.2em;
+		font-size: 13px;
+	}
+
+	.prose img,
+	.prose video {
+		border-radius: 20px;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.prose a {
+		transition: none;
+	}
+}

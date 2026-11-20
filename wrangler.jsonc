@@ -1,0 +1,54 @@
+{
+	// `pnpm build` (Astro の静的出力) の dist/ を static assets として配り、お問い合わせフォームの送信
+	// (POST /api/contact) だけを Worker スクリプト (worker/index.ts) で受ける。
+	// Worker があるのは、フォームの内容を Discord の Webhook へ流すため: Webhook の URL は知られると誰でも
+	// 投稿できてしまうので、ブラウザには渡さず Worker の secret に持たせて、Worker から送る。
+	// 初回の `wrangler deploy` が Worker を作成する (ダッシュボードでの事前作成は不要)。
+	//
+	// secret はここに書かない (この repo は public)。`pnpm wrangler secret put <名前>` で入れる:
+	//   DISCORD_WEBHOOK_URL   送り先の Webhook の URL。未設定のあいだ、フォームは 503 (受け付けていません) を返す
+	//   TURNSTILE_SECRET_KEY  任意。設定すると Turnstile のトークンを検証する (site key は src/lib/site.ts)
+	// ローカル (`pnpm wrangler dev`) では .dev.vars に書く (.dev.vars.example を写す)。
+	//
+	// binding (assets.binding / ratelimits) を足す・名前を変えるときは、型を作り直す (README の「公開」):
+	//   pnpm wrangler types worker/worker-configuration.d.ts --env-file .dev.vars.example
+	"name": "prism-aiken",
+	"main": "worker/index.ts",
+	"compatibility_date": "2026-10-01",
+	"assets": {
+		"directory": "./dist",
+		// Worker から static assets を引くための binding (env.ASSETS)。
+		// アセットに当たらなかったリクエストは Worker に来るので、Worker はそれを env.ASSETS.fetch() に渡して
+		// 下の not_found_handling / html_handling を効かせる (ページ遷移のリクエストは Worker を通らず直接 404 ページになる)
+		"binding": "ASSETS",
+		// 存在しないパスは dist/404.html (src/pages/404.astro) を 404 で返す。SPA fallback にしない
+		"not_found_handling": "404-page",
+		// Astro は trailingSlash: 'always' + build.format: 'directory' で <path>/index.html を出す。
+		// /posts/foo は /posts/foo/ へリダイレクトし、URL の正を末尾スラッシュ付きに揃える
+		"html_handling": "auto-trailing-slash",
+		// /api/ 配下だけは、アセットを探す前に Worker を通す。それ以外は今までどおりアセットが先
+		// (アセットの配信は Worker を起こさないので、リクエスト数の課金・上限の対象にならない)
+		"run_worker_first": ["/api/*"],
+	},
+	// フォームの連投を抑えるレート制限 (Workers の Rate Limiting binding)。送信元 IP ごとに 60 秒で 5 件まで。
+	// period に書けるのは 10 か 60 (秒) だけ。namespace_id はアカウント内で一意になるよう自分で決める整数の文字列で、
+	// 同じ値を別の Worker で使うとカウンタを共有する。
+	// 数え方は Cloudflare の拠点ごと・おおよそ (厳密な上限ではない)。迷惑送信をならす程度の備え
+	"ratelimits": [
+		{
+			"name": "CONTACT_RATE_LIMITER",
+			"namespace_id": "4301",
+			"simple": { "limit": 5, "period": 60 },
+		},
+	],
+	// Worker のログ (console.*) をダッシュボードで見られるようにする。送信の失敗 (Webhook が 2xx 以外など) を追うため。
+	// 入力値 (名前・メール・本文) と Webhook の URL はログに出していない
+	"observability": {
+		"enabled": true,
+	},
+	// カスタムドメインはダッシュボードで Worker に紐づける。ここに routes を書くと deploy のたびに wrangler が
+	// ゾーンの経路を同期しに行き、CI のトークンに Zone 権限が要る。一度紐づければ deploy で外れない
+	// routes を書かないと workers.dev の URL が勝手に有効になるので明示的に止める (公開はカスタムドメインだけ)
+	"workers_dev": false,
+	"preview_urls": false,
+}

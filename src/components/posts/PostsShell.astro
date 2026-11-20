@@ -1,0 +1,280 @@
+---
+/**
+ * 記事まわりのページの共通の器。
+ * 青緑の地 → パンくず → 上の角を丸めた白い面（中身は slot）→ 青緑の締めの帯、の順に積む。
+ * 締めの帯は白い面の下端に角丸でかぶさる。直後に来るフッターがどんな形でも白い面と直接つながらないので、
+ * 角丸の外側に地の色が欠けて見えることがない。
+ */
+interface Crumb {
+	label: string
+	href?: string
+}
+
+interface Props {
+	/** パンくず。最後の要素が現在地（href なし） */
+	crumbs?: Crumb[]
+}
+
+const { crumbs = [] } = Astro.props
+---
+
+<div class="posts-shell">
+	{crumbs.length > 0 ? (
+		<nav class="crumbs" aria-label="パンくずリスト">
+			<ol class="crumbs__list">
+				{crumbs.map((crumb, i) => (
+					<li class="crumbs__item">
+						{crumb.href && i < crumbs.length - 1 ? (
+							<a href={crumb.href}>{crumb.label}</a>
+						) : (
+							<span aria-current="page">{crumb.label}</span>
+						)}
+					</li>
+				))}
+			</ol>
+		</nav>
+	) : (
+		<div class="crumbs crumbs--empty" />
+	)}
+
+	<div class="sheet">
+		<div class="sheet__inner">
+			<slot />
+		</div>
+	</div>
+
+	<aside class="outro" aria-label="記事の案内">
+		<div class="outro__inner">
+			<p class="outro__en" lang="en" aria-hidden="true">
+				Stay tuned
+			</p>
+			<p class="outro__lead">新しい記事は RSS でも受け取れます。</p>
+			<div class="outro__actions">
+				<a class="outro__btn outro__btn--solid" href="/rss.xml">
+					RSS を購読する
+				</a>
+				<a class="outro__btn" href="/posts/">
+					記事一覧
+				</a>
+				<a class="outro__btn" href="/">
+					トップページ
+				</a>
+			</div>
+		</div>
+	</aside>
+</div>
+
+<style>
+	.posts-shell {
+		/* tokens.css に無い値。記事まわりのコンポーネントが継承して使う */
+		--border-thick: 5px; /* カードの太い枠 */
+		--radius-thumb: 22px; /* カード内の画像・日付の面 */
+		--radius-panel: 44px; /* 空表示など大きめの面 */
+		--radius-image: 28px; /* 本文中の画像 */
+		--article-width: 680px; /* 記事詳細の 1 段の幅（17px × 全角 40 字） */
+		--font-mono: ui-monospace, 'SFMono-Regular', 'Cascadia Mono', Menlo, Consolas, monospace;
+		/*
+		 * 本文のコードブロックの地。濃い青緑（--teal-ink）をさらに沈めた色。
+		 * 構文ハイライトの配色（github-dark）が本来の地（#24292e）と同じ明るさの差で読める濃さにしてある
+		 */
+		--code-bg: color-mix(in srgb, var(--teal-ink) 60%, black);
+	}
+
+	/* ---------- パンくず（青緑の地の上） ---------- */
+	.crumbs {
+		max-width: calc(var(--content-width) + var(--gutter) * 2);
+		margin: 0 auto;
+		padding: 26px var(--gutter) 24px;
+	}
+
+	.crumbs--empty {
+		padding: 0;
+		height: 40px;
+	}
+
+	.crumbs__list {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 6px 4px;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+		font-size: 14px;
+		font-weight: 700;
+		line-height: 1.5;
+		color: var(--on-teal);
+	}
+
+	.crumbs__item {
+		display: flex;
+		align-items: center;
+		min-width: 0;
+	}
+
+	.crumbs__item + .crumbs__item::before {
+		content: '';
+		flex: none;
+		width: 6px;
+		height: 6px;
+		margin: 0 10px 0 8px;
+		border-radius: 50%;
+		background: var(--highlight);
+	}
+
+	.crumbs__item a {
+		padding: 4px 12px;
+		border-radius: var(--radius-pill);
+		background: rgba(255, 255, 255, 0.2);
+		color: #fff;
+		transition: background 0.2s;
+	}
+
+	.crumbs__item a:hover {
+		background: rgba(255, 255, 255, 0.36);
+		color: #fff;
+	}
+
+	.crumbs__item span {
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		max-width: 22em;
+	}
+
+	/* ---------- 白い面 ---------- */
+	.sheet {
+		position: relative;
+		overflow-x: clip; /* 見出しの後ろの大きな英字が横にはみ出すのを切る */
+		background: var(--surface);
+		border-radius: var(--radius-section) var(--radius-section) 0 0;
+		/* 下は、かぶさってくる締めの帯の角丸ぶんだけ余分に取る */
+		padding: 84px var(--gutter) calc(96px + var(--radius-section));
+	}
+
+	.sheet__inner {
+		max-width: var(--content-width);
+		margin: 0 auto;
+	}
+
+	/* ---------- 締めの帯 ---------- */
+	.outro {
+		position: relative;
+		margin-top: calc(var(--radius-section) * -1);
+		border-radius: var(--radius-section) var(--radius-section) 0 0;
+		background: var(--teal);
+		padding: 64px var(--gutter) 72px;
+		color: var(--on-teal);
+	}
+
+	.outro__inner {
+		max-width: var(--content-width);
+		margin: 0 auto;
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 18px 32px;
+	}
+
+	.outro__en {
+		margin: 0;
+		font-family: var(--font-en);
+		font-size: clamp(30px, 3.8vw, 44px);
+		font-weight: 800;
+		line-height: 1;
+		letter-spacing: 0.01em;
+		color: #fff;
+	}
+
+	.outro__lead {
+		flex: 1 1 14em;
+		margin: 0;
+		font-size: 17px;
+		font-weight: 700;
+		line-height: 1.8;
+	}
+
+	.outro__actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 10px;
+	}
+
+	.outro__btn {
+		display: inline-flex;
+		align-items: center;
+		padding: 12px 24px;
+		border: 2px solid rgba(255, 255, 255, 0.85);
+		border-radius: var(--radius-pill);
+		color: #fff;
+		font-size: 15px;
+		font-weight: 700;
+		line-height: 1.4;
+		transition:
+			background 0.2s,
+			color 0.2s,
+			transform 0.2s var(--ease-out);
+	}
+
+	.outro__btn:hover {
+		background: rgba(255, 255, 255, 0.18);
+		color: #fff;
+		transform: translateY(-2px);
+	}
+
+	.outro__btn--solid {
+		border-color: var(--surface);
+		background: var(--surface);
+		color: var(--teal-ink);
+		box-shadow: var(--shadow-sm);
+	}
+
+	.outro__btn--solid:hover {
+		background: var(--surface);
+		color: var(--violet-strong);
+	}
+
+	.outro__btn:focus-visible,
+	.crumbs__item a:focus-visible {
+		outline: 3px solid var(--highlight);
+		outline-offset: 3px;
+	}
+
+	@media (max-width: 640px) {
+		.crumbs {
+			padding: 18px var(--gutter) 18px;
+		}
+
+		.crumbs__list {
+			font-size: 13px;
+		}
+
+		.crumbs__item span {
+			max-width: 12em;
+		}
+
+		.sheet {
+			padding-top: 52px;
+			padding-bottom: calc(64px + var(--radius-section));
+		}
+
+		.outro {
+			padding: 44px var(--gutter) 52px;
+		}
+
+		.outro__lead {
+			flex-basis: 100%;
+			font-size: 16px;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.outro__btn {
+			transition: none;
+		}
+
+		.outro__btn:hover {
+			transform: none;
+		}
+	}
+</style>

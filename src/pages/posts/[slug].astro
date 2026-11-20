@@ -1,0 +1,555 @@
+---
+/**
+ * 記事詳細。公開している記事 1 本につき 1 ページ（/posts/<slug>/）。
+ * 本文（Markdown）の組版は src/styles/prose.css。
+ */
+import type { GetStaticPaths, InferGetStaticPropsType } from 'astro'
+import { Image, getImage } from 'astro:assets'
+import { render } from 'astro:content'
+import Base from '../../layouts/Base.astro'
+import PostsShell from '../../components/posts/PostsShell.astro'
+import {
+	POSTS_PATH,
+	authorsOf,
+	categoryHref,
+	englishLabel,
+	excerptOf,
+	getPublishedPosts,
+	neighborsOf,
+	postHref,
+	tagHref,
+	tagsOf,
+	toPostView,
+} from '../../lib/posts'
+import { formatDate } from '../../lib/site'
+import '../../styles/prose.css'
+
+export const getStaticPaths = (async () => {
+	const posts = await getPublishedPosts()
+	return posts.map((post) => ({
+		params: { slug: post.id },
+		// 前後の記事（日付の順）
+		props: { post, ...neighborsOf(posts, post.id) },
+	}))
+}) satisfies GetStaticPaths
+
+type Props = InferGetStaticPropsType<typeof getStaticPaths>
+
+const { post, newer, older } = Astro.props
+const { title, date, thumbnail } = post.data
+const view = toPostView(post)
+const { Content } = await render(post)
+const [tags, authors] = await Promise.all([tagsOf(post), authorsOf(post)])
+
+// OGP 用の画像。SNS のクローラが読める形式（JPEG / PNG）で、幅 1200px までに縮めて出す
+const ogImage =
+	thumbnail &&
+	(await getImage({
+		src: thumbnail,
+		width: Math.min(thumbnail.width, 1200),
+		format: thumbnail.format === 'png' ? 'png' : 'jpg',
+	}))
+
+const ghost = englishLabel(view.category.slug, 'Article')
+const near = [
+	{ entry: older, dir: 'older', label: '前の記事' },
+	{ entry: newer, dir: 'newer', label: '次の記事' },
+] as const
+---
+
+<Base title={title} pageType="article" description={excerptOf(post, 120)} image={ogImage?.src}>
+	<PostsShell
+		crumbs={[
+			{ label: 'ホーム', href: '/' },
+			{ label: '記事', href: POSTS_PATH },
+			{ label: view.category.label, href: categoryHref(view.category.slug) },
+			{ label: title },
+		]}
+	>
+		<article class:list={['article', `article--${view.kind}`]}>
+			<header class="article__head">
+				<span class="article__ghost" lang="en" aria-hidden="true">
+					{ghost}
+				</span>
+				<div class="article__meta">
+					<time class="article__date" datetime={date.toISOString()}>
+						{formatDate(date)}
+					</time>
+					<ul class="article__cats" aria-label="カテゴリ">
+						{view.categories.map((category) => (
+							<li>
+								<a class="article__cat" href={categoryHref(category.slug)}>
+									{category.label}
+								</a>
+							</li>
+						))}
+					</ul>
+				</div>
+				<h1 class="article__title">{title}</h1>
+				{authors.length > 0 && (
+					<p class="article__byline">
+						<span class="article__byline-label" lang="en" aria-hidden="true">
+							By
+						</span>
+						<span class="article__byline-names">
+							{authors.map((author) => author.data.name).join('、')}
+						</span>
+					</p>
+				)}
+			</header>
+
+			{thumbnail && (
+				<div class="article__eyecatch">
+					<Image
+						src={thumbnail}
+						alt=""
+						width={Math.min(thumbnail.width, 1640)}
+						widths={[480, 820, 1240, 1640]}
+						sizes="(max-width: 899px) 100vw, 820px"
+						priority
+					/>
+				</div>
+			)}
+
+			<div class="article__body prose">
+				<Content />
+			</div>
+
+			{tags.length > 0 && (
+				<ul class="article__tags" aria-label="タグ">
+					{tags.map((tag) => (
+						<li>
+							<a class="article__tag" href={tagHref(tag.id)}>
+								<span aria-hidden="true">#</span>
+								{tag.data.label}
+							</a>
+						</li>
+					))}
+				</ul>
+			)}
+
+			<footer class="article__foot">
+				{(older || newer) && (
+					<nav class="near" aria-label="前後の記事">
+						{near.map(({ entry, dir, label }) =>
+							entry ? (
+								<a
+									class:list={['near__link', `near__link--${dir}`]}
+									href={postHref(entry.id)}
+									rel={dir === 'older' ? 'prev' : 'next'}
+								>
+									<span class="near__label">
+										{dir === 'older' && <span aria-hidden="true">←</span>}
+										{label}
+										{dir === 'newer' && <span aria-hidden="true">→</span>}
+									</span>
+									<span class="near__title">{entry.data.title}</span>
+									<span class="near__date">{formatDate(entry.data.date)}</span>
+								</a>
+							) : (
+								<span class="near__spacer" />
+							)
+						)}
+					</nav>
+				)}
+				<p class="article__back">
+					<a class="article__back-link" href={POSTS_PATH}>
+						<span aria-hidden="true">←</span>
+						記事一覧へ戻る
+					</a>
+				</p>
+			</footer>
+		</article>
+	</PostsShell>
+</Base>
+
+<style>
+	.article {
+		--tone-ghost: var(--teal-ghost);
+		--tone-date: var(--violet);
+		max-width: var(--article-width);
+		margin: 0 auto;
+	}
+
+	/* 読み物は後ろの輪郭文字がすみれ色になるので、重なる日付は青緑にして読めるようにする */
+	.article--reading {
+		--tone-ghost: var(--violet-ghost);
+		--tone-date: var(--teal-strong);
+	}
+
+	/* ---------- 見出し（トップページの見出しと同じ組み。番号の位置に日付を置く） ---------- */
+	.article__head {
+		position: relative;
+		padding-top: 52px;
+	}
+
+	.article__ghost {
+		position: absolute;
+		top: 0;
+		left: -6px;
+		font-family: var(--font-en);
+		font-size: clamp(72px, 10vw, 128px);
+		font-weight: 800;
+		line-height: 0.78;
+		letter-spacing: -0.03em;
+		white-space: nowrap;
+		color: transparent;
+		-webkit-text-stroke: 2px var(--tone-ghost);
+		pointer-events: none;
+		user-select: none;
+	}
+
+	.article__meta {
+		position: relative;
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 10px 16px;
+	}
+
+	.article__date {
+		font-family: var(--font-en);
+		font-size: 20px;
+		font-weight: 800;
+		line-height: 1.2;
+		letter-spacing: 0.14em;
+		color: var(--tone-date);
+	}
+
+	.article__cats,
+	.article__tags {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.article__cat {
+		display: inline-flex;
+		padding: 6px 14px;
+		border-radius: var(--radius-pill);
+		background: var(--teal-tint);
+		color: var(--teal-strong);
+		font-size: 13px;
+		font-weight: 700;
+		line-height: 1.4;
+		transition:
+			background 0.2s,
+			color 0.2s;
+	}
+
+	.article__cat:hover {
+		background: var(--teal-line);
+		color: var(--teal-ink);
+	}
+
+	.article--reading .article__cat {
+		background: var(--violet);
+		color: #fff;
+	}
+
+	.article--reading .article__cat:hover {
+		background: var(--violet-hover);
+		color: #fff;
+	}
+
+	.article__title {
+		position: relative;
+		margin: 18px 0 0;
+		font-size: clamp(26px, 3.6vw, 38px);
+		font-weight: 900;
+		line-height: 1.45;
+		letter-spacing: 0.01em;
+		color: var(--teal-ink);
+		overflow-wrap: anywhere;
+		word-break: auto-phrase;
+		text-wrap: pretty;
+	}
+
+	.article__byline {
+		display: flex;
+		align-items: baseline;
+		gap: 10px;
+		margin: 16px 0 0;
+		font-size: 15px;
+		font-weight: 700;
+		line-height: 1.7;
+		color: var(--text-mid);
+	}
+
+	.article__byline-label {
+		flex: none;
+		font-family: var(--font-en);
+		font-size: 13px;
+		font-weight: 800;
+		letter-spacing: 0.16em;
+		text-transform: uppercase;
+		color: var(--text-faint);
+	}
+
+	/* ---------- アイキャッチ ---------- */
+	.article__eyecatch {
+		margin-top: 36px;
+		overflow: hidden;
+		border-radius: var(--radius-card);
+		background: var(--teal-tint);
+		box-shadow: var(--shadow-md);
+	}
+
+	.article__eyecatch :global(img) {
+		display: block;
+		width: 100%;
+		height: auto;
+		max-height: 600px;
+		object-fit: cover;
+	}
+
+	/* 広い画面では、本文の段より左右に少しはみ出させる */
+	@media (min-width: 900px) {
+		.article__eyecatch {
+			margin-inline: -70px;
+		}
+	}
+
+	/* ---------- 本文 ---------- */
+	.article__body {
+		margin-top: 44px;
+	}
+
+	/* ---------- タグ ---------- */
+	.article__tags {
+		margin-top: 52px;
+	}
+
+	.article__tag {
+		display: inline-flex;
+		gap: 3px;
+		padding: 8px 16px;
+		border-radius: var(--radius-pill);
+		background: var(--violet-tint);
+		color: var(--violet-strong);
+		font-size: 14px;
+		font-weight: 700;
+		line-height: 1.4;
+		transition:
+			background 0.2s,
+			transform 0.2s var(--ease-out);
+	}
+
+	.article__tag:hover {
+		background: var(--violet-line);
+		color: var(--violet-strong);
+		transform: translateY(-2px);
+	}
+
+	/* ---------- 前後の記事・一覧へ戻る ---------- */
+	.article__foot {
+		margin-top: 64px;
+		padding-top: 40px;
+		border-top: var(--border-thick) solid var(--teal-tint);
+	}
+
+	.near {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 16px;
+	}
+
+	.near__link {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+		min-width: 0;
+		padding: 18px 22px 20px;
+		border: var(--border-thick) solid var(--teal-line);
+		border-radius: var(--radius-card-sm);
+		background: var(--surface);
+		color: inherit;
+		transition:
+			border-color 0.25s,
+			transform 0.25s var(--ease-out);
+	}
+
+	.near__link:hover {
+		border-color: var(--teal);
+		color: inherit;
+		transform: translateY(-3px);
+	}
+
+	.near__link--newer {
+		align-items: flex-end;
+		text-align: right;
+	}
+
+	.near__label {
+		display: inline-flex;
+		gap: 8px;
+		font-size: 13px;
+		font-weight: 700;
+		line-height: 1.5;
+		color: var(--violet-strong);
+	}
+
+	.near__title {
+		display: -webkit-box;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 2;
+		line-clamp: 2;
+		overflow: hidden;
+		font-size: 15.5px;
+		font-weight: 900;
+		line-height: 1.6;
+		color: var(--teal-ink);
+		overflow-wrap: anywhere;
+	}
+
+	.near__date {
+		font-family: var(--font-en);
+		font-size: 13px;
+		font-weight: 700;
+		letter-spacing: 0.08em;
+		color: var(--teal-strong);
+	}
+
+	.article__back {
+		display: flex;
+		justify-content: center;
+		margin: 36px 0 0;
+	}
+
+	.near + .article__back {
+		margin-top: 36px;
+	}
+
+	.article__back:first-child {
+		margin-top: 0;
+	}
+
+	.article__back-link {
+		display: inline-flex;
+		align-items: center;
+		gap: 10px;
+		padding: 16px 34px;
+		border-radius: var(--radius-pill);
+		background: var(--teal-ink);
+		color: #fff;
+		font-size: 16px;
+		font-weight: 700;
+		line-height: 1.4;
+		transition:
+			background 0.2s,
+			transform 0.2s var(--ease-out);
+	}
+
+	.article__back-link:hover {
+		background: var(--teal-strong);
+		color: #fff;
+		transform: translateY(-2px);
+	}
+
+	.article__cat:focus-visible,
+	.article__tag:focus-visible,
+	.near__link:focus-visible,
+	.article__back-link:focus-visible {
+		outline: 3px solid var(--violet);
+		outline-offset: 3px;
+	}
+
+	@media (max-width: 640px) {
+		.article__date {
+			font-size: 17px;
+		}
+
+		.article__title {
+			margin-top: 14px;
+		}
+
+		.article__eyecatch {
+			margin-top: 28px;
+		}
+
+		.article__body {
+			margin-top: 32px;
+		}
+
+		.article__tags {
+			margin-top: 40px;
+		}
+
+		.article__foot {
+			margin-top: 48px;
+			padding-top: 32px;
+		}
+
+		.near {
+			grid-template-columns: minmax(0, 1fr);
+			gap: 12px;
+		}
+
+		.near__spacer {
+			display: none;
+		}
+
+		.near__link {
+			padding: 14px 18px 16px;
+			border-width: 4px;
+		}
+	}
+
+	@media (prefers-reduced-motion: no-preference) {
+		.article__ghost {
+			animation: article-ghost 1.1s var(--ease-out) both;
+		}
+
+		.article__meta,
+		.article__title,
+		.article__byline {
+			animation: article-line 0.8s var(--ease-out) both;
+		}
+
+		.article__title {
+			animation-delay: 0.08s;
+		}
+
+		.article__byline {
+			animation-delay: 0.16s;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.article__cat,
+		.article__tag,
+		.near__link,
+		.article__back-link {
+			transition: none;
+		}
+
+		.article__tag:hover,
+		.near__link:hover,
+		.article__back-link:hover {
+			transform: none;
+		}
+	}
+
+	@keyframes article-ghost {
+		from {
+			opacity: 0;
+		}
+		to {
+			opacity: 1;
+		}
+	}
+
+	@keyframes article-line {
+		from {
+			opacity: 0;
+			transform: translateX(-14px);
+		}
+		to {
+			opacity: 1;
+			transform: translateX(0);
+		}
+	}
+</style>

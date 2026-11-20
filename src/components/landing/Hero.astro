@@ -1,0 +1,498 @@
+---
+import { SITE_NAME, SITE_SHORT_NAME } from '../../lib/site'
+import { fiscalYear } from '../../lib/members'
+
+const year = fiscalYear()
+---
+
+<section id="top" class="hero">
+	<div class="copy">
+		<div class="badge">
+			<span class="badge-dot"></span>
+			{year}年度 新メンバー募集中
+		</div>
+		<h1>
+			<span style="--i:0">医学とAIの</span>
+			<span style="--i:1">まんなかで、</span>
+			<span style="--i:2">いっしょに学ぶ。</span>
+		</h1>
+		<p class="lead">
+			北海道大学医学部の学生が中心の学生団体「{SITE_NAME}」（通称：{SITE_SHORT_NAME}
+			）です。プログラミング未経験でも、どの学部・学年でも大丈夫。
+			<em>医療とAIに「なんかおもしろそう」があれば、それが入会条件です。</em>
+		</p>
+		<div class="actions">
+			<a class="button primary" href="#join">
+				見学を申し込む →
+			</a>
+			<a class="button outline" href="#activity">
+				活動をのぞいてみる
+			</a>
+		</div>
+	</div>
+
+	<div class="visual">
+		<div class="bubble" aria-hidden="true"></div>
+		<div class="frame">
+			<svg
+				viewBox="0 0 420 400"
+				preserveAspectRatio="xMidYMid slice"
+				role="img"
+				aria-label="病理標本とAIの解析をあらわしたイラスト"
+			>
+				<rect width="420" height="400" fill="#eafcfc"></rect>
+				<g fill="#bdeef0">
+					<circle cx="40" cy="40" r="2.5"></circle>
+					<circle cx="90" cy="40" r="2.5"></circle>
+					<circle cx="140" cy="40" r="2.5"></circle>
+					<circle cx="40" cy="90" r="2.5"></circle>
+					<circle cx="380" cy="330" r="2.5"></circle>
+					<circle cx="340" cy="360" r="2.5"></circle>
+					<circle cx="380" cy="360" r="2.5"></circle>
+					<circle cx="40" cy="360" r="2.5"></circle>
+				</g>
+
+				<!-- スライドガラス -->
+				<g transform="rotate(-12 210 210)">
+					<rect
+						x="66"
+						y="118"
+						width="288"
+						height="176"
+						rx="10"
+						fill="#ffffff"
+						stroke="#9fe4e6"
+						stroke-width="3"
+					></rect>
+					<rect x="66" y="118" width="288" height="30" rx="10" fill="#d6f6f7"></rect>
+					<rect x="84" y="128" width="86" height="10" rx="5" fill="#8bdcdf"></rect>
+				</g>
+
+				<!-- 組織の視野 -->
+				<circle cx="200" cy="212" r="98" fill="#ffffff" stroke="#00B4B8" stroke-width="4"></circle>
+				<clipPath id="hero-field">
+					<circle cx="200" cy="212" r="94"></circle>
+				</clipPath>
+				<g clip-path="url(#hero-field)">
+					<rect x="102" y="114" width="196" height="196" fill="#f6feff"></rect>
+					<g fill="#d9f6f7" stroke="#00B4B8" stroke-width="2.4">
+						<ellipse cx="160" cy="176" rx="26" ry="21"></ellipse>
+						<ellipse cx="228" cy="166" rx="22" ry="26"></ellipse>
+						<ellipse cx="146" cy="240" rx="23" ry="25"></ellipse>
+						<ellipse cx="214" cy="238" rx="30" ry="23"></ellipse>
+						<ellipse cx="256" cy="278" rx="20" ry="18"></ellipse>
+						<ellipse cx="176" cy="292" rx="24" ry="19"></ellipse>
+					</g>
+					<g fill="#EE82EE">
+						<circle cx="160" cy="176" r="7"></circle>
+						<circle cx="228" cy="166" r="6"></circle>
+						<circle cx="146" cy="240" r="7"></circle>
+						<circle cx="214" cy="238" r="8"></circle>
+						<circle cx="256" cy="278" r="5.5"></circle>
+						<circle cx="176" cy="292" r="6"></circle>
+					</g>
+					<g class="flow" stroke="#EE82EE" stroke-width="2" fill="none" stroke-dasharray="7 7">
+						<path d="M160 176 L228 166 L214 238 L146 240 Z"></path>
+						<path d="M214 238 L256 278 M146 240 L176 292 M176 292 L256 278"></path>
+					</g>
+					<rect
+						class="scan"
+						x="96"
+						y="204"
+						width="208"
+						height="14"
+						fill="#EE82EE"
+						opacity=".22"
+					></rect>
+				</g>
+
+				<!-- 検出枠 -->
+				<g fill="none" stroke="#b23fb2" stroke-width="3">
+					<path d="M182 210 h-16 v-16 M246 210 h16 v-16 M182 268 h-16 v16 M246 268 h16 v16"></path>
+				</g>
+
+				<!-- AI のグラフ -->
+				<g stroke="#00898c" stroke-width="2.4" fill="none" opacity=".9">
+					<path d="M318 96 L364 128 M318 96 L364 76 M364 128 L364 76 M364 128 L392 176 M364 76 L392 176"></path>
+				</g>
+				<g fill="#00B4B8">
+					<circle
+						class="node"
+						cx="318"
+						cy="96"
+						r="9"
+						style="--d:0s; transform-origin:318px 96px;"
+					></circle>
+					<circle
+						class="node"
+						cx="364"
+						cy="128"
+						r="7"
+						style="--d:.4s; transform-origin:364px 128px;"
+					></circle>
+					<circle
+						class="node"
+						cx="364"
+						cy="76"
+						r="7"
+						style="--d:.8s; transform-origin:364px 76px;"
+					></circle>
+					<circle
+						class="node"
+						cx="392"
+						cy="176"
+						r="8"
+						fill="#EE82EE"
+						style="--d:1.2s; transform-origin:392px 176px;"
+					></circle>
+				</g>
+			</svg>
+		</div>
+		<div class="note">
+			<div class="note-main">週1回～</div>
+			<div class="note-sub">AI×医療の勉強会</div>
+		</div>
+	</div>
+</section>
+
+<style>
+	.hero {
+		position: relative;
+		max-width: 1120px;
+		margin: 0 auto;
+		padding: 56px var(--gutter) 120px;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 44px;
+		align-items: center;
+	}
+
+	/* 読み込み直後に、コピー → イラストの順で下から出す */
+	.copy {
+		flex: 1 1 420px;
+		min-width: 0;
+		animation: hero-rise-in 0.9s 0.1s var(--ease-out) both;
+	}
+
+	.badge {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		background: var(--surface);
+		color: var(--violet-strong);
+		font-weight: 700;
+		font-size: 17px;
+		line-height: 1.45;
+		padding: 10px 20px;
+		border-radius: var(--radius-pill);
+		box-shadow: var(--shadow-sm);
+	}
+
+	.badge-dot {
+		width: 10px;
+		height: 10px;
+		border-radius: 50%;
+		background: var(--violet);
+	}
+
+	h1 {
+		margin: 22px 0 0;
+		font-size: clamp(38px, 5.2vw, 60px);
+		font-weight: 900;
+		line-height: 1.18;
+		letter-spacing: 0.01em;
+		color: #fff;
+		text-shadow: var(--shadow-text);
+	}
+
+	h1 span {
+		display: block;
+		animation: hero-line-in 1.9s calc(0.25s + var(--i) * 0.45s) var(--ease-reveal) both;
+	}
+
+	.lead {
+		margin: 22px 0 0;
+		max-width: 30em;
+		font-size: 21px;
+		font-weight: 700;
+		line-height: 2;
+		color: var(--on-teal);
+		text-wrap: pretty;
+	}
+
+	.lead em {
+		font-style: normal;
+		color: var(--highlight);
+	}
+
+	.actions {
+		display: flex;
+		gap: 14px;
+		flex-wrap: wrap;
+		margin-top: 32px;
+	}
+
+	.button {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 10px;
+		font-weight: 700;
+		font-size: 19px;
+		line-height: 1.45;
+		border-radius: var(--radius-pill);
+		transition:
+			transform 0.2s,
+			color 0.2s,
+			background 0.2s;
+	}
+
+	.button.primary {
+		background: var(--surface);
+		color: var(--teal-ink);
+		padding: 19px 36px;
+		box-shadow: var(--shadow-button);
+	}
+
+	.button.primary:hover {
+		transform: translateY(-2px);
+		color: var(--violet-strong);
+	}
+
+	.button.outline {
+		border: 2px solid color-mix(in srgb, var(--surface) 85%, transparent);
+		color: #fff;
+		padding: 17px 34px;
+	}
+
+	.button.outline:hover {
+		background: color-mix(in srgb, var(--surface) 18%, transparent);
+	}
+
+	.visual {
+		position: relative;
+		flex: 1 1 340px;
+		min-width: 0;
+		animation:
+			hero-rise-in 0.9s 0.3s var(--ease-out) both,
+			hero-float 7s 1.2s ease-in-out infinite;
+	}
+
+	.bubble {
+		position: absolute;
+		top: -18px;
+		right: -18px;
+		width: 120px;
+		height: 120px;
+		border-radius: 50%;
+		background: var(--violet);
+		opacity: 0.9;
+	}
+
+	.frame {
+		position: relative;
+		height: 400px;
+		border-radius: var(--radius-leaf);
+		overflow: hidden;
+		background: var(--teal-tint);
+		box-shadow: var(--shadow-lg);
+	}
+
+	.frame svg {
+		display: block;
+		width: 100%;
+		height: 100%;
+	}
+
+	.flow {
+		animation: hero-dash-flow 3.2s linear infinite;
+	}
+
+	.scan {
+		animation: hero-scan 4.6s ease-in-out infinite;
+	}
+
+	.node {
+		animation: hero-node-pulse 2.6s var(--d, 0s) ease-in-out infinite;
+	}
+
+	.note {
+		position: absolute;
+		bottom: -26px;
+		left: -26px;
+		background: var(--surface);
+		border-radius: var(--radius-card-sm);
+		padding: 16px 22px;
+		box-shadow: var(--shadow-float);
+	}
+
+	.note-main {
+		font-family: var(--font-en);
+		font-weight: 800;
+		font-size: 30px;
+		line-height: 1;
+		color: var(--teal);
+	}
+
+	.note-sub {
+		margin-top: 4px;
+		font-size: 16px;
+		font-weight: 700;
+		line-height: 1.45;
+		color: var(--text-mid);
+	}
+
+	@keyframes hero-rise-in {
+		from {
+			transform: translateY(24px);
+			opacity: 0;
+		}
+		to {
+			transform: translateY(0);
+			opacity: 1;
+		}
+	}
+
+	@keyframes hero-line-in {
+		from {
+			opacity: 0;
+			transform: translateX(-16px);
+			clip-path: inset(-10% 100% -10% 0);
+		}
+		to {
+			opacity: 1;
+			transform: translateX(0);
+			clip-path: inset(-10% -5% -10% 0);
+		}
+	}
+
+	@keyframes hero-float {
+		0%,
+		100% {
+			transform: translateY(0);
+		}
+		50% {
+			transform: translateY(-14px);
+		}
+	}
+
+	@keyframes hero-node-pulse {
+		0%,
+		100% {
+			transform: scale(1);
+			opacity: 0.95;
+		}
+		50% {
+			transform: scale(1.35);
+			opacity: 0.55;
+		}
+	}
+
+	@keyframes hero-dash-flow {
+		to {
+			stroke-dashoffset: -60;
+		}
+	}
+
+	@keyframes hero-scan {
+		0%,
+		100% {
+			transform: translateY(-46px);
+		}
+		50% {
+			transform: translateY(46px);
+		}
+	}
+
+	@media (max-width: 640px) {
+		.hero {
+			padding: 28px var(--gutter) 88px;
+			gap: 40px;
+		}
+
+		.badge {
+			font-size: 14px;
+			padding: 8px 16px;
+		}
+
+		h1 {
+			margin-top: 18px;
+		}
+
+		.lead {
+			margin-top: 18px;
+			font-size: 17px;
+			line-height: 1.9;
+		}
+
+		.actions {
+			margin-top: 26px;
+			gap: 12px;
+		}
+
+		.button {
+			font-size: 16px;
+			flex: 1 1 auto;
+		}
+
+		.button.primary {
+			padding: 15px 24px;
+		}
+
+		.button.outline {
+			padding: 13px 22px;
+		}
+
+		.visual {
+			flex-basis: 100%;
+			margin-inline: 6px;
+		}
+
+		.bubble {
+			top: -14px;
+			right: -6px;
+			width: 88px;
+			height: 88px;
+		}
+
+		.frame {
+			height: auto;
+			aspect-ratio: 21 / 20;
+			border-radius: 88px 32px 88px 32px;
+		}
+
+		.note {
+			bottom: -22px;
+			left: -6px;
+			padding: 12px 18px;
+			border-radius: 22px;
+		}
+
+		.note-main {
+			font-size: 24px;
+		}
+
+		.note-sub {
+			font-size: 14px;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.copy,
+		.visual,
+		h1 span,
+		.flow,
+		.scan,
+		.node {
+			animation: none;
+		}
+
+		.button {
+			transition: none;
+		}
+
+		.button.primary:hover {
+			transform: none;
+		}
+	}
+</style>

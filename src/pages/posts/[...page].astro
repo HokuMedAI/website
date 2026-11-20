@@ -1,0 +1,108 @@
+---
+/**
+ * 記事一覧。新しい順に並べ、18 件ごとにページを分ける。
+ * /posts/ が 1 ページ目、2 ページ目以降は /posts/page/<n>/（page には "page/2" の形で入る）。
+ * 1 ページ目だけ、読み物（特集・レポート）の新しいものを先頭に大きく出す。
+ */
+import type { GetStaticPaths, InferGetStaticPropsType } from 'astro'
+import Base from '../../layouts/Base.astro'
+import CategoryNav from '../../components/posts/CategoryNav.astro'
+import EmptyState from '../../components/posts/EmptyState.astro'
+import PageHead from '../../components/posts/PageHead.astro'
+import Pager from '../../components/posts/Pager.astro'
+import PostGrid from '../../components/posts/PostGrid.astro'
+import PostsShell from '../../components/posts/PostsShell.astro'
+import SubHead from '../../components/posts/SubHead.astro'
+import {
+	PICKUP_COUNT,
+	POSTS_PATH,
+	POSTS_PER_PAGE,
+	getPostViews,
+	pageParam,
+	paginate,
+} from '../../lib/posts'
+
+export const getStaticPaths = (async () => {
+	const views = await getPostViews()
+	const pickup = views.filter((view) => view.kind === 'reading').slice(0, PICKUP_COUNT)
+	return paginate(views, POSTS_PER_PAGE).map(({ items, page, totalPages }) => ({
+		params: { page: pageParam(page) },
+		props: { views: items, page, totalPages, pickup: page === 1 ? pickup : [] },
+	}))
+}) satisfies GetStaticPaths
+
+type Props = InferGetStaticPropsType<typeof getStaticPaths>
+
+const { views, page, totalPages, pickup } = Astro.props
+// 先頭に出した読み物は、すぐ下の新着順からは外す（同じ記事が 2 回並ばないように）。
+// 外すのは表示だけでページの切れ目は変えないので、ページをまたいだ抜けや重複は起きない。
+const pickedIds = new Set(pickup.map((view) => view.post.id))
+const latest = views.filter((view) => !pickedIds.has(view.post.id))
+const isEmpty = pickup.length === 0 && views.length === 0
+const pageLabel = String(page).padStart(2, '0')
+---
+
+<Base
+	title={page > 1 ? `記事（${page} ページ目）` : '記事'}
+	description="北医AI研の特集・レポートと、ふだんの活動の記録です。"
+>
+	<PostsShell
+		crumbs={[
+			{ label: 'ホーム', href: '/' },
+			{ label: '記事', href: POSTS_PATH },
+		]}
+	>
+		<PageHead index={pageLabel} en="Articles" ja="記事">
+			<p>特集・レポートと、ふだんの活動の記録です。</p>
+		</PageHead>
+		<CategoryNav active="all" />
+
+		<div class="posts-body">
+			{isEmpty ? (
+				<EmptyState title="まだ記事がありません">
+					<p>活動の記録やレポートを、これから載せていきます。</p>
+				</EmptyState>
+			) : (
+				<>
+					{pickup.length > 0 && (
+						<section class="posts-block" aria-labelledby="posts-pickup">
+							<SubHead en="Pick up" ja="読み物" id="posts-pickup" tone="violet" />
+							<PostGrid views={pickup} layout="reading" lead heading="h3" />
+						</section>
+					)}
+					{latest.length > 0 && (
+						<section class="posts-block" aria-labelledby="posts-latest">
+							<SubHead
+								en="Latest"
+								ja={page > 1 ? `新着順（${page} ページ目）` : '新着順'}
+								id="posts-latest"
+							/>
+							<PostGrid views={latest} layout="log" heading="h3" />
+						</section>
+					)}
+					<Pager basePath={POSTS_PATH} page={page} totalPages={totalPages} />
+				</>
+			)}
+		</div>
+	</PostsShell>
+</Base>
+
+<style>
+	.posts-body {
+		margin-top: 48px;
+	}
+
+	.posts-block + .posts-block {
+		margin-top: 64px;
+	}
+
+	@media (max-width: 600px) {
+		.posts-body {
+			margin-top: 36px;
+		}
+
+		.posts-block + .posts-block {
+			margin-top: 44px;
+		}
+	}
+</style>

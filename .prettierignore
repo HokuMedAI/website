@@ -1,0 +1,10 @@
+dist/
+.astro/
+.wrangler/
+node_modules/
+pnpm-lock.yaml
+_docs/
+# wrangler types の生成物
+worker/worker-configuration.d.ts
+# 記事の本文は書いた人の表記のまま残す (行末 2 スペースの改行を整形で消さない)
+src/content/posts/

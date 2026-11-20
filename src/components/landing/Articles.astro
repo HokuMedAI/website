@@ -1,0 +1,122 @@
+---
+/**
+ * 最近の記事。カードとカテゴリの切り替えは記事ページ（/posts/）と同じ部品を使い、見た目を揃える。
+ * 記事が 1 本も無いときは何も出さない。
+ */
+import CategoryNav from '../posts/CategoryNav.astro'
+import PostGrid from '../posts/PostGrid.astro'
+import { POSTS_PATH, getPostViews, latestCount } from '../../lib/posts'
+import SectionHead from './SectionHead.astro'
+
+interface Props {
+	num: string
+}
+
+const { num } = Astro.props
+// 新しい順。3 列の格子に端数が出ない本数だけ出す
+const all = await getPostViews()
+const views = all.slice(0, latestCount(all.length))
+---
+
+{views.length > 0 && (
+	<section id="articles" class="articles">
+		<div class="inner">
+			<SectionHead num={num} en="Articles" ja="活動の記録" />
+
+			<CategoryNav active={null} />
+
+			<div class="grid">
+				<PostGrid views={views} layout="log" heading="h3" />
+			</div>
+
+			<div class="more">
+				<a class="button" href={POSTS_PATH}>
+					すべての記事を見る →
+				</a>
+			</div>
+		</div>
+	</section>
+)}
+
+<style>
+	.articles {
+		/*
+		 * 記事カード（components/posts/PostCard.astro）が継承して使う値。
+		 * 記事ページでは PostsShell.astro が同じ名前で定義している。値を変えるときは両方を揃える。
+		 */
+		--border-thick: 5px;
+		--radius-thumb: 22px;
+
+		position: relative;
+		background: var(--surface);
+		border-radius: var(--radius-section) var(--radius-section) 0 0;
+		padding: 84px var(--gutter) 96px;
+		overflow-x: clip;
+	}
+
+	.inner {
+		max-width: var(--content-width);
+		margin: 0 auto;
+	}
+
+	.grid {
+		margin-top: 32px;
+	}
+
+	.more {
+		margin-top: 36px;
+		display: flex;
+		justify-content: center;
+	}
+
+	.button {
+		display: inline-flex;
+		align-items: center;
+		background: var(--teal);
+		color: #fff;
+		font-weight: 700;
+		font-size: 17px;
+		line-height: 1.45;
+		padding: 16px 32px;
+		border-radius: var(--radius-pill);
+		box-shadow: var(--shadow-sm);
+		transition:
+			transform 0.2s,
+			background 0.2s;
+	}
+
+	.button:hover {
+		background: var(--teal-strong);
+		color: #fff;
+		transform: translateY(-2px);
+	}
+
+	@media (max-width: 640px) {
+		.articles {
+			padding: 60px var(--gutter) 72px;
+		}
+
+		.grid {
+			margin-top: 24px;
+		}
+
+		.more {
+			margin-top: 28px;
+		}
+
+		.button {
+			font-size: 16px;
+			padding: 14px 28px;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.button {
+			transition: none;
+		}
+
+		.button:hover {
+			transform: none;
+		}
+	}
+</style>

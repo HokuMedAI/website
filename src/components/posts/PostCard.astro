@@ -1,0 +1,505 @@
+---
+/**
+ * 記事カード。
+ * - 体裁（variant）: compact = 小ぶり（3 列の格子用）/ feature = 大きめ（読み物用）/ lead = 横長の特大（先頭の 1 本）
+ * - 色味は記事の種類で決まる: 読み物（特集・レポート）= すみれ色、記録（活動日誌）= 青緑
+ * - アイキャッチが無い記事は、画像の位置に日付を大きく出す。同じ行に画像つきのカードが並んで
+ *   背が伸びたときは、この日付の面が伸びて余白を吸う。
+ */
+import { Image } from 'astro:assets'
+import { englishLabel, excerptOf, type PostView } from '../../lib/posts'
+import { formatDate } from '../../lib/site'
+
+interface Props {
+	view: PostView
+	variant?: 'compact' | 'feature' | 'lead'
+	/** タイトルの見出しレベル */
+	heading?: 'h2' | 'h3'
+	/** 画面の最初に見える画像なら true（遅延読み込みしない） */
+	priority?: boolean
+}
+
+const { view, variant = 'compact', heading: Heading = 'h2', priority = false } = Astro.props
+const { post, href, kind, category } = view
+
+const image = post.data.thumbnail
+const date = formatDate(post.data.date)
+const isoDate = post.data.date.toISOString()
+const [year, ...monthDay] = date.split('.')
+const excerpt = excerptOf(post, variant === 'compact' ? 80 : 140)
+const ghost = englishLabel(category.slug, 'Post')
+// カードに収まる大きさの画像を何段階か作り、表示される幅に合ったものをブラウザに選ばせる
+// （元の画像より大きい幅は作られない）
+const widths = variant === 'compact' ? [200, 400, 640] : [500, 750, 1000]
+const sizes = {
+	compact: '(max-width: 600px) 92px, (max-width: 960px) 50vw, 320px',
+	feature: '(max-width: 720px) 100vw, 500px',
+	lead: '(max-width: 819px) 100vw, 500px',
+}[variant]
+---
+
+<article
+	class:list={['card', `card--${variant}`, `card--${kind}`, image ? 'card--photo' : 'card--plain']}
+>
+	<a class="card__link" href={href}>
+		{image ? (
+			<div class="card__visual card__visual--photo">
+				<Image
+					src={image}
+					alt=""
+					width={Math.min(image.width, widths[widths.length - 1])}
+					widths={widths}
+					sizes={sizes}
+					priority={priority}
+				/>
+			</div>
+		) : (
+			<div class="card__visual card__visual--date">
+				<span class="card__ghost" lang="en" aria-hidden="true">
+					{ghost}
+				</span>
+				<time class="card__stamp" datetime={isoDate}>
+					<span class="card__year">{year}</span>
+					<span class="card__day">{monthDay.join('.')}</span>
+				</time>
+			</div>
+		)}
+		<div class="card__body">
+			<div class="card__meta">
+				<span class="card__chip">{category.label}</span>
+				{image && (
+					<time class="card__date" datetime={isoDate}>
+						{date}
+					</time>
+				)}
+			</div>
+			<Heading class="card__title">{post.data.title}</Heading>
+			{excerpt && <p class="card__excerpt">{excerpt}</p>}
+			{variant !== 'compact' && (
+				<span class="card__more" aria-hidden="true">
+					読む<span class="card__arrow">→</span>
+				</span>
+			)}
+		</div>
+	</a>
+</article>
+
+<style>
+	.card {
+		--tone: var(--teal);
+		--tone-strong: var(--teal-strong);
+		--tone-tint: var(--teal-tint);
+		--tone-line: var(--teal-line);
+		--tone-ghost: var(--teal-ghost);
+		display: flex;
+		min-width: 0;
+	}
+
+	.card--reading {
+		--tone: var(--violet);
+		--tone-strong: var(--violet-strong);
+		--tone-tint: var(--violet-tint);
+		--tone-line: var(--violet-line);
+		--tone-ghost: var(--violet-ghost);
+	}
+
+	.card__link {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+		min-width: 0;
+		padding: 14px 14px 22px;
+		border: var(--border-thick) solid var(--tone-line);
+		border-radius: var(--radius-card);
+		background: var(--surface);
+		color: inherit;
+		transition:
+			border-color 0.25s,
+			transform 0.25s var(--ease-out);
+	}
+
+	.card__link:hover {
+		border-color: var(--tone);
+		color: inherit;
+		transform: translateY(-3px);
+	}
+
+	.card__link:focus-visible {
+		outline: 3px solid var(--violet);
+		outline-offset: 3px;
+	}
+
+	/* ---------- 画像／日付の面 ---------- */
+	.card__visual {
+		position: relative;
+		overflow: hidden;
+		border-radius: var(--radius-thumb);
+		background: var(--tone-tint);
+	}
+
+	.card__visual--photo {
+		aspect-ratio: 3 / 2;
+	}
+
+	.card__visual--photo :global(img) {
+		position: absolute;
+		inset: 0;
+		display: block;
+		width: 100%;
+		height: 100%;
+		max-width: none;
+		object-fit: cover;
+	}
+
+	.card__visual--date {
+		flex: 1 0 auto;
+		display: flex;
+		align-items: flex-end;
+		min-height: 96px;
+		padding: 14px 18px;
+	}
+
+	.card__ghost {
+		position: absolute;
+		top: 10px;
+		/* 左下の日付と重ならないよう右半分に置き、はみ出した分は面の端で切る */
+		left: 42%;
+		font-family: var(--font-en);
+		font-size: 56px;
+		font-weight: 800;
+		line-height: 0.8;
+		letter-spacing: -0.03em;
+		white-space: nowrap;
+		color: transparent;
+		-webkit-text-stroke: 1.5px var(--tone-ghost);
+		pointer-events: none;
+		user-select: none;
+	}
+
+	.card__stamp {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+		font-family: var(--font-en);
+		line-height: 1;
+	}
+
+	.card__year {
+		font-size: 13px;
+		font-weight: 700;
+		letter-spacing: 0.16em;
+		color: var(--tone-strong);
+	}
+
+	.card__day {
+		font-size: 34px;
+		font-weight: 800;
+		letter-spacing: 0.01em;
+		color: var(--teal-ink);
+	}
+
+	/* ---------- 文字 ---------- */
+	.card__body {
+		flex: 1 1 auto;
+		display: flex;
+		flex-direction: column;
+		min-width: 0;
+		padding: 0 8px;
+	}
+
+	.card--plain .card__body {
+		flex: 0 0 auto;
+	}
+
+	.card__meta {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 6px 12px;
+		margin-bottom: 10px;
+	}
+
+	.card__chip {
+		padding: 5px 12px;
+		border-radius: var(--radius-pill);
+		background: var(--tone-tint);
+		color: var(--tone-strong);
+		font-size: 13px;
+		font-weight: 700;
+		line-height: 1.4;
+	}
+
+	.card--reading .card__chip {
+		background: var(--violet);
+		color: #fff;
+	}
+
+	.card__date {
+		font-family: var(--font-en);
+		font-size: 14px;
+		font-weight: 700;
+		letter-spacing: 0.08em;
+		color: var(--teal-strong);
+	}
+
+	.card__title {
+		display: -webkit-box;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 3;
+		line-clamp: 3;
+		overflow: hidden;
+		margin: 0;
+		font-size: 17px;
+		font-weight: 900;
+		line-height: 1.55;
+		color: var(--teal-ink);
+		overflow-wrap: anywhere;
+		word-break: auto-phrase;
+	}
+
+	.card__excerpt {
+		display: -webkit-box;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 2;
+		line-clamp: 2;
+		overflow: hidden;
+		margin: 8px 0 0;
+		font-size: 14px;
+		line-height: 1.85;
+		color: var(--text-soft);
+		overflow-wrap: anywhere;
+	}
+
+	.card__more {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		margin-top: auto;
+		padding-top: 16px;
+		font-size: 14px;
+		font-weight: 700;
+		color: var(--violet-strong);
+	}
+
+	.card__arrow {
+		transition: transform 0.25s var(--ease-out);
+	}
+
+	.card__link:hover .card__arrow {
+		transform: translateX(4px);
+	}
+
+	/* ---------- 大きめ（読み物） ---------- */
+	.card--feature .card__link {
+		gap: 20px;
+		padding: 16px 16px 24px;
+	}
+
+	.card--feature .card__visual--photo {
+		aspect-ratio: 16 / 9;
+	}
+
+	.card--feature .card__visual--date {
+		min-height: 132px;
+		padding: 18px 22px;
+	}
+
+	.card--feature .card__ghost,
+	.card--lead .card__ghost {
+		font-size: 84px;
+	}
+
+	.card--feature .card__day,
+	.card--lead .card__day {
+		font-size: 46px;
+	}
+
+	.card--feature .card__body {
+		padding: 0 10px;
+	}
+
+	.card--feature .card__title {
+		font-size: 21px;
+		line-height: 1.5;
+	}
+
+	.card--feature .card__excerpt,
+	.card--lead .card__excerpt {
+		-webkit-line-clamp: 3;
+		line-clamp: 3;
+		margin-top: 10px;
+		font-size: 15px;
+		line-height: 1.9;
+		color: var(--text-mid);
+	}
+
+	/* ---------- 特大（先頭の 1 本）。広い画面では横に組む ---------- */
+	.card--lead .card__link {
+		gap: 20px;
+		padding: 16px 16px 24px;
+	}
+
+	.card--lead .card__visual {
+		border-radius: 72px 28px 72px 28px;
+	}
+
+	.card--lead .card__visual--photo {
+		aspect-ratio: 16 / 9;
+	}
+
+	.card--lead .card__visual--date {
+		min-height: 132px;
+		padding: 22px 30px;
+	}
+
+	.card--lead .card__body {
+		padding: 0 10px;
+	}
+
+	.card--lead .card__title {
+		font-size: clamp(21px, 2.5vw, 28px);
+		line-height: 1.45;
+	}
+
+	@media (min-width: 820px) {
+		.card--lead .card__link {
+			flex-direction: row;
+			align-items: stretch;
+			gap: 36px;
+			padding: 20px;
+		}
+
+		.card--lead .card__visual {
+			flex: 0 0 48%;
+			border-radius: var(--radius-leaf);
+		}
+
+		.card--lead .card__visual--photo {
+			aspect-ratio: auto;
+			min-height: 320px;
+		}
+
+		.card--lead .card__visual--date {
+			flex: 0 0 300px;
+			min-height: 220px;
+		}
+
+		.card--lead .card__ghost {
+			top: 24px;
+			font-size: 96px;
+		}
+
+		.card--lead .card__day {
+			font-size: 60px;
+		}
+
+		.card--lead .card__body,
+		.card--lead.card--plain .card__body {
+			flex: 1 1 0;
+			justify-content: center;
+			padding: 16px 20px 16px 0;
+		}
+
+		.card--lead .card__meta {
+			margin-bottom: 14px;
+		}
+
+		.card--lead .card__excerpt {
+			-webkit-line-clamp: 4;
+			line-clamp: 4;
+			font-size: 16px;
+			line-height: 2;
+		}
+
+		.card--lead .card__more {
+			margin-top: 0;
+		}
+	}
+
+	/* ---------- 狭い画面: 小ぶりなカードは横に寝かせて、1 件の背を低くする ---------- */
+	@media (max-width: 600px) {
+		.card--compact .card__link {
+			flex-direction: row;
+			align-items: stretch;
+			gap: 14px;
+			padding: 10px 14px 10px 10px;
+			border-width: 4px;
+		}
+
+		.card--compact .card__visual {
+			flex: 0 0 92px;
+			border-radius: 18px;
+		}
+
+		.card--compact .card__visual--photo {
+			aspect-ratio: auto;
+			min-height: 92px;
+		}
+
+		.card--compact .card__visual--date {
+			min-height: 92px;
+			padding: 10px 6px 12px 12px;
+		}
+
+		.card--compact .card__ghost {
+			display: none;
+		}
+
+		.card--compact .card__year {
+			font-size: 11px;
+		}
+
+		.card--compact .card__day {
+			font-size: 23px;
+		}
+
+		.card--compact .card__body,
+		.card--compact.card--plain .card__body {
+			flex: 1 1 0;
+			justify-content: center;
+			padding: 4px 0;
+		}
+
+		.card--compact .card__meta {
+			margin-bottom: 6px;
+		}
+
+		.card--compact .card__chip {
+			padding: 3px 10px;
+			font-size: 12px;
+		}
+
+		.card--compact .card__date {
+			font-size: 13px;
+		}
+
+		.card--compact .card__title {
+			font-size: 15.5px;
+			line-height: 1.5;
+		}
+
+		.card--compact .card__excerpt {
+			margin-top: 4px;
+			font-size: 13px;
+			line-height: 1.7;
+		}
+
+		.card--feature .card__title {
+			font-size: 19px;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.card__link,
+		.card__arrow {
+			transition: none;
+		}
+
+		.card__link:hover,
+		.card__link:hover .card__arrow {
+			transform: none;
+		}
+	}
+</style>

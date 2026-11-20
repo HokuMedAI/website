@@ -1,0 +1,25 @@
+# 記事の署名。記事の frontmatter の authors にここの id を書く
+
+- id: hokumedai
+  name: 北医AI研究会
+  bio: 北医AI研究会は、北海道大学医学部を中心に、AIについて学び、研究する団体です。
+
+- id: ymd000
+  name: 山田
+  bio: 好きな食べ物：えんがわ
+
+- id: murakami
+  name: 村上
+  bio: 「やるかやらぬかだ。『やってみる』などない」
+
+- id: shogo
+  name: 佐藤
+  bio: つけだし
+
+- id: mbyamaguchi
+  name: ヤマグチ
+  bio: ラーメンとピザが好きです。
+
+- id: enda
+  name: 遠田
+  bio: 名誉会長

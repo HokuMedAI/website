@@ -1,0 +1,858 @@
+---
+/**
+ * お問い合わせフォーム。送信は <script> から POST /api/contact (worker/index.ts) へ JSON で送り、
+ * Worker が Discord の Webhook へ流す。項目の上限と検証の規則は worker/contact.ts と共有する。
+ *
+ * - /api/contact は Worker にしか無い。Astro の dev サーバー (`pnpm dev`) では送信は必ず失敗の表示になる
+ *   (通して試す方法は README の「公開」)
+ * - JS が動かないと送れないので、送信ボタンは最初は無効で、<script> が有効にする。<noscript> で Discord を案内する
+ * - Turnstile は src/lib/site.ts の TURNSTILE_SITE_KEY が空のあいだ、ウィジェットもスクリプトも読み込まない
+ */
+import { FIELD_LIMITS, HONEYPOT_FIELD, TURNSTILE_ACTION } from '../../../worker/contact'
+import { DISCORD_INVITE_URL, SITE_SHORT_NAME, TURNSTILE_SITE_KEY } from '../../lib/site'
+---
+
+<section class="contact-form" aria-labelledby="contact-form-title" data-contact>
+	<h2 id="contact-form-title">フォームで問い合わせる</h2>
+
+	<form class="panel" method="post" action="/api/contact" data-contact-form>
+		<div class="fields">
+			<div class="field">
+				<label for="contact-name">
+					お名前
+					<span class="badge badge-required">必須</span>
+				</label>
+				<input
+					type="text"
+					id="contact-name"
+					name="name"
+					autocomplete="name"
+					maxlength={FIELD_LIMITS.name}
+					required
+				/>
+				<p class="error" id="contact-name-error" data-error-for="name" hidden></p>
+			</div>
+
+			<div class="field">
+				<label for="contact-email">
+					メールアドレス
+					<span class="badge badge-required">必須</span>
+				</label>
+				<input
+					type="email"
+					id="contact-email"
+					name="email"
+					autocomplete="email"
+					inputmode="email"
+					autocapitalize="off"
+					spellcheck="false"
+					maxlength={FIELD_LIMITS.email}
+					aria-describedby="contact-email-hint"
+					required
+				/>
+				<p class="hint" id="contact-email-hint">
+					返信に使います。
+				</p>
+				<p class="error" id="contact-email-error" data-error-for="email" hidden></p>
+			</div>
+
+			<div class="field field-wide">
+				<label for="contact-affiliation">
+					所属・学年など
+					<span class="badge badge-optional">任意</span>
+				</label>
+				<input
+					type="text"
+					id="contact-affiliation"
+					name="affiliation"
+					autocomplete="organization"
+					maxlength={FIELD_LIMITS.affiliation}
+				/>
+				<p class="error" id="contact-affiliation-error" data-error-for="affiliation" hidden></p>
+			</div>
+
+			<div class="field field-wide">
+				<label for="contact-message">
+					内容
+					<span class="badge badge-required">必須</span>
+				</label>
+				<textarea
+					id="contact-message"
+					name="message"
+					rows="7"
+					maxlength={FIELD_LIMITS.message}
+					aria-describedby="contact-message-hint"
+					required
+				></textarea>
+				<p class="hint" id="contact-message-hint">
+					{FIELD_LIMITS.message} 字まで。
+				</p>
+				<p class="error" id="contact-message-error" data-error-for="message" hidden></p>
+			</div>
+
+			{/* ハニーポット。人には見えず、キーボードでも読み上げでも届かない。埋めて送ってくるのは機械 */}
+			<div class="trap" aria-hidden="true">
+				<label for="contact-website">この欄は空のままにしてください</label>
+				<input
+					type="text"
+					id="contact-website"
+					name={HONEYPOT_FIELD}
+					tabindex="-1"
+					autocomplete="off"
+				/>
+			</div>
+		</div>
+
+		{TURNSTILE_SITE_KEY && (
+			<div
+				class="turnstile"
+				data-turnstile
+				data-sitekey={TURNSTILE_SITE_KEY}
+				data-action={TURNSTILE_ACTION}
+			/>
+		)}
+
+		{/* フォーム全体のエラー。<script> が下の <template> の中身を写す */}
+		<div class="status" aria-live="polite" data-status></div>
+
+		<noscript>
+			<p class="noscript">
+				このフォームの送信には JavaScript が必要です。お使いの環境では送信できないため、
+				<a href={DISCORD_INVITE_URL} target="_blank" rel="noopener noreferrer">
+					Discord
+				</a>
+				からご連絡ください。
+			</p>
+		</noscript>
+
+		<div class="actions">
+			<button type="submit" class="submit" disabled data-submit>
+				<span data-submit-label>送信する</span>
+			</button>
+		</div>
+	</form>
+
+	{/* 送信できたら、フォームをこの表示に置き換える */}
+	<div class="done" tabindex="-1" hidden data-done>
+		<svg class="done-mark" viewBox="0 0 48 48" aria-hidden="true">
+			<circle cx="24" cy="24" r="22"></circle>
+			<path d="M14 24.5l7 7 13-14"></path>
+		</svg>
+		<p class="done-title">送信しました。</p>
+		<p class="done-text">入力されたメールアドレスへ、部員から返信します。</p>
+	</div>
+
+	<p class="note">
+		入力内容は{SITE_SHORT_NAME}の
+		Discord（部員のみが見られる場所）に届きます。メールアドレスは返信のためだけに使います。
+	</p>
+
+	<template data-notice="invalid">
+		<p>入力内容を確かめてください。直すところを、それぞれの項目の下に出しています。</p>
+	</template>
+	<template data-notice="rate_limited">
+		<p>送信が続いています。少し時間をおいて、もう一度お試しください。</p>
+	</template>
+	<template data-notice="failed">
+		<p>
+			送信できませんでした。
+			<a href={DISCORD_INVITE_URL} target="_blank" rel="noopener noreferrer">
+				Discord
+			</a>
+			からご連絡ください。
+		</p>
+	</template>
+	<template data-notice="forbidden">
+		<p>
+			送信を確認できませんでした。ページを読み込み直して、もう一度お試しください。うまくいかないときは
+			<a href={DISCORD_INVITE_URL} target="_blank" rel="noopener noreferrer">
+				Discord
+			</a>
+			からご連絡ください。
+		</p>
+	</template>
+	<template data-notice="turnstile">
+		<p>上の確認（Cloudflare Turnstile）が終わってから、もう一度「送信する」を押してください。</p>
+	</template>
+</section>
+
+<script>
+	import { FIELD_LIMITS, HONEYPOT_FIELD, isRecord, validateContact } from '../../../worker/contact'
+	import type { ContactField, FieldError, FieldErrors } from '../../../worker/contact'
+
+	type Notice = 'invalid' | 'rate_limited' | 'failed' | 'forbidden' | 'turnstile'
+
+	const ENDPOINT = '/api/contact'
+	const TURNSTILE_SCRIPT_URL =
+		'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit'
+
+	const FIELDS = Object.keys(FIELD_LIMITS) as ContactField[]
+	const FIELD_LABELS: Record<ContactField, string> = {
+		name: 'お名前',
+		email: 'メールアドレス',
+		affiliation: '所属・学年など',
+		message: '内容',
+	}
+
+	function fieldMessage(field: ContactField, error: FieldError): string {
+		if (error === 'required') return `${FIELD_LABELS[field]}を入力してください。`
+		if (error === 'too_long') return `${FIELD_LIMITS[field]} 字以内で入力してください。`
+		return field === 'email'
+			? 'name@example.com のような形で入力してください。'
+			: '入力内容を確かめてください。'
+	}
+
+	/** Worker の応答から、項目ごとのエラーを取り出す (知らない項目・理由は捨てる) */
+	function readFieldErrors(value: unknown): FieldErrors {
+		const errors: FieldErrors = {}
+		if (!isRecord(value)) return errors
+		for (const field of FIELDS) {
+			const error = value[field]
+			if (error === 'required' || error === 'too_long' || error === 'invalid') errors[field] = error
+		}
+		return errors
+	}
+
+	interface TurnstileApi {
+		render: (
+			container: HTMLElement,
+			options: {
+				sitekey: string
+				action: string
+				size: 'flexible'
+				callback: (token: string) => void
+				'expired-callback': () => void
+				'error-callback': () => void
+			}
+		) => string
+		reset: (widgetId: string) => void
+		remove: (widgetId: string) => void
+	}
+
+	/**
+	 * Turnstile のウィジェット。スクリプトはここで初めて読み込む (site key が無ければ、この関数自体が呼ばれない)。
+	 * トークンは 1 回しか使えないので、送信が終わるたびに reset() で作り直す
+	 */
+	function setupTurnstile(container: HTMLElement, onToken: () => void) {
+		const turnstileWindow = window as Window & { turnstile?: TurnstileApi }
+		let widgetId: string | undefined
+		let token = ''
+
+		const render = () => {
+			const api = turnstileWindow.turnstile
+			if (!api || widgetId !== undefined) return
+			widgetId = api.render(container, {
+				sitekey: container.dataset.sitekey ?? '',
+				action: container.dataset.action ?? '',
+				size: 'flexible',
+				callback: (value) => {
+					token = value
+					onToken()
+				},
+				'expired-callback': () => {
+					token = ''
+				},
+				'error-callback': () => {
+					token = ''
+				},
+			})
+		}
+
+		const load = () => {
+			if (turnstileWindow.turnstile) {
+				render()
+				return
+			}
+			const script = document.createElement('script')
+			script.src = TURNSTILE_SCRIPT_URL
+			script.async = true
+			script.addEventListener('load', render, { once: true })
+			document.head.append(script)
+		}
+
+		// 先読み (Speculation Rules の prerender) の間は読み込まない。見てもいない人の検証を走らせないため。
+		// 実際に表示された時点 (prerenderingchange) で始める (prerendering は TypeScript の DOM の型にまだ無い)
+		if ((document as Document & { prerendering?: boolean }).prerendering) {
+			document.addEventListener('prerenderingchange', load, { once: true })
+		} else {
+			load()
+		}
+
+		return {
+			token: () => token,
+			reset: () => {
+				token = ''
+				if (widgetId !== undefined) turnstileWindow.turnstile?.reset(widgetId)
+			},
+			/** フォームごと片付ける前に、ウィジェットを外す */
+			remove: () => {
+				token = ''
+				if (widgetId !== undefined) turnstileWindow.turnstile?.remove(widgetId)
+				widgetId = undefined
+			},
+		}
+	}
+
+	function setupContactForm(root: HTMLElement) {
+		const form = root.querySelector<HTMLFormElement>('[data-contact-form]')
+		const submit = root.querySelector<HTMLButtonElement>('[data-submit]')
+		const submitLabel = root.querySelector<HTMLElement>('[data-submit-label]')
+		const status = root.querySelector<HTMLElement>('[data-status]')
+		const done = root.querySelector<HTMLElement>('[data-done]')
+		if (!form || !submit || !submitLabel || !status || !done) return
+
+		const idleLabel = submitLabel.textContent ?? ''
+		let sending = false
+		let shownNotice: Notice | null = null
+
+		const control = (field: ContactField) =>
+			form.elements.namedItem(field) as HTMLInputElement | HTMLTextAreaElement | null
+
+		/** 項目のエラーを出す・消す。文言を入力欄の説明 (aria-describedby) に結びつける */
+		const setFieldError = (field: ContactField, error: FieldError | undefined) => {
+			const input = control(field)
+			const message = root.querySelector<HTMLElement>(`[data-error-for="${field}"]`)
+			if (!input || !message) return
+			// 元からある説明 (hint) の id。エラーの id は足したり外したりする
+			const describedBy = (input.getAttribute('aria-describedby') ?? '')
+				.split(' ')
+				.filter((id) => id !== '' && id !== message.id)
+			if (error) {
+				message.textContent = fieldMessage(field, error)
+				message.hidden = false
+				input.setAttribute('aria-invalid', 'true')
+				describedBy.push(message.id)
+			} else {
+				message.textContent = ''
+				message.hidden = true
+				input.removeAttribute('aria-invalid')
+			}
+			if (describedBy.length > 0) input.setAttribute('aria-describedby', describedBy.join(' '))
+			else input.removeAttribute('aria-describedby')
+		}
+
+		const showFieldErrors = (errors: FieldErrors) => {
+			for (const field of FIELDS) setFieldError(field, errors[field])
+			const first = FIELDS.find((field) => errors[field])
+			if (first) control(first)?.focus()
+		}
+
+		const showNotice = (notice: Notice | null) => {
+			shownNotice = notice
+			const template = notice
+				? root.querySelector<HTMLTemplateElement>(`template[data-notice="${notice}"]`)
+				: null
+			status.replaceChildren(...(template ? [template.content.cloneNode(true)] : []))
+		}
+
+		const setSending = (value: boolean) => {
+			sending = value
+			submit.disabled = value
+			submitLabel.textContent = value ? '送信中…' : idleLabel
+			form.setAttribute('aria-busy', String(value))
+		}
+
+		const showDone = () => {
+			turnstile?.remove()
+			form.remove()
+			done.hidden = false
+			done.focus()
+		}
+
+		// Turnstile の確認が終わったら、「確認が終わってから」の案内を消す
+		const turnstileBox = root.querySelector<HTMLElement>('[data-turnstile]')
+		const turnstile = turnstileBox
+			? setupTurnstile(turnstileBox, () => {
+					if (shownNotice === 'turnstile') showNotice(null)
+				})
+			: null
+
+		// 直し始めたら、その項目のエラーを消す
+		for (const field of FIELDS) {
+			control(field)?.addEventListener('input', () => setFieldError(field, undefined))
+		}
+
+		form.addEventListener('submit', async (event) => {
+			event.preventDefault()
+			if (sending) return
+
+			const data = new FormData(form)
+			const read = (name: string) => String(data.get(name) ?? '')
+			const values = {
+				name: read('name'),
+				email: read('email'),
+				affiliation: read('affiliation'),
+				message: read('message'),
+			}
+
+			// 送る前に、Worker と同じ規則で確かめる
+			const checked = validateContact(values)
+			if (!checked.ok) {
+				showNotice('invalid')
+				showFieldErrors(checked.fields)
+				return
+			}
+			showFieldErrors({})
+
+			const turnstileToken = turnstile?.token()
+			if (turnstile && !turnstileToken) {
+				showNotice('turnstile')
+				return
+			}
+
+			showNotice(null)
+			setSending(true)
+
+			let ok = false
+			let error = ''
+			let fields: FieldErrors = {}
+			try {
+				const response = await fetch(ENDPOINT, {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({
+						...values,
+						[HONEYPOT_FIELD]: read(HONEYPOT_FIELD),
+						turnstileToken,
+					}),
+				})
+				const body: unknown = await response.json().catch(() => null)
+				ok = response.ok && isRecord(body) && body.ok === true
+				if (!ok && isRecord(body)) {
+					error = typeof body.error === 'string' ? body.error : ''
+					fields = readFieldErrors(body.fields)
+				}
+			} catch {
+				// 通信できなかった。下の「送信できませんでした」に落とす
+			}
+
+			if (ok) {
+				showDone()
+				return
+			}
+
+			setSending(false)
+			turnstile?.reset()
+			// 送信中は無効にしていたボタンへフォーカスを戻す (項目のエラーがあれば、下でその入力欄へ移る)
+			submit.focus()
+			if (error === 'invalid_input' && Object.keys(fields).length > 0) {
+				showNotice('invalid')
+				showFieldErrors(fields)
+			} else if (error === 'rate_limited') {
+				showNotice('rate_limited')
+			} else if (error === 'forbidden') {
+				showNotice('forbidden')
+			} else {
+				showNotice('failed')
+			}
+		})
+
+		// ブラウザ標準の吹き出しではなく、上の文言でエラーを出す
+		form.noValidate = true
+		submit.disabled = false
+	}
+
+	const root = document.querySelector<HTMLElement>('[data-contact]')
+	if (root) setupContactForm(root)
+</script>
+
+<style>
+	.contact-form {
+		margin-top: 64px;
+	}
+
+	h2 {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		margin: 0;
+		font-size: 24px;
+		font-weight: 900;
+		line-height: 1.45;
+		color: var(--teal-ink);
+	}
+
+	h2::before {
+		content: '';
+		flex: none;
+		width: 12px;
+		height: 12px;
+		border-radius: 50%;
+		background: var(--violet);
+	}
+
+	.panel,
+	.done {
+		margin-top: 20px;
+		border: 5px solid var(--teal-line);
+		border-radius: var(--radius-card);
+		background: var(--surface);
+	}
+
+	.panel {
+		padding: 36px 40px 40px;
+	}
+
+	.fields {
+		position: relative;
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 26px 28px;
+	}
+
+	.field {
+		min-width: 0;
+	}
+
+	.field-wide {
+		grid-column: 1 / -1;
+	}
+
+	label {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 6px 10px;
+		font-size: 16px;
+		font-weight: 700;
+		line-height: 1.5;
+		color: var(--teal-ink);
+	}
+
+	.badge {
+		flex: none;
+		padding: 2px 10px;
+		border-radius: var(--radius-pill);
+		font-size: 12px;
+		font-weight: 700;
+		line-height: 1.5;
+		letter-spacing: 0.04em;
+	}
+
+	.badge-required {
+		background: var(--violet-tint);
+		color: var(--violet-strong);
+	}
+
+	.badge-optional {
+		background: var(--teal-tint);
+		color: var(--text-mid);
+	}
+
+	input,
+	textarea {
+		display: block;
+		width: 100%;
+		margin-top: 8px;
+		border: 3px solid var(--teal-line);
+		border-radius: var(--radius-frame);
+		padding: 13px 18px;
+		background: var(--surface);
+		color: var(--text);
+		font: inherit;
+		font-size: 17px;
+		line-height: 1.7;
+		transition:
+			border-color 0.2s,
+			background 0.2s;
+	}
+
+	textarea {
+		min-height: 11em;
+		resize: vertical;
+	}
+
+	input:hover,
+	textarea:hover {
+		border-color: var(--teal);
+	}
+
+	/* フォーカス: 枠を濃くしたうえで、サイト共通のすみれ色の輪郭を重ねる */
+	input:focus,
+	textarea:focus {
+		border-color: var(--teal-strong);
+		background: var(--teal-tint);
+		outline: 3px solid var(--violet);
+		outline-offset: 2px;
+	}
+
+	/* エラーの入力欄。色に加えて、下の文言 (.error) と aria-invalid で伝える */
+	input[aria-invalid='true'],
+	textarea[aria-invalid='true'] {
+		border-color: var(--violet-strong);
+		background: var(--violet-tint);
+	}
+
+	.hint,
+	.error {
+		margin: 8px 4px 0;
+		font-size: 14px;
+		line-height: 1.7;
+	}
+
+	.hint {
+		color: var(--text-soft);
+	}
+
+	.error {
+		font-weight: 700;
+		color: var(--violet-strong);
+	}
+
+	/* 「!」の印を左に置く。文言の飾りで、意味は文言が持つ */
+	.error,
+	.status :global(p) {
+		position: relative;
+		padding-left: 1.9em;
+	}
+
+	.error::before,
+	.status :global(p)::before {
+		content: '!';
+		position: absolute;
+		left: 0;
+		top: 0.2em;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 1.3em;
+		height: 1.3em;
+		border-radius: 50%;
+		background: var(--violet-strong);
+		color: var(--surface);
+		font-family: var(--font-en);
+		font-weight: 800;
+		line-height: 1;
+	}
+
+	/* ハニーポット。display: none だと埋めない機械があるので、画面の外へ出して隠す */
+	.trap {
+		position: absolute;
+		left: -9999px;
+		top: 0;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+		opacity: 0;
+		pointer-events: none;
+	}
+
+	/* ウィジェットは幅に合わせて伸びる (size: flexible、最小 300px)。広い画面で横いっぱいにしない */
+	.turnstile {
+		max-width: 400px;
+		min-height: 65px;
+		margin-top: 26px;
+	}
+
+	.status:not(:empty),
+	.noscript {
+		margin: 26px 0 0;
+		border: 3px solid var(--violet-line);
+		border-radius: var(--radius-frame);
+		padding: 14px 18px;
+		background: var(--violet-tint);
+		font-size: 16px;
+		font-weight: 700;
+		line-height: 1.8;
+		color: var(--teal-ink);
+	}
+
+	.status :global(p) {
+		margin: 0;
+	}
+
+	.status :global(a),
+	.noscript a {
+		margin: 0 0.15em;
+		text-decoration: underline;
+		text-underline-offset: 4px;
+	}
+
+	.status :global(a:focus-visible),
+	.noscript a:focus-visible {
+		outline: 3px solid var(--violet);
+		outline-offset: 3px;
+		border-radius: 4px;
+	}
+
+	.actions {
+		display: flex;
+		justify-content: center;
+		margin-top: 30px;
+	}
+
+	.submit {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 240px;
+		border: 0;
+		border-radius: var(--radius-pill);
+		padding: 17px 40px;
+		background: var(--teal);
+		color: #fff;
+		font: inherit;
+		font-size: 18px;
+		font-weight: 700;
+		line-height: 1.45;
+		box-shadow: var(--shadow-sm);
+		cursor: pointer;
+		transition:
+			transform 0.2s,
+			background 0.2s;
+	}
+
+	.submit:hover:not(:disabled) {
+		background: var(--teal-strong);
+		transform: translateY(-2px);
+	}
+
+	.submit:focus-visible {
+		outline: 3px solid var(--violet);
+		outline-offset: 3px;
+	}
+
+	.submit:disabled {
+		background: var(--text-faint);
+		box-shadow: none;
+		cursor: default;
+	}
+
+	.done {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		padding: 52px 32px 56px;
+		border-color: var(--teal-line);
+		background: var(--teal-tint);
+		text-align: center;
+	}
+
+	.done[hidden] {
+		display: none;
+	}
+
+	.done:focus-visible {
+		outline: 3px solid var(--violet);
+		outline-offset: 3px;
+	}
+
+	.done-mark {
+		width: 64px;
+		height: 64px;
+	}
+
+	.done-mark circle {
+		fill: var(--teal);
+	}
+
+	.done-mark path {
+		fill: none;
+		stroke: var(--surface);
+		stroke-width: 5;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+	}
+
+	.done-title {
+		margin: 18px 0 0;
+		font-size: 24px;
+		font-weight: 900;
+		line-height: 1.5;
+		color: var(--teal-ink);
+	}
+
+	.done-text {
+		margin: 8px 0 0;
+		font-size: 17px;
+		line-height: 1.9;
+		color: var(--text-mid);
+		text-wrap: pretty;
+	}
+
+	.note {
+		margin: 16px 8px 0;
+		font-size: 14px;
+		line-height: 1.9;
+		color: var(--text-soft);
+		text-wrap: pretty;
+	}
+
+	@media (max-width: 640px) {
+		.contact-form {
+			margin-top: 44px;
+		}
+
+		h2 {
+			font-size: 20px;
+		}
+
+		.panel,
+		.done {
+			margin-top: 14px;
+			border-width: 4px;
+		}
+
+		.panel {
+			padding: 24px 18px 28px;
+		}
+
+		.fields {
+			grid-template-columns: minmax(0, 1fr);
+			gap: 22px;
+		}
+
+		label {
+			font-size: 15px;
+		}
+
+		/* 16px 未満にしない (iOS は 16px 未満の入力欄にフォーカスすると画面を拡大する) */
+		input,
+		textarea {
+			padding: 12px 14px;
+			font-size: 16px;
+		}
+
+		.status:not(:empty),
+		.noscript {
+			padding: 12px 14px;
+			font-size: 15px;
+		}
+
+		.submit {
+			width: 100%;
+			min-width: 0;
+			font-size: 17px;
+			padding: 15px 28px;
+		}
+
+		.done {
+			padding: 40px 20px 44px;
+		}
+
+		.done-title {
+			font-size: 21px;
+		}
+
+		.done-text {
+			font-size: 15px;
+		}
+
+		.note {
+			margin: 14px 4px 0;
+			font-size: 13px;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		input,
+		textarea,
+		.submit {
+			transition: none;
+		}
+
+		.submit:hover:not(:disabled) {
+			transform: none;
+		}
+	}
+</style>

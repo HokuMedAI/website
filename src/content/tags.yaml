@@ -1,0 +1,9 @@
+# 記事のタグ。記事の frontmatter の tags にここの id を書く (id が URL の /tag/<id>/ になる)
+
+- id: the-leader-has-spoken
+  label: 部長のありがたい一言
+  description: 部長からのありがたいお言葉をまとめています
+
+- id: academic-conference
+  label: 学術集会
+  description: 学術集会・学会に関する記事一覧です

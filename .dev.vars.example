@@ -1,0 +1,15 @@
+# ローカルで Worker (お問い合わせフォームの送信) まで動かすときの secret。
+# このファイルを .dev.vars という名前で写して値を入れる (.dev.vars は git に入れない)。
+# `pnpm build` のあと `pnpm wrangler dev` が .dev.vars を読む。本番の値は `pnpm wrangler secret put <名前>` で入れる。
+#
+# このファイルは `pnpm wrangler types --env-file .dev.vars.example` が secret の名前を知るためにも読む。
+# secret を足す・名前を変えるときは、ここも直して型を作り直す。値はここに書かない。
+
+# Discord の Webhook の URL (チャンネルの設定 → 連携サービス → ウェブフック)。
+# 空のあいだ、フォームは 503 (受け付けていません) を返す。
+# 入れると実際にそのチャンネルへ投稿されるので、試すときは試験用のチャンネルの Webhook を使う
+DISCORD_WEBHOOK_URL=
+
+# Turnstile の secret key。任意。空のあいだは Turnstile の検証をしない。
+# 入れるときは src/lib/site.ts の TURNSTILE_SITE_KEY にも site key を入れる (入れないとトークンが送られず 403 になる)
+TURNSTILE_SECRET_KEY=

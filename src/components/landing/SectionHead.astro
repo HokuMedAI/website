@@ -1,0 +1,212 @@
+---
+/**
+ * セクション見出し。後ろに輪郭だけの大きな英字、手前に「番号＋英字」と和文の見出し (h2。ページの見出しなら h1)。
+ *
+ * 画面に入ったときの出現アニメーション（[data-reveal]）もここが持つ。
+ * Join.astro は見出しの形が違うので、このコンポーネントを使わず data-reveal 属性だけ借りている。
+ */
+interface Props {
+	/** 英字の前に出す番号。下層ページでは省いてよい */
+	num?: string
+	en: string
+	ja: string
+	/** 和文の見出しの要素。下層ページの先頭で使うときは h1 */
+	as?: 'h1' | 'h2'
+	/** 地の色。teal は青緑の面の上（文字が白） */
+	tone?: 'light' | 'teal'
+	/** 輪郭文字の色 */
+	ghost?: 'teal' | 'violet'
+}
+
+const { num, en, ja, as: Heading = 'h2', tone = 'light', ghost = 'teal' } = Astro.props
+---
+
+<div
+	class:list={['head', `tone-${tone}`, `ghost-${ghost}`]}
+	data-reveal
+	data-reveal-fast={Heading === 'h1' ? '' : undefined}
+>
+	<span class="ghost" data-reveal-ghost aria-hidden="true">
+		{en}
+	</span>
+	<div class="label" data-reveal-line style="--i:0">
+		{num && <span class="num">{num}</span>}
+		<span class="en">{en}</span>
+	</div>
+	<Heading class="ja" data-reveal-line style="--i:1">
+		{ja}
+	</Heading>
+</div>
+
+<script>
+	// 見出しが画面に入ったら一度だけ出現させる。JS が動かなければ最初から見えたまま。
+	function armReveals() {
+		const targets = document.querySelectorAll<HTMLElement>('[data-reveal]')
+		const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+		if (targets.length === 0 || reduced || !('IntersectionObserver' in window)) return
+
+		const io = new IntersectionObserver(
+			(entries) => {
+				for (const entry of entries) {
+					if (!entry.isIntersecting) continue
+					entry.target.classList.add('is-in')
+					io.unobserve(entry.target)
+				}
+			},
+			{ rootMargin: '0px 0px -12% 0px', threshold: 0.15 }
+		)
+		for (const el of targets) {
+			el.classList.add('is-armed')
+			io.observe(el)
+		}
+	}
+
+	// 先読み (prerender) 中は画面に出ていない。そこで動かすと、表示されたときには出現が終わっているので、
+	// 実際に表示されるまで待つ (prerendering は TypeScript の DOM の型にまだ無い)
+	if ((document as Document & { prerendering?: boolean }).prerendering) {
+		document.addEventListener('prerenderingchange', armReveals, { once: true })
+	} else {
+		armReveals()
+	}
+</script>
+
+<style is:global>
+	/* 出現アニメーション。Join.astro からも使うので global */
+	[data-reveal].is-armed [data-reveal-ghost],
+	[data-reveal].is-armed [data-reveal-line] {
+		opacity: 0;
+	}
+
+	[data-reveal].is-armed [data-reveal-line] {
+		will-change: transform, clip-path;
+	}
+
+	[data-reveal].is-in [data-reveal-ghost] {
+		animation: head-ghost-in 1.6s ease-out forwards;
+	}
+
+	[data-reveal].is-in [data-reveal-line] {
+		animation: head-line-in 1.9s calc(0.15s + var(--i, 0) * 0.45s) var(--ease-reveal) forwards;
+	}
+
+	/* ページ先頭の見出し (h1) は、開いてすぐ読めるよう短く出す */
+	[data-reveal][data-reveal-fast].is-in [data-reveal-ghost] {
+		animation-duration: 0.6s;
+	}
+
+	[data-reveal][data-reveal-fast].is-in [data-reveal-line] {
+		animation-duration: 0.7s;
+		animation-delay: calc(0.05s + var(--i, 0) * 0.12s);
+	}
+
+	@keyframes head-ghost-in {
+		from {
+			opacity: 0;
+		}
+		to {
+			opacity: 1;
+		}
+	}
+
+	@keyframes head-line-in {
+		from {
+			opacity: 0;
+			transform: translateX(-16px);
+			clip-path: inset(-10% 100% -10% 0);
+		}
+		to {
+			opacity: 1;
+			transform: translateX(0);
+			clip-path: inset(-10% -5% -10% 0);
+		}
+	}
+</style>
+
+<style>
+	.head {
+		position: relative;
+		padding-top: 52px;
+	}
+
+	.ghost {
+		position: absolute;
+		top: 0;
+		left: -6px;
+		font-family: var(--font-en);
+		font-size: clamp(72px, 10vw, 128px);
+		font-weight: 800;
+		line-height: 0.78;
+		letter-spacing: -0.03em;
+		color: transparent;
+		white-space: nowrap;
+		pointer-events: none;
+	}
+
+	.ghost-teal .ghost {
+		-webkit-text-stroke: 2px var(--teal-ghost);
+	}
+
+	.ghost-violet .ghost {
+		-webkit-text-stroke: 2px var(--violet-ghost);
+	}
+
+	.tone-teal .ghost {
+		-webkit-text-stroke: 2px color-mix(in srgb, var(--surface) 50%, transparent);
+	}
+
+	.label {
+		position: relative;
+		display: flex;
+		align-items: center;
+		gap: 14px;
+	}
+
+	.num {
+		font-family: var(--font-en);
+		font-size: 20px;
+		font-weight: 800;
+		letter-spacing: 0.14em;
+		color: var(--violet);
+	}
+
+	.en {
+		font-family: var(--font-en);
+		font-size: clamp(38px, 4.8vw, 60px);
+		font-weight: 800;
+		letter-spacing: 0.01em;
+		line-height: 1;
+		color: var(--teal-ink);
+	}
+
+	.ja {
+		position: relative;
+		margin: 12px 0 0;
+		font-size: 20px;
+		font-weight: 700;
+		line-height: 1.45;
+		letter-spacing: 0.04em;
+		color: var(--text-mid);
+	}
+
+	.tone-teal .num {
+		color: var(--violet-tint);
+	}
+
+	.tone-teal .en {
+		color: #fff;
+	}
+
+	.tone-teal .ja {
+		color: var(--on-teal);
+	}
+
+	@media (max-width: 640px) {
+		.ghost {
+			font-size: clamp(60px, 19vw, 72px);
+		}
+
+		.ja {
+			font-size: 18px;
+		}
+	}
+</style>

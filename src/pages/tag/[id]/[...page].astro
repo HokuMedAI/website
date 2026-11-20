@@ -1,0 +1,85 @@
+---
+/**
+ * タグ別の記事一覧。src/content/tags.yaml にある全タグについて作る（記事が無いタグは空表示）。
+ * /tag/<id>/ が 1 ページ目、2 ページ目以降は /tag/<id>/page/<n>/。
+ */
+import type { GetStaticPaths, InferGetStaticPropsType } from 'astro'
+import { getCollection } from 'astro:content'
+import Base from '../../../layouts/Base.astro'
+import CategoryNav from '../../../components/posts/CategoryNav.astro'
+import EmptyState from '../../../components/posts/EmptyState.astro'
+import PageHead from '../../../components/posts/PageHead.astro'
+import Pager from '../../../components/posts/Pager.astro'
+import PostGrid from '../../../components/posts/PostGrid.astro'
+import PostsShell from '../../../components/posts/PostsShell.astro'
+import {
+	POSTS_PATH,
+	POSTS_PER_PAGE,
+	getPostViews,
+	pageParam,
+	paginate,
+	tagHref,
+	withTag,
+} from '../../../lib/posts'
+
+export const getStaticPaths = (async () => {
+	const [tags, views] = await Promise.all([getCollection('tags'), getPostViews()])
+	return tags.flatMap((tag) =>
+		paginate(withTag(views, tag.id), POSTS_PER_PAGE).map(({ items, page, totalPages }) => ({
+			params: { id: tag.id, page: pageParam(page) },
+			props: { tag, views: items, page, totalPages },
+		}))
+	)
+}) satisfies GetStaticPaths
+
+type Props = InferGetStaticPropsType<typeof getStaticPaths>
+
+const { tag, views, page, totalPages } = Astro.props
+const { label } = tag.data
+const basePath = tagHref(tag.id)
+const pageLabel = String(page).padStart(2, '0')
+const lead = tag.data.description ?? `タグ「${label}」が付いた記事です。`
+---
+
+<Base title={page > 1 ? `#${label}（${page} ページ目）` : `#${label}`} description={lead}>
+	<PostsShell
+		crumbs={[
+			{ label: 'ホーム', href: '/' },
+			{ label: '記事', href: POSTS_PATH },
+			{ label: `#${label}`, href: basePath },
+		]}
+	>
+		<PageHead index={pageLabel} en="Tag" ja={`#${label}`} tone="violet">
+			<p>{lead}</p>
+		</PageHead>
+		<CategoryNav active={null} />
+
+		<div class="posts-body">
+			{views.length === 0 ? (
+				<EmptyState
+					title={`「#${label}」の記事はまだありません`}
+					action={{ label: 'すべての記事を見る', href: POSTS_PATH }}
+				>
+					<p>ほかの記事は、記事一覧から読めます。</p>
+				</EmptyState>
+			) : (
+				<>
+					<PostGrid views={views} layout="log" />
+					<Pager basePath={basePath} page={page} totalPages={totalPages} />
+				</>
+			)}
+		</div>
+	</PostsShell>
+</Base>
+
+<style>
+	.posts-body {
+		margin-top: 48px;
+	}
+
+	@media (max-width: 600px) {
+		.posts-body {
+			margin-top: 36px;
+		}
+	}
+</style>

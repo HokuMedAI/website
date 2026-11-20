@@ -1,0 +1,304 @@
+---
+/**
+ * 部員紹介の紙面。雑誌の 1 ページに見立てた紙の地 (ざらつき・方眼・ちぎれた縁)、上端のリング綴じ、
+ * 隅の水玉、端の小さな英字を持ち、中身は slot に入れる。
+ */
+interface Props {
+	/** 右端の縦書きの英字 */
+	sideText: string
+	/** 下端の英字。左から順に並ぶ */
+	footText: string[]
+}
+
+const { sideText, footText } = Astro.props
+
+/** リングは多めに描いておき、幅に入らない分は CSS で隠す */
+const RING_COUNT = 30
+---
+
+<section class="paper-page">
+	<svg class="defs" aria-hidden="true" width="0" height="0">
+		<filter id="paper-edge" x="-2%" y="-2%" width="104%" height="104%">
+			<feTurbulence
+				type="fractalNoise"
+				baseFrequency="0.035"
+				numOctaves="3"
+				seed="3"
+				result="noise"
+			></feTurbulence>
+			<feDisplacementMap
+				in="SourceGraphic"
+				in2="noise"
+				scale="8"
+				xChannelSelector="R"
+				yChannelSelector="G"
+			></feDisplacementMap>
+		</filter>
+	</svg>
+	<div class="paper-edge" aria-hidden="true"></div>
+	<div class="paper" aria-hidden="true">
+		<div class="paper-face"></div>
+		<div class="paper-inset"></div>
+	</div>
+	<div class="deco" aria-hidden="true">
+		<div class="dots dots-top"></div>
+		<div class="dots dots-bottom"></div>
+		<div class="side-text">{sideText}</div>
+		<div class="foot-text">
+			{footText.map((text) => (
+				<span>{text}</span>
+			))}
+		</div>
+	</div>
+	<div class="rings" aria-hidden="true">
+		{Array.from({ length: RING_COUNT }, () => (
+			<svg viewBox="0 0 26 76">
+				<path
+					d="M 5 30 C 3 26, 2 20, 4 13"
+					fill="none"
+					stroke="#0d4b50"
+					stroke-width="5"
+					stroke-linecap="round"
+				/>
+				<path
+					d="M 5 30 C 3 26, 2 20, 4 13"
+					fill="none"
+					stroke="#6f8f92"
+					stroke-width="2.2"
+					stroke-linecap="round"
+				/>
+				<ellipse cx="5.5" cy="31" rx="4" ry="1.4" fill="rgba(13,75,80,.3)" />
+				<circle cx="17" cy="53" r="4.4" fill="#0d4b50" />
+				<path
+					d="M 4 13 C 6 6, 12 6, 15 12 C 19 20, 18 40, 17 52"
+					fill="none"
+					stroke="#0d4b50"
+					stroke-width="6"
+					stroke-linecap="round"
+				/>
+				<path
+					d="M 4 13 C 6 6, 12 6, 15 12 C 19 20, 18 40, 17 52"
+					fill="none"
+					stroke="#dbeaea"
+					stroke-width="3"
+					stroke-linecap="round"
+				/>
+				<path
+					d="M 9 8.6 C 12 8.6, 14.4 11.5, 15.6 15.5 C 16.8 22, 16.6 32, 16 40"
+					fill="none"
+					stroke="#ffffff"
+					stroke-width="1.2"
+					stroke-linecap="round"
+				/>
+				<ellipse cx="17" cy="56.5" rx="4.6" ry="1.5" fill="rgba(13,75,80,.25)" />
+			</svg>
+		))}
+	</div>
+
+	<div class="inner">
+		<slot />
+	</div>
+</section>
+
+<style>
+	.paper-page {
+		position: relative;
+		border-radius: var(--radius-section);
+		padding: 84px var(--gutter) 96px;
+		/* 中の斜めの帯を左右で切る。上にはみ出すリングは切らない */
+		overflow-x: clip;
+	}
+
+	/* ---- 紙の地 ---- */
+
+	.defs {
+		position: absolute;
+	}
+
+	.paper-edge {
+		position: absolute;
+		inset: 0;
+		z-index: 0;
+		pointer-events: none;
+		border-radius: var(--radius-section);
+		background: var(--paper-edge);
+		box-shadow: var(--shadow-paper);
+		filter: url(#paper-edge);
+	}
+
+	.paper {
+		position: absolute;
+		inset: 6px;
+		z-index: 0;
+		pointer-events: none;
+		border-radius: calc(var(--radius-section) - 6px);
+		overflow: hidden;
+	}
+
+	.paper-face {
+		position: absolute;
+		inset: 0;
+		background-color: var(--paper);
+		background-image:
+			url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .45 0 0 0 0 .38 0 0 0 0 .3 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+			linear-gradient(var(--paper-grid) 1.5px, transparent 1.5px),
+			linear-gradient(90deg, var(--paper-grid) 1.5px, transparent 1.5px);
+		background-size:
+			180px 180px,
+			30px 30px,
+			30px 30px;
+		background-position:
+			0 0,
+			-1px -1px,
+			-1px -1px;
+	}
+
+	.paper-inset {
+		position: absolute;
+		inset: 0;
+		border-radius: inherit;
+		box-shadow:
+			inset 0 0 0 4px rgba(236, 224, 204, 0.55),
+			inset 0 0 22px rgba(176, 150, 110, 0.18);
+	}
+
+	.deco {
+		position: absolute;
+		inset: 0;
+		z-index: 0;
+		border-radius: var(--radius-section);
+		overflow: hidden;
+		pointer-events: none;
+	}
+
+	.dots {
+		position: absolute;
+		border-radius: 50%;
+		background-size: 14px 14px;
+	}
+
+	.dots-top {
+		top: -90px;
+		right: -90px;
+		width: 360px;
+		height: 360px;
+		background-color: var(--dot-violet-bg);
+		background-image: radial-gradient(var(--dot-violet) 2.4px, transparent 2.6px);
+	}
+
+	.dots-bottom {
+		bottom: -120px;
+		left: -100px;
+		width: 340px;
+		height: 340px;
+		background-color: var(--band-teal);
+		background-image: radial-gradient(var(--band-dot) 2.4px, transparent 2.6px);
+	}
+
+	.side-text,
+	.foot-text {
+		font-family: var(--font-en);
+		font-size: 12px;
+		font-weight: 800;
+		line-height: 1.45;
+		color: var(--paper-ink);
+	}
+
+	.side-text {
+		position: absolute;
+		top: 140px;
+		right: 26px;
+		writing-mode: vertical-rl;
+		letter-spacing: 0.3em;
+	}
+
+	.foot-text {
+		position: absolute;
+		left: 0;
+		right: 0;
+		bottom: 34px;
+		display: flex;
+		justify-content: center;
+		gap: 18px;
+		letter-spacing: 0.22em;
+	}
+
+	/* ---- リング綴じ ---- */
+
+	.rings {
+		position: absolute;
+		left: 90px;
+		right: 90px;
+		top: -46px;
+		height: 114px;
+		z-index: 2;
+		pointer-events: none;
+		/* 1 行に入る本数だけ等間隔に並べ、折り返した分は高さで切り落とす */
+		display: flex;
+		flex-wrap: wrap;
+		align-content: flex-start;
+		justify-content: space-evenly;
+		column-gap: 22px;
+		overflow: hidden;
+	}
+
+	.rings svg {
+		flex: none;
+		width: 39px;
+		height: 114px;
+	}
+
+	.inner {
+		position: relative;
+		z-index: 1;
+		max-width: var(--content-width);
+		margin: 0 auto;
+	}
+
+	/* 右端の縦書きは、本文と重ならない幅のときだけ出す */
+	@media (max-width: 1220px) {
+		.side-text {
+			display: none;
+		}
+	}
+
+	@media (max-width: 640px) {
+		.paper-page {
+			padding: 76px var(--gutter) 88px;
+		}
+
+		.rings {
+			left: 40px;
+			right: 40px;
+			top: -34px;
+			height: 84px;
+			column-gap: 16px;
+		}
+
+		.rings svg {
+			width: 29px;
+			height: 84px;
+		}
+
+		.dots-top {
+			top: -70px;
+			right: -80px;
+			width: 220px;
+			height: 220px;
+		}
+
+		.dots-bottom {
+			bottom: -90px;
+			left: -80px;
+			width: 220px;
+			height: 220px;
+		}
+
+		.foot-text {
+			bottom: 28px;
+			gap: 12px;
+			font-size: 10px;
+			letter-spacing: 0.16em;
+		}
+	}
+</style>

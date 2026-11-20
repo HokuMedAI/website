@@ -1,0 +1,171 @@
+---
+/**
+ * カテゴリの切り替え。記事一覧・カテゴリ別・タグ別の一覧とトップページで共通に使う。
+ * 子を持つカテゴリ（活動日誌）は、親と子をひとつの枠にまとめて出す。
+ */
+import { CATEGORY_TREE, POSTS_PATH, categoryHref, flattenCategories } from '../../lib/posts'
+
+interface Props {
+	/** 選択中: "all" = すべて / カテゴリの slug / null = どれでもない（タグ別の一覧・トップページ） */
+	active: string | null
+}
+
+const { active } = Astro.props
+const current = (slug: string) => (active === slug ? 'page' : undefined)
+---
+
+<nav class="cat-nav" aria-label="カテゴリで絞り込む">
+	<ul class="cat-nav__list">
+		<li>
+			<a class="cat-nav__pill" href={POSTS_PATH} aria-current={current('all')}>
+				すべて
+			</a>
+		</li>
+		{CATEGORY_TREE.map((root) => {
+			const children = flattenCategories(root.children)
+			return children.length === 0 ? (
+				<li>
+					<a class="cat-nav__pill" href={categoryHref(root.slug)} aria-current={current(root.slug)}>
+						{root.label}
+					</a>
+				</li>
+			) : (
+				<li class="cat-nav__group">
+					<a class="cat-nav__pill" href={categoryHref(root.slug)} aria-current={current(root.slug)}>
+						{root.label}
+					</a>
+					<ul class="cat-nav__children" aria-label={`${root.label}の内訳`}>
+						{children.map((child) => (
+							<li>
+								<a
+									class="cat-nav__pill cat-nav__pill--sub"
+									href={categoryHref(child.slug)}
+									aria-current={current(child.slug)}
+								>
+									{child.label}
+								</a>
+							</li>
+						))}
+					</ul>
+				</li>
+			)
+		})}
+	</ul>
+</nav>
+
+<style>
+	.cat-nav {
+		margin-top: 32px;
+	}
+
+	.cat-nav__list,
+	.cat-nav__children {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 8px;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.cat-nav__list {
+		gap: 10px;
+	}
+
+	/* 親と子をまとめる枠 */
+	.cat-nav__group {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 4px 6px;
+		padding: 4px;
+		border: 2px solid var(--teal-line);
+		border-radius: 28px;
+	}
+
+	.cat-nav__children {
+		gap: 2px;
+		padding-right: 6px;
+	}
+
+	.cat-nav__pill {
+		display: inline-flex;
+		align-items: center;
+		padding: 10px 20px;
+		border-radius: var(--radius-pill);
+		background: var(--teal-tint);
+		color: var(--teal-ink);
+		font-size: 15px;
+		font-weight: 700;
+		line-height: 1.4;
+		white-space: nowrap;
+		transition:
+			background 0.2s,
+			color 0.2s,
+			transform 0.2s var(--ease-out);
+	}
+
+	.cat-nav__pill:hover {
+		background: var(--teal-line);
+		color: var(--teal-ink);
+		transform: translateY(-2px);
+	}
+
+	.cat-nav__pill--sub {
+		padding: 8px 14px;
+		background: transparent;
+		color: var(--teal-strong);
+		font-size: 14px;
+	}
+
+	.cat-nav__pill--sub:hover {
+		background: var(--teal-tint);
+	}
+
+	.cat-nav__pill[aria-current='page'],
+	.cat-nav__pill[aria-current='page']:hover {
+		background: var(--teal-ink);
+		color: #fff;
+		transform: none;
+	}
+
+	.cat-nav__pill:focus-visible {
+		outline: 3px solid var(--violet);
+		outline-offset: 2px;
+	}
+
+	@media (max-width: 640px) {
+		.cat-nav {
+			margin-top: 26px;
+		}
+
+		.cat-nav__list {
+			gap: 8px;
+		}
+
+		.cat-nav__pill {
+			padding: 9px 16px;
+			font-size: 14px;
+		}
+
+		.cat-nav__pill--sub {
+			padding: 7px 11px;
+			font-size: 13px;
+		}
+
+		.cat-nav__group {
+			border-radius: 24px;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.cat-nav__pill {
+			transition: none;
+		}
+
+		.cat-nav__pill:hover {
+			transform: none;
+		}
+	}
+</style>

@@ -1,0 +1,279 @@
+---
+import { DISCORD_INVITE_URL } from '../../lib/site'
+
+interface Props {
+	num: string
+}
+
+const { num } = Astro.props
+---
+
+<section id="join" class="join">
+	<div class="panel">
+		<div>
+			<!-- 出現アニメーションは SectionHead.astro の [data-reveal] を借りている -->
+			<div data-reveal>
+				<div class="label" data-reveal-line style="--i:0">
+					<span class="num">{num}</span>
+					<span class="en">Join Us</span>
+				</div>
+				<h2 data-reveal-line style="--i:1">
+					まずは、見学から。
+				</h2>
+			</div>
+			<p class="lead">
+				学年・学部・経験は問いません。勉強会に一度お越しいただき、雰囲気を見てから決めてください。
+			</p>
+			<div class="actions">
+				<a
+					class="button primary"
+					href={DISCORD_INVITE_URL}
+					target="_blank"
+					rel="noopener noreferrer"
+				>
+					Discord で連絡する
+				</a>
+				<a class="button outline" href="/contact/">
+					お問い合わせ
+				</a>
+			</div>
+		</div>
+
+		<div class="info">
+			<h3>こんな人に向いています</h3>
+			<ul class="fits">
+				<li>AIは気になるけど何から始めればいいか分からない</li>
+				<li>研究や論文の読み方を先に知っておきたい</li>
+				<li>他学部の友達と何かつくってみたい</li>
+			</ul>
+			<dl class="facts">
+				<div>
+					<dt>活動場所</dt>
+					<dd>北海道大学 医学研究院 2階「サイエンスカフェ」（札幌市北区北15条西7丁目）</dd>
+				</div>
+				<div>
+					<dt>活動日</dt>
+					<dd>
+						<span>勉強会：毎週水曜日／</span>
+						<span>もくもく会：毎週木曜日</span>
+					</dd>
+				</div>
+				<div>
+					<dt>お問い合わせ</dt>
+					<dd>
+						Discord か、<a href="/contact/">お問い合わせページ</a>へ
+					</dd>
+				</div>
+			</dl>
+		</div>
+	</div>
+</section>
+
+<style>
+	.join {
+		position: relative;
+		padding: 84px var(--gutter) 90px;
+	}
+
+	.panel {
+		max-width: var(--content-width);
+		margin: 0 auto;
+		background: var(--violet);
+		border-radius: var(--radius-panel);
+		padding: 60px 52px;
+		color: #fff;
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+		gap: 40px;
+		align-items: center;
+		box-shadow: var(--shadow-violet);
+	}
+
+	.label {
+		display: flex;
+		align-items: center;
+		gap: 14px;
+		margin-bottom: 10px;
+	}
+
+	.num {
+		font-family: var(--font-en);
+		font-size: 15px;
+		font-weight: 800;
+		letter-spacing: 0.14em;
+		opacity: 0.85;
+	}
+
+	.en {
+		font-family: var(--font-en);
+		font-size: clamp(32px, 3.8vw, 46px);
+		font-weight: 800;
+		letter-spacing: 0.01em;
+		line-height: 1;
+	}
+
+	h2 {
+		margin: 0;
+		font-size: 38px;
+		font-weight: 900;
+		line-height: 1.35;
+	}
+
+	.lead {
+		margin: 18px 0 0;
+		font-size: 19px;
+		line-height: 2.05;
+	}
+
+	.actions {
+		display: flex;
+		gap: 12px;
+		flex-wrap: wrap;
+		margin-top: 28px;
+	}
+
+	.button {
+		font-weight: 700;
+		font-size: 16px;
+		line-height: 1.45;
+		border-radius: var(--radius-pill);
+		transition: background 0.2s;
+	}
+
+	.button.primary {
+		background: var(--surface);
+		color: var(--violet-strong);
+		padding: 16px 30px;
+	}
+
+	.button.primary:hover {
+		background: var(--violet-tint);
+	}
+
+	.button.outline {
+		border: 2px solid color-mix(in srgb, var(--surface) 90%, transparent);
+		color: #fff;
+		padding: 14px 28px;
+	}
+
+	.button.outline:hover {
+		background: color-mix(in srgb, var(--surface) 18%, transparent);
+	}
+
+	.info {
+		background: color-mix(in srgb, var(--surface) 16%, transparent);
+		border-radius: var(--radius-card-md);
+		padding: 28px 30px;
+	}
+
+	.info h3 {
+		margin: 0;
+		font-weight: 900;
+		font-size: 17px;
+		line-height: 1.45;
+	}
+
+	.fits {
+		list-style: none;
+		margin: 16px 0 0;
+		padding: 0;
+		display: grid;
+		gap: 12px;
+		font-size: 15px;
+		line-height: 1.7;
+	}
+
+	.fits li {
+		padding-left: 1em;
+		text-indent: -1em;
+	}
+
+	.fits li::before {
+		content: '・';
+	}
+
+	.facts {
+		margin: 22px 0 0;
+		border-top: 2px solid color-mix(in srgb, var(--surface) 40%, transparent);
+		padding-top: 18px;
+		display: grid;
+		gap: 10px;
+		font-size: 14px;
+		line-height: 1.85;
+	}
+
+	.facts div {
+		display: grid;
+		grid-template-columns: 6.5em minmax(0, 1fr);
+		gap: 0 8px;
+	}
+
+	.facts dt {
+		font-weight: 700;
+	}
+
+	.facts dd {
+		margin: 0;
+	}
+
+	.facts a {
+		color: inherit;
+		font-weight: 700;
+		text-decoration: underline;
+		text-underline-offset: 4px;
+	}
+
+	.facts a:hover {
+		color: var(--highlight);
+	}
+
+	/* 「活動日」は区切りのよい所で折り返す */
+	.facts dd span {
+		display: inline-block;
+	}
+
+	@media (max-width: 640px) {
+		.join {
+			padding: 56px var(--gutter) 64px;
+		}
+
+		.panel {
+			border-radius: var(--radius-card);
+			padding: 36px 22px 24px;
+			gap: 30px;
+		}
+
+		h2 {
+			font-size: 30px;
+		}
+
+		.lead {
+			font-size: 16px;
+			line-height: 2;
+		}
+
+		.actions {
+			margin-top: 22px;
+		}
+
+		.button {
+			flex: 1 1 auto;
+			text-align: center;
+		}
+
+		.info {
+			border-radius: 24px;
+			padding: 22px 20px;
+		}
+
+		.facts div {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.button {
+			transition: none;
+		}
+	}
+</style>

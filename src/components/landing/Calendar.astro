@@ -1,0 +1,134 @@
+---
+/**
+ * 活動予定の Google カレンダー (埋め込み)。
+ *
+ * 広い画面は月表示、幅 640px 以下は予定のリスト表示にする。表示の種類は URL で決まり CSS では切り替えられないので、
+ * iframe を 2 つ置いて片方だけ表示する。どちらも loading="lazy" なので、隠している側 (display: none) は読み込まれない。
+ */
+import { GOOGLE_CALENDAR_ID } from '../../lib/site'
+
+const EMBED_URL = 'https://calendar.google.com/calendar/embed'
+
+/** Google カレンダーそのもののページ (タイトルや表示切り替えのタブ付き) */
+const pageUrl = `${EMBED_URL}?${new URLSearchParams({
+	src: GOOGLE_CALENDAR_ID,
+	ctz: 'Asia/Tokyo',
+	hl: 'ja',
+})}`
+
+/** 埋め込み用。枠の中に要らないもの (タイトル・印刷・タブ・カレンダー一覧・タイムゾーン) を消す */
+const embedUrl = (mode?: 'AGENDA') =>
+	`${EMBED_URL}?${new URLSearchParams({
+		src: GOOGLE_CALENDAR_ID,
+		ctz: 'Asia/Tokyo',
+		hl: 'ja',
+		showTitle: '0',
+		showPrint: '0',
+		showTabs: '0',
+		showCalendars: '0',
+		showTz: '0',
+		...(mode && { mode }),
+	})}`
+---
+
+<div class="calendar">
+	<h3>活動カレンダー</h3>
+	<div class="frame">
+		<iframe class="month" src={embedUrl()} title="活動カレンダー（月表示）" loading="lazy"></iframe>
+		<iframe
+			class="agenda"
+			src={embedUrl('AGENDA')}
+			title="活動カレンダー（予定の一覧）"
+			loading="lazy"
+		></iframe>
+	</div>
+	<p class="open">
+		<a href={pageUrl} target="_blank" rel="noopener noreferrer">
+			Google カレンダーで開く →
+		</a>
+	</p>
+</div>
+
+<style>
+	.calendar {
+		margin-top: 44px;
+	}
+
+	h3 {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		margin: 0;
+		font-size: 24px;
+		font-weight: 900;
+		line-height: 1.45;
+		color: var(--teal-ink);
+	}
+
+	h3::before {
+		content: '';
+		flex: none;
+		width: 12px;
+		height: 12px;
+		border-radius: 50%;
+		background: var(--violet);
+	}
+
+	.frame {
+		margin-top: 18px;
+		border: 5px solid var(--teal-line);
+		border-radius: var(--radius-card);
+		overflow: hidden;
+		background: var(--surface);
+	}
+
+	iframe {
+		display: block;
+		width: 100%;
+		border: 0;
+	}
+
+	.month {
+		height: 600px;
+	}
+
+	.agenda {
+		display: none;
+		height: 460px;
+	}
+
+	.open {
+		margin: 12px 4px 0;
+		text-align: right;
+		font-size: 15px;
+		font-weight: 700;
+		line-height: 1.6;
+	}
+
+	@media (max-width: 640px) {
+		.calendar {
+			margin-top: 32px;
+		}
+
+		h3 {
+			font-size: 20px;
+		}
+
+		.frame {
+			margin-top: 14px;
+			border-width: 4px;
+		}
+
+		.month {
+			display: none;
+		}
+
+		.agenda {
+			display: block;
+		}
+
+		.open {
+			font-size: 14px;
+		}
+	}
+</style>

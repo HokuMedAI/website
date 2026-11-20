@@ -1,0 +1,61 @@
+name: site
+
+# PR は check + test + build まで、master への push はそのまま Cloudflare Workers へデプロイ
+# (static assets と、お問い合わせフォームを受ける Worker スクリプト worker/index.ts を wrangler deploy が一緒に上げる)。
+# Worker 名・assets・binding の設定はルートの wrangler.jsonc。
+# paths フィルタは付けない: このサイトは src/content/ の Markdown と YAML が中身なので、それだけの変更でもデプロイする。
+# 必要な secrets: CLOUDFLARE_API_TOKEN (Account: Workers Scripts: Edit) / CLOUDFLARE_ACCOUNT_ID /
+# DISCORD_WEBHOOK_URL (お問い合わせフォームの届け先。デプロイのたびに Worker の secret として入れ直す)
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # pnpm のバージョンは package.json の packageManager から取る (version を書くと二重指定で落ちる)
+      - uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # 型と、記事・部員・研究の frontmatter / YAML の検査 (項目の打ち間違いはここで落ちる)
+      - name: Check
+        run: pnpm check
+
+      # Worker (worker/) は astro check の対象外 (tsconfig を分けてある) なので、ここで型を検査する。
+      # 1 行目は、生成した型 (worker/worker-configuration.d.ts) が wrangler.jsonc と食い違っていないかの確認
+      - name: Check worker
+        run: |
+          pnpm wrangler types worker/worker-configuration.d.ts --env-file .dev.vars.example --check
+          pnpm exec tsc -p worker
+
+      - name: Test
+        run: pnpm test
+
+      - name: Build
+        run: pnpm build
+
+      - name: Deploy to Cloudflare Workers
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+          # ここに並べた名前の環境変数を、Worker の secret として登録する (値は下の env から)
+          secrets: |
+            DISCORD_WEBHOOK_URL
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}

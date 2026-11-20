@@ -1,0 +1,71 @@
+---
+/**
+ * 本人のコメントの吹き出し。中身 (slot) は部員の Markdown の本文。
+ * しっぽは左上に付き、すぐ上の写真・名前から話しているように見せる。
+ * 上との間隔は置く側が決める (既定はしっぽが上の要素に触れる程度)。
+ */
+---
+
+<div class="comment">
+	<slot />
+</div>
+
+<style>
+	.comment {
+		position: relative;
+		background: var(--surface);
+		border: 3px solid var(--teal-ink);
+		border-radius: var(--radius-chip);
+		margin-top: 14px;
+		padding: 10px 14px;
+		font-size: 15px;
+		font-weight: 700;
+		line-height: 1.6;
+		color: var(--teal-ink);
+		overflow-wrap: anywhere;
+	}
+
+	/* しっぽ。枠線と同じ太さの角を 45° 回して上に出す */
+	.comment::before {
+		content: '';
+		position: absolute;
+		top: -10px;
+		left: 24px;
+		width: 14px;
+		height: 14px;
+		background: var(--surface);
+		border-top: 3px solid var(--teal-ink);
+		border-left: 3px solid var(--teal-ink);
+		border-top-left-radius: 4px;
+		transform: rotate(45deg);
+	}
+
+	.comment :global(p) {
+		margin: 0;
+	}
+
+	.comment :global(p + p) {
+		margin-top: 0.5em;
+	}
+
+	.comment :global(a) {
+		text-decoration: underline;
+		text-underline-offset: 3px;
+	}
+
+	@media (max-width: 640px) {
+		.comment {
+			margin-top: 12px;
+			padding: 8px 10px;
+			border-radius: 14px;
+			font-size: 13px;
+		}
+
+		.comment::before {
+			top: -9px;
+			left: 18px;
+			width: 12px;
+			height: 12px;
+		}
+	}
+</style>

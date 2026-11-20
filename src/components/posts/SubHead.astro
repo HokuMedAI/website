@@ -1,0 +1,75 @@
+---
+/**
+ * ページ内の区切りの小見出し（英字 ＋ 和文）。和文が h2 になる。
+ */
+interface Props {
+	en: string
+	ja: string
+	/** h2 に付ける id（aria-labelledby 用） */
+	id?: string
+	tone?: 'teal' | 'violet'
+}
+
+const { en, ja, id, tone = 'teal' } = Astro.props
+---
+
+<div class:list={['sub-head', `sub-head--${tone}`]}>
+	<span class="sub-head__dot" aria-hidden="true"></span>
+	<span class="sub-head__en" lang="en" aria-hidden="true">
+		{en}
+	</span>
+	<h2 class="sub-head__ja" id={id}>
+		{ja}
+	</h2>
+</div>
+
+<style>
+	.sub-head {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		gap: 4px 14px;
+		margin: 0 0 22px;
+	}
+
+	.sub-head__dot {
+		align-self: center;
+		width: 12px;
+		height: 12px;
+		margin-right: -2px;
+		border-radius: 50%;
+		background: var(--teal);
+	}
+
+	.sub-head--violet .sub-head__dot {
+		background: var(--violet);
+	}
+
+	.sub-head__en {
+		font-family: var(--font-en);
+		font-size: 28px;
+		font-weight: 800;
+		line-height: 1.1;
+		letter-spacing: 0.01em;
+		color: var(--teal-ink);
+	}
+
+	.sub-head__ja {
+		margin: 0;
+		font-size: 15px;
+		font-weight: 700;
+		line-height: 1.6;
+		letter-spacing: 0.04em;
+		color: var(--text-mid);
+	}
+
+	@media (max-width: 600px) {
+		.sub-head {
+			margin-bottom: 16px;
+		}
+
+		.sub-head__en {
+			font-size: 24px;
+		}
+	}
+</style>

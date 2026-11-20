@@ -1,0 +1,97 @@
+---
+/**
+ * 記事カードの格子。
+ * - layout="log" … 小ぶりなカードを 3 列（狭い画面では 2 列 → 1 列）
+ * - layout="reading" … 大きめのカードを 2 列。lead を付けると先頭の 1 本を横長の特大にする
+ */
+import type { PostView } from '../../lib/posts'
+import PostCard from './PostCard.astro'
+
+interface Props {
+	views: PostView[]
+	layout?: 'log' | 'reading'
+	/** reading のとき、先頭の 1 本を特大にする */
+	lead?: boolean
+	/** カードのタイトルの見出しレベル */
+	heading?: 'h2' | 'h3'
+}
+
+const { views, layout = 'log', lead = false, heading = 'h2' } = Astro.props
+const useLead = layout === 'reading' && lead
+// 特大にした残りが 1 本だけだと 2 列の片側が空くので、そのときは 2 本とも特大にする
+const leadCount = useLead ? (views.length === 2 ? 2 : 1) : 0
+const leadViews = views.slice(0, leadCount)
+const gridViews = views.slice(leadCount)
+---
+
+{leadViews.length > 0 && (
+	<div class="post-lead">
+		{leadViews.map((view, i) => (
+			<PostCard view={view} variant="lead" heading={heading} priority={i === 0} />
+		))}
+	</div>
+)}
+{gridViews.length > 0 && (
+	<div class:list={['post-grid', `post-grid--${layout}`]}>
+		{gridViews.map((view) => (
+			<PostCard
+				view={view}
+				variant={layout === 'reading' ? 'feature' : 'compact'}
+				heading={heading}
+			/>
+		))}
+	</div>
+)}
+
+<style>
+	.post-lead {
+		display: grid;
+		gap: 24px;
+	}
+
+	.post-lead + .post-grid {
+		margin-top: 24px;
+	}
+
+	.post-grid {
+		display: grid;
+		gap: 22px;
+	}
+
+	.post-grid--log {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+
+	.post-grid--reading {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 24px;
+	}
+
+	@media (max-width: 960px) {
+		.post-grid--log {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+
+	@media (max-width: 720px) {
+		.post-grid--reading {
+			grid-template-columns: minmax(0, 1fr);
+		}
+	}
+
+	@media (max-width: 600px) {
+		.post-grid--log {
+			grid-template-columns: minmax(0, 1fr);
+			gap: 12px;
+		}
+
+		.post-grid--reading,
+		.post-lead {
+			gap: 16px;
+		}
+
+		.post-lead + .post-grid {
+			margin-top: 16px;
+		}
+	}
+</style>

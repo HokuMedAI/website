@@ -1,0 +1,314 @@
+---
+/**
+ * 部員のカード。4:5 の写真の枠が主役で、枠の左上に番号、右上に役職のステッカー、枠の下の端にコメントの吹き出しが重なり、
+ * その下に学科と学年・期・名前が並ぶ。
+ * 写真が無いあいだは、枠に人物のシルエットを出す。コメントは Markdown の本文で、空の人は吹き出しを出さない。
+ */
+import { Image } from 'astro:assets'
+import { render, type CollectionEntry } from 'astro:content'
+import { classNumberOf } from '../../lib/members'
+import Comment from './Comment.astro'
+
+interface Props {
+	member: CollectionEntry<'members'>
+	/** 学年。入学年度が無い人は null */
+	grade: number | null
+	/** 色。同じ学年を同じ色にして、ひとかたまりに見せる */
+	tone: 'teal' | 'violet'
+	/** 一覧の中での位置 (0 始まり)。枠の番号と、傾き・上下のずらしを決める */
+	index: number
+}
+
+const { member, grade, tone, index } = Astro.props
+const { name, photo, role, entryYear } = member.data
+
+const DEFAULT_DEPARTMENT = '医学科'
+const department = member.data.department || DEFAULT_DEPARTMENT
+const classNumber = classNumberOf(entryYear, member.data.department)
+
+/** カードの傾き。順番に繰り返す */
+const TILTS = ['-2deg', '1.6deg', '-1.2deg', '2deg']
+const tilt = TILTS[index % TILTS.length]
+const number = String(index + 1).padStart(2, '0')
+
+/** カードの幅は広くても 340px ほど。高精細な画面用に 2 倍も用意する */
+const PHOTO_WIDTH = 340
+
+const hasComment = Boolean(member.body?.trim())
+const { Content } = hasComment ? await render(member) : { Content: null }
+---
+
+<li class:list={['member', `tone-${tone}`, index % 2 === 1 && 'is-low']} style={`--tilt:${tilt}`}>
+	<div class="member-card">
+		<div class="member-photo">
+			{photo ? (
+				<Image
+					src={photo}
+					alt={name}
+					widths={[PHOTO_WIDTH, Math.min(PHOTO_WIDTH * 2, photo.width)]}
+					sizes={`(max-width: 640px) 45vw, ${PHOTO_WIDTH}px`}
+					loading="lazy"
+				/>
+			) : (
+				<svg class="member-silhouette" viewBox="0 0 120 150" aria-hidden="true">
+					<path d="M14 152 C14 116 34 100 60 100 C86 100 106 116 106 152 Z" />
+					<circle cx="60" cy="64" r="23" />
+				</svg>
+			)}
+			<span class="member-number" aria-hidden="true">
+				{number}
+			</span>
+		</div>
+		{Content && (
+			<Comment>
+				<Content />
+			</Comment>
+		)}
+		<div class="member-info">
+			<div class="member-affil">
+				<span>{department}</span>
+				{grade && <span>{grade}年</span>}
+				{classNumber && <span class="member-class">{classNumber}期</span>}
+			</div>
+			<div class="member-name">{name}</div>
+		</div>
+	</div>
+	{role && <div class:list={['sticker', [...role].length >= 4 && 'is-long']}>{role}</div>}
+</li>
+
+<style>
+	.member {
+		position: relative;
+		transform: rotate(var(--tilt)) translateY(var(--drop, 0px));
+		transition: transform 0.35s var(--ease-bounce);
+	}
+
+	.member.is-low {
+		--drop: 18px;
+	}
+
+	.member:hover {
+		transform: rotate(0deg) translateY(calc(var(--drop, 0px) - 8px));
+	}
+
+	.member-card {
+		background: var(--surface);
+		border: 3px solid var(--teal-ink);
+		border-radius: var(--radius-card-sm);
+		padding: 14px 14px 22px;
+		box-shadow: var(--shadow-hard-teal);
+	}
+
+	.tone-violet .member-card {
+		box-shadow: var(--shadow-hard-violet);
+	}
+
+	/* 写真の枠 (4:5)。水玉の地は、写真が無いあいだと読み込み中に見える */
+	.member-photo {
+		position: relative;
+		aspect-ratio: 4 / 5;
+		border: 2px solid var(--teal-ink);
+		border-radius: var(--radius-frame);
+		overflow: hidden;
+		background-color: var(--dot-teal-bg);
+		background-image: radial-gradient(var(--dot-teal) 1.6px, transparent 1.8px);
+		background-size: 12px 12px;
+	}
+
+	.tone-violet .member-photo {
+		background-color: var(--dot-violet-bg);
+		background-image: radial-gradient(var(--dot-violet) 1.6px, transparent 1.8px);
+	}
+
+	.member-photo :global(img) {
+		display: block;
+		width: 100%;
+		height: 100%;
+		max-width: none;
+		max-height: none;
+		object-fit: cover;
+	}
+
+	/* 写真が入るまでの人物のシルエット。ナビのアイコンと同じ、白い面に色の線 */
+	.member-silhouette {
+		display: block;
+		width: 100%;
+		height: 100%;
+		fill: var(--surface);
+		stroke: var(--teal);
+		stroke-width: 3;
+		stroke-linejoin: round;
+	}
+
+	.tone-violet .member-silhouette {
+		stroke: var(--violet);
+	}
+
+	.member-number {
+		position: absolute;
+		top: 4px;
+		left: 10px;
+		font-family: var(--font-en);
+		font-size: 64px;
+		font-weight: 800;
+		line-height: 1;
+		color: #fff;
+		/* 線は文字の後ろに描く (字画の重なりに線が出ない)。見える太さは半分の 2px */
+		-webkit-text-stroke: 4px var(--teal-ink);
+		paint-order: stroke fill;
+		pointer-events: none;
+	}
+
+	/* 吹き出しは写真の下の端に重ねる */
+	.member-card :global(.comment) {
+		margin: -30px 6px 0;
+	}
+
+	.member-info {
+		padding: 0 6px;
+	}
+
+	.member-affil {
+		margin-top: 16px;
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 2px 8px;
+		font-size: 13px;
+		font-weight: 900;
+		line-height: 1.5;
+		letter-spacing: 0.06em;
+		color: var(--teal-strong);
+	}
+
+	.tone-violet .member-affil {
+		color: var(--violet-strong);
+	}
+
+	.member-class {
+		margin-left: auto;
+		font-family: var(--font-en);
+		font-size: 12px;
+		font-weight: 800;
+		letter-spacing: 0.04em;
+		padding: 1px 9px;
+		border: 2px solid currentColor;
+		border-radius: var(--radius-pill);
+	}
+
+	.member-name {
+		margin-top: 2px;
+		font-size: 24px;
+		font-weight: 900;
+		line-height: 1.4;
+		letter-spacing: 0.04em;
+		color: var(--teal-ink);
+	}
+
+	.sticker {
+		position: absolute;
+		top: -20px;
+		right: -14px;
+		width: 70px;
+		height: 70px;
+		border-radius: 50%;
+		background: var(--violet);
+		border: 3px solid var(--teal-ink);
+		transform: rotate(12deg);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		text-align: center;
+		padding: 4px;
+		color: #fff;
+		font-weight: 900;
+		font-size: 15px;
+		line-height: 1.2;
+	}
+
+	.tone-violet .sticker {
+		background: var(--teal);
+	}
+
+	.member.is-low .sticker {
+		transform: rotate(-10deg);
+	}
+
+	.sticker.is-long {
+		font-size: 12px;
+	}
+
+	@media (max-width: 640px) {
+		.member.is-low {
+			--drop: 12px;
+		}
+
+		.member-card {
+			padding: 9px 9px 14px;
+			border-radius: 22px;
+			box-shadow: var(--shadow-hard-teal-sm);
+		}
+
+		.tone-violet .member-card {
+			box-shadow: var(--shadow-hard-violet-sm);
+		}
+
+		.member-photo {
+			border-radius: 14px;
+			background-size: 10px 10px;
+		}
+
+		.member-number {
+			top: 3px;
+			left: 7px;
+			font-size: 44px;
+		}
+
+		.member-card :global(.comment) {
+			margin: -22px 3px 0;
+		}
+
+		.member-info {
+			padding: 0 4px;
+		}
+
+		.member-affil {
+			margin-top: 12px;
+			font-size: 12px;
+			gap: 2px 6px;
+			letter-spacing: 0.02em;
+		}
+
+		.member-class {
+			font-size: 11px;
+			padding: 0 7px;
+		}
+
+		.member-name {
+			font-size: 19px;
+			letter-spacing: 0.02em;
+		}
+
+		.sticker {
+			top: -16px;
+			right: -8px;
+			width: 56px;
+			height: 56px;
+			font-size: 13px;
+		}
+
+		.sticker.is-long {
+			font-size: 10px;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.member {
+			transition: none;
+		}
+
+		.member:hover {
+			transform: rotate(var(--tilt)) translateY(var(--drop, 0px));
+		}
+	}
+</style>

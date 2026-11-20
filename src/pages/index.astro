@@ -1,0 +1,194 @@
+---
+import { getCollection } from 'astro:content'
+import Base from '../layouts/Base.astro'
+import Hero from '../components/landing/Hero.astro'
+import About from '../components/landing/About.astro'
+import Activities from '../components/landing/Activities.astro'
+import Articles from '../components/landing/Articles.astro'
+import Research from '../components/landing/Research.astro'
+import Join from '../components/landing/Join.astro'
+
+const DEFAULT_DEPARTMENT = '医学科'
+
+const [members, researchEntries, posts] = await Promise.all([
+	getCollection('members'),
+	getCollection('research'),
+	getCollection('posts', ({ data }) => !data.draft),
+])
+
+const research = researchEntries.sort((a, b) => a.data.order - b.data.order)
+const hasPosts = posts.length > 0
+
+// ---- 「研究会について」の数字。すべて src/content/ の中身から数える ----
+
+const students = members.filter((m) => m.data.group === '部員')
+
+/** 部員の学科 (省略は医学科)。人数の多い順 */
+const departmentCounts = new Map<string, number>()
+for (const m of students) {
+	const department = m.data.department || DEFAULT_DEPARTMENT
+	departmentCounts.set(department, (departmentCounts.get(department) ?? 0) + 1)
+}
+const departments = [...departmentCounts.entries()]
+	.sort((a, b) => b[1] - a[1])
+	.map(([name]) => name)
+
+const scopeCount = (scope: '学内' | '学外') => research.filter((r) => r.data.scope === scope).length
+const researchBreakdown = [
+	scopeCount('学内') > 0 && `北大学内 ${scopeCount('学内')}件`,
+	scopeCount('学外') > 0 && `学外 ${scopeCount('学外')}件`,
+].filter(Boolean)
+
+const stats = [
+	students.length > 0 && {
+		value: students.length,
+		unit: '人',
+		label: '部員',
+		note: `${departments.join('・')}の学生が所属しています。`,
+		link: { href: '/members/', label: 'メンバー紹介' },
+	},
+	research.length > 0 && {
+		value: research.length,
+		unit: '件',
+		label: '研究テーマ',
+		note: `共同研究のテーマ数です（${researchBreakdown.join('・')}）。`,
+		link: { href: '#research', label: '研究内容' },
+	},
+	hasPosts && {
+		value: posts.length,
+		unit: '本',
+		label: '活動の記録',
+		note: 'これまでに公開した記事の数です。',
+		link: { href: '/posts/', label: '記事一覧' },
+	},
+].filter((s) => s !== false)
+
+// ---- セクション番号。記事が無いときは Articles を出さず、その分を詰める ----
+
+const sectionIds = ['about', 'activity', ...(hasPosts ? ['articles'] : []), 'research', 'join']
+const numOf = (id: string) => String(sectionIds.indexOf(id) + 1).padStart(2, '0')
+---
+
+<Base>
+	<div class="landing">
+		<div class="backdrop" aria-hidden="true">
+			<div class="blob blob-light"></div>
+			<div class="blob blob-violet"></div>
+		</div>
+
+		<Hero />
+		<About num={numOf('about')} stats={stats} />
+
+		<!-- 次のセクションの丸い肩の後ろを、前のセクションの色で埋める -->
+		<div class="shoulder shoulder-surface" aria-hidden="true"></div>
+		<Activities num={numOf('activity')} />
+
+		{hasPosts && (
+			<>
+				<div class="shoulder shoulder-activity" aria-hidden="true" />
+				<Articles num={numOf('articles')} />
+				<div class="shoulder shoulder-surface" aria-hidden="true" />
+			</>
+		)}
+
+		<Research num={numOf('research')} research={research} />
+		<Join num={numOf('join')} />
+	</div>
+</Base>
+
+<style>
+	.landing {
+		position: relative;
+	}
+
+	/* 背景のぼかし玉。ナビの裏（main の外）まで届かせるため上にはみ出して置く */
+	.backdrop {
+		position: absolute;
+		top: -200px;
+		left: 0;
+		right: 0;
+		height: 1300px;
+		overflow: hidden;
+		pointer-events: none;
+		z-index: 0;
+	}
+
+	.blob {
+		position: absolute;
+		border-radius: 50%;
+	}
+
+	.blob-light {
+		top: -90px;
+		right: -120px;
+		width: 520px;
+		height: 520px;
+		background: radial-gradient(
+			circle at 30% 30%,
+			color-mix(in srgb, var(--surface) 55%, transparent),
+			transparent 70%
+		);
+		animation: landing-drift 16s ease-in-out infinite;
+	}
+
+	.blob-violet {
+		top: 670px;
+		left: -160px;
+		width: 420px;
+		height: 420px;
+		background: color-mix(in srgb, var(--violet) 35%, transparent);
+		filter: blur(6px);
+		animation: landing-drift 22s ease-in-out infinite;
+	}
+
+	@keyframes landing-drift {
+		0%,
+		100% {
+			transform: translate(0, 0) rotate(0deg);
+		}
+		50% {
+			transform: translate(18px, -22px) rotate(8deg);
+		}
+	}
+
+	.shoulder {
+		height: var(--radius-section);
+		margin-bottom: calc(-1 * var(--radius-section));
+	}
+
+	.shoulder-surface {
+		background: var(--surface);
+	}
+
+	/* Activities の枠線（左右）をそのまま下へ延ばす */
+	.shoulder-activity {
+		background: var(--teal-tint);
+		border-inline: 5px solid var(--teal);
+	}
+
+	@media (max-width: 640px) {
+		.blob-light {
+			top: 40px;
+			right: -160px;
+			width: 360px;
+			height: 360px;
+		}
+
+		.blob-violet {
+			top: 760px;
+			left: -200px;
+			width: 320px;
+			height: 320px;
+		}
+
+		.shoulder-activity {
+			border-inline-width: 4px;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.blob {
+			animation: none;
+		}
+	}
+</style>

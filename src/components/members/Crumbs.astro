@@ -1,0 +1,102 @@
+---
+/**
+ * パンくず。下層ページの先頭、青緑の地の上に置く。
+ */
+interface Crumb {
+	label: string
+	href?: string
+}
+
+interface Props {
+	/** 最後の要素が現在地 (href は付けない) */
+	crumbs: Crumb[]
+}
+
+const { crumbs } = Astro.props
+---
+
+<nav class="crumbs" aria-label="パンくずリスト">
+	<ol>
+		{crumbs.map((crumb, i) => (
+			<li>
+				{crumb.href && i < crumbs.length - 1 ? (
+					<a href={crumb.href}>{crumb.label}</a>
+				) : (
+					<span aria-current="page">{crumb.label}</span>
+				)}
+			</li>
+		))}
+	</ol>
+</nav>
+
+<style>
+	.crumbs {
+		max-width: calc(var(--content-width) + var(--gutter) * 2);
+		margin: 0 auto;
+		padding: 26px var(--gutter) 24px;
+	}
+
+	ol {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 6px 4px;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+		font-size: 14px;
+		font-weight: 700;
+		line-height: 1.5;
+		color: var(--on-teal);
+	}
+
+	li {
+		display: flex;
+		align-items: center;
+		min-width: 0;
+	}
+
+	li + li::before {
+		content: '';
+		flex: none;
+		width: 6px;
+		height: 6px;
+		margin: 0 10px 0 8px;
+		border-radius: 50%;
+		background: var(--highlight);
+	}
+
+	a {
+		padding: 4px 12px;
+		border-radius: var(--radius-pill);
+		background: rgba(255, 255, 255, 0.2);
+		color: #fff;
+		transition: background 0.2s;
+	}
+
+	a:hover {
+		background: rgba(255, 255, 255, 0.36);
+		color: #fff;
+	}
+
+	a:focus-visible {
+		outline: 3px solid var(--highlight);
+		outline-offset: 3px;
+	}
+
+	@media (max-width: 640px) {
+		.crumbs {
+			padding: 18px var(--gutter) 18px;
+		}
+
+		ol {
+			font-size: 13px;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		a {
+			transition: none;
+		}
+	}
+</style>

@@ -1,0 +1,212 @@
+---
+/**
+ * 一覧のページ送り。前後へのリンクと、ページ番号を出す。1 ページしか無いときは何も出さない。
+ * 2 ページ目以降の URL は <basePath>page/<n>/。
+ */
+import { pageHref, pagerItems } from '../../lib/posts'
+
+interface Props {
+	/** 1 ページ目の URL。末尾スラッシュ付き（/posts/、/category/activity/ など） */
+	basePath: string
+	/** 現在のページ（1 始まり） */
+	page: number
+	totalPages: number
+}
+
+const { basePath, page, totalPages } = Astro.props
+const items = pagerItems(page, totalPages)
+---
+
+{totalPages > 1 && (
+	<nav class="pager" aria-label="ページ送り">
+		{page > 1 ? (
+			<a class="pager__btn pager__btn--prev" href={pageHref(basePath, page - 1)} rel="prev">
+				<span class="pager__arrow" aria-hidden="true">
+					←
+				</span>
+				新しい記事
+			</a>
+		) : (
+			<span class="pager__spacer pager__spacer--prev" />
+		)}
+		<ol class="pager__pages">
+			{items.map((item) =>
+				item === 'gap' ? (
+					<li class="pager__gap" aria-hidden="true">
+						…
+					</li>
+				) : item === page ? (
+					<li>
+						<span
+							class="pager__num"
+							aria-current="page"
+							aria-label={`${item} ページ目（現在のページ）`}
+						>
+							{item}
+						</span>
+					</li>
+				) : (
+					<li>
+						<a class="pager__num" href={pageHref(basePath, item)} aria-label={`${item} ページ目`}>
+							{item}
+						</a>
+					</li>
+				)
+			)}
+		</ol>
+		{page < totalPages ? (
+			<a class="pager__btn pager__btn--next" href={pageHref(basePath, page + 1)} rel="next">
+				過去の記事
+				<span class="pager__arrow" aria-hidden="true">
+					→
+				</span>
+			</a>
+		) : (
+			<span class="pager__spacer pager__spacer--next" />
+		)}
+	</nav>
+)}
+
+<style>
+	.pager {
+		display: grid;
+		grid-template-columns: 1fr auto 1fr;
+		grid-template-areas: 'prev pages next';
+		align-items: center;
+		gap: 12px;
+		margin-top: 56px;
+	}
+
+	.pager__btn {
+		display: inline-flex;
+		align-items: center;
+		gap: 10px;
+		padding: 15px 28px;
+		border-radius: var(--radius-pill);
+		background: var(--teal-ink);
+		color: #fff;
+		font-size: 16px;
+		font-weight: 700;
+		line-height: 1.4;
+		white-space: nowrap;
+		transition:
+			background 0.2s,
+			transform 0.2s var(--ease-out);
+	}
+
+	.pager__btn:hover {
+		background: var(--teal-strong);
+		color: #fff;
+		transform: translateY(-2px);
+	}
+
+	.pager__btn:focus-visible,
+	.pager__num:focus-visible {
+		outline: 3px solid var(--violet);
+		outline-offset: 3px;
+	}
+
+	.pager__btn--prev,
+	.pager__spacer--prev {
+		grid-area: prev;
+		justify-self: start;
+	}
+
+	.pager__btn--prev {
+		background: var(--teal-tint);
+		color: var(--teal-ink);
+	}
+
+	.pager__btn--prev:hover {
+		background: var(--teal-line);
+		color: var(--teal-ink);
+	}
+
+	.pager__btn--next,
+	.pager__spacer--next {
+		grid-area: next;
+		justify-self: end;
+	}
+
+	/* ---------- ページ番号 ---------- */
+	.pager__pages {
+		grid-area: pages;
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		align-items: center;
+		gap: 6px;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+		font-family: var(--font-en);
+	}
+
+	.pager__num {
+		display: grid;
+		place-items: center;
+		min-width: 44px;
+		height: 44px;
+		padding: 0 6px;
+		border-radius: var(--radius-pill);
+		color: var(--teal-strong);
+		font-size: 18px;
+		font-weight: 800;
+		line-height: 1;
+		transition:
+			background 0.2s,
+			color 0.2s;
+	}
+
+	a.pager__num:hover {
+		background: var(--teal-tint);
+		color: var(--teal-ink);
+	}
+
+	.pager__num[aria-current='page'] {
+		background: var(--violet);
+		color: #fff;
+	}
+
+	.pager__gap {
+		min-width: 20px;
+		text-align: center;
+		font-weight: 800;
+		color: var(--text-faint);
+	}
+
+	/* 狭い画面: 番号を上の段に、前後のボタンを下の段に */
+	@media (max-width: 720px) {
+		.pager {
+			grid-template-columns: 1fr 1fr;
+			grid-template-areas:
+				'pages pages'
+				'prev next';
+			gap: 16px 8px;
+			margin-top: 36px;
+		}
+
+		.pager__btn {
+			gap: 6px;
+			padding: 12px 18px;
+			font-size: 14px;
+		}
+
+		.pager__num {
+			min-width: 40px;
+			height: 40px;
+			font-size: 16px;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.pager__btn,
+		.pager__num {
+			transition: none;
+		}
+
+		.pager__btn:hover {
+			transform: none;
+		}
+	}
+</style>
