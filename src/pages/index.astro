@@ -65,7 +65,14 @@ const stats = [
 
 // ---- セクション番号。記事が無いときは Articles を出さず、その分を詰める ----
 
-const sectionIds = ['about', 'activity', ...(hasPosts ? ['articles'] : []), 'research', 'join']
+const sectionIds = [
+	'about',
+	'activity',
+	'schedule',
+	...(hasPosts ? ['articles'] : []),
+	'research',
+	'join',
+]
 const numOf = (id: string) => String(sectionIds.indexOf(id) + 1).padStart(2, '0')
 ---
 
@@ -81,7 +88,7 @@ const numOf = (id: string) => String(sectionIds.indexOf(id) + 1).padStart(2, '0'
 
 		<!-- 次のセクションの丸い肩の後ろを、前のセクションの色で埋める -->
 		<div class="shoulder shoulder-surface" aria-hidden="true"></div>
-		<Activities num={numOf('activity')} />
+		<Activities num={numOf('activity')} scheduleNum={numOf('schedule')} />
 
 		{hasPosts && (
 			<>

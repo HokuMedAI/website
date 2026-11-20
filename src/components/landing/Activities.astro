@@ -1,85 +1,169 @@
 ---
+/**
+ * 活動内容 (Activities) と、定期の活動 (Schedule)。見出しは 2 つだが、同じ青緑の面の中に続けて置く。
+ * - Activities … 何をしているか (写真つきのカード)
+ * - Schedule … いつ集まっているか (曜日と時刻)、カレンダー、活動場所のコラム
+ */
 import { Image } from 'astro:assets'
 import Calendar from './Calendar.astro'
 import SectionHead from './SectionHead.astro'
+import activityExchange from '../../assets/landing/activity-exchange.jpg'
+import activityResearch from '../../assets/landing/activity-research.jpg'
+import activityStudy from '../../assets/landing/activity-study.jpg'
 import photo1 from '../../assets/landing/photo-1.jpg'
 import photo2 from '../../assets/landing/photo-2.webp'
 import photo3 from '../../assets/landing/photo-3.webp'
+import photo4 from '../../assets/landing/photo-4.jpg'
 import scienceCafe from '../../assets/landing/science-cafe.jpg'
 
 interface Props {
+	/** Activities の番号 */
 	num: string
+	/** Schedule の番号 */
+	scheduleNum: string
 }
 
-const { num } = Astro.props
+const { num, scheduleNum } = Astro.props
+
+const activities = [
+	{
+		title: '各自の課題に取り組む',
+		image: activityStudy,
+		alt: 'テーブルを囲み、ノートパソコンを開いて作業する部員たち',
+	},
+	{
+		title: '大学内外との共同研究',
+		image: activityResearch,
+		alt: '肺の病理標本に、領域ごとの炎症スコアを色で重ねた図',
+	},
+	{
+		title: 'Kaggle などのコンペ',
+		image: photo1,
+		alt: 'スクリーンに「はじめての Kaggle」のスライドを映したレクチャーの様子',
+	},
+	{
+		title: '他大学との交流',
+		image: activityExchange,
+		alt: '北海道大学と九州大学の医学部 AI サークル交流会「南北交流会」（2026年6月26日）のポスター',
+	},
+]
+
+const schedule = [
+	{
+		name: '勉強会',
+		day: '毎週水曜日',
+		time: '16:30〜18:00',
+		text: '質問や相談をしながら、各々の課題に取り組みます。先輩が分からないところを教えてくれます。',
+	},
+	{
+		name: '全体ミーティング',
+		day: '第2水曜日',
+		time: '18:00〜',
+		text: '勉強会のあとに、部員みんなで集まるミーティングです。',
+	},
+	{
+		name: '定期レクチャー',
+		day: '第4水曜日',
+		time: '18:00〜',
+		text: 'AIの基礎知識や医療AIの最新研究を、持ち回りでレクチャーします。',
+	},
+	{
+		name: '研究ミーティング',
+		day: '第1・第3金曜日',
+		time: '18:00〜',
+		text: '研究に取り組むメンバーが進捗を共有し、今後の方針を話し合います。',
+	},
+]
 
 const photos = [
-	{ src: photo1, alt: '勉強会の様子。スクリーンを囲んで作業する部員たち' },
+	{ src: photo4, alt: '定期レクチャーの様子。スクリーンを囲んで話を聞く部員たち' },
 	{ src: photo2, alt: '活動中のテーブル。紙コップのお茶とピザ' },
 	{ src: photo3, alt: '活動の合間の部員たち' },
 ]
 ---
 
-<section id="activity" class="activity">
-	<div class="inner">
+<div class="activity">
+	<section id="activity" class="inner">
 		<SectionHead num={num} en="Activities" ja="活動内容" ghost="violet" />
+
+		<div class="cards">
+			{activities.map((a, i) => (
+				<article class:list={['card', i % 2 === 0 ? 'tone-teal' : 'tone-violet']}>
+					<div class="card-photo">
+						<Image
+							src={a.image}
+							alt={a.alt}
+							widths={[420, 840]}
+							sizes="(max-width: 640px) 90vw, 210px"
+							loading="lazy"
+						/>
+					</div>
+					<div class="card-body">
+						<div class="card-num">{String(i + 1).padStart(2, '0')}</div>
+						<h3>{a.title}</h3>
+						{i === 0 && (
+							<p>
+								各自で課題を決めて取り組みます。最初は『ゼロから作るDeep
+								Learning』を読むところから。
+							</p>
+						)}
+						{i === 1 && (
+							<p>
+								北大の学内や、他大学の研究室と共同研究を進めています。
+								<a href="#research">研究内容を見る →</a>
+							</p>
+						)}
+						{i === 2 && <p>Kaggle などのデータ分析コンペティションに挑戦しています。</p>}
+						{i === 3 && (
+							<p>
+								他大学の医療AI団体との合同勉強会を開催することも。
+								<strong>2026年は九州大学医学部情報研究会とオンラインで交流しました！</strong>
+							</p>
+						)}
+					</div>
+				</article>
+			))}
+		</div>
+
+		<!-- 写真のマーキー。同じ並びを 2 回描き、1 組ぶん（-50%）流して継ぎ目なく繰り返す -->
+		<div class="marquee">
+			<div class="track">
+				{[0, 1].map((copy) => (
+					<div class="set" aria-hidden={copy === 1 ? 'true' : undefined}>
+						{photos.map((p) => (
+							<div class="shot">
+								<Image
+									src={p.src}
+									alt={copy === 0 ? p.alt : ''}
+									widths={[540, p.src.width]}
+									sizes="(max-width: 640px) 78vw, 540px"
+									loading="lazy"
+								/>
+							</div>
+						))}
+					</div>
+				))}
+			</div>
+		</div>
+	</section>
+
+	<section id="schedule" class="inner schedule">
+		<SectionHead num={scheduleNum} en="Schedule" ja="定期の活動" />
 
 		<p class="intro">ふだんは週1回の勉強会が中心。参加は自由参加です。</p>
 
-		<div class="cards">
-			<article class="card tone-teal">
-				<div class="card-num">01</div>
-				<h3>
-					勉強会 <span class="when">◇毎週水曜日 16:30〜18:00</span>
-				</h3>
-				<p>
-					途中で質問や相談をしながら、互いに刺激を受けつつ各々の課題に取り組んでいます。先輩が分からないところを教えてくれます。
-				</p>
-			</article>
-			<article class="card tone-violet">
-				<div class="card-num">02</div>
-				<h3>
-					全体ミーティング <span class="when">◇第2水曜日 18:00〜</span>
-				</h3>
-				<p>勉強会のあとに、部員みんなで集まるミーティングです。</p>
-			</article>
-			<article class="card tone-teal">
-				<div class="card-num">03</div>
-				<h3>
-					定期レクチャー <span class="when">◇第4水曜日 18:00〜</span>
-				</h3>
-				<p>AIの基礎知識や医療AIの最新研究を持ち回りでレクチャーします。</p>
-			</article>
-			<article class="card tone-violet">
-				<div class="card-num">04</div>
-				<h3>他大学との交流</h3>
-				<p>
-					他大学の医療AI団体との合同勉強会を開催することも。
-					<strong>2026年は九州大学医学部情報研究会とオンラインで交流しました！</strong>
-				</p>
-			</article>
-
-			<!-- 写真のマーキー。同じ並びを 2 回描き、1 組ぶん（-50%）流して継ぎ目なく繰り返す -->
-			<div class="marquee">
-				<div class="track">
-					{[0, 1].map((copy) => (
-						<div class="set" aria-hidden={copy === 1 ? 'true' : undefined}>
-							{photos.map((p) => (
-								<div class="shot">
-									<Image
-										src={p.src}
-										alt={copy === 0 ? p.alt : ''}
-										widths={[540, p.src.width]}
-										sizes="(max-width: 640px) 78vw, 540px"
-										loading="lazy"
-									/>
-								</div>
-							))}
-						</div>
-					))}
-				</div>
-			</div>
-		</div>
+		<ul class="slots">
+			{schedule.map((s, i) => (
+				<li class:list={['slot', i % 2 === 0 ? 'tone-teal' : 'tone-violet']}>
+					<div class="slot-when">
+						<span class="slot-day">{s.day}</span>
+						<span class="slot-time">{s.time}</span>
+					</div>
+					<h3>{s.name}</h3>
+					<p>{s.text}</p>
+				</li>
+			))}
+		</ul>
 
 		<Calendar />
 
@@ -114,8 +198,8 @@ const photos = [
 				</div>
 			</div>
 		</div>
-	</div>
-</section>
+	</section>
+</div>
 
 <style>
 	.activity {
@@ -144,18 +228,18 @@ const photos = [
 	}
 
 	.cards {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 20px;
+		display: grid;
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+		gap: 18px;
 		margin-top: 40px;
 	}
 
 	.card {
-		flex: 1 1 300px;
+		position: relative;
 		min-width: 0;
 		border: 5px solid var(--teal-line);
 		border-radius: var(--radius-card);
-		padding: 34px 26px;
+		padding: 12px 12px 24px;
 		background: var(--surface);
 		transition:
 			border-color 0.2s,
@@ -176,10 +260,29 @@ const photos = [
 		transform: translateY(-3px);
 	}
 
-	.card-num {
-		width: 52px;
-		height: 52px;
+	.card-photo {
+		aspect-ratio: 3 / 2;
 		border-radius: var(--radius-chip);
+		overflow: hidden;
+		background: var(--teal-tint);
+	}
+
+	.tone-violet .card-photo {
+		background: var(--violet-tint);
+	}
+
+	.card-body {
+		padding: 0 10px;
+	}
+
+	/* 番号。写真の下の縁に半分かぶせる */
+	.card-num {
+		position: relative;
+		width: 48px;
+		height: 48px;
+		margin-top: -24px;
+		border: 3px solid var(--surface);
+		border-radius: var(--radius-frame);
 		background: var(--teal);
 		color: #fff;
 		display: flex;
@@ -187,7 +290,7 @@ const photos = [
 		justify-content: center;
 		font-family: var(--font-en);
 		font-weight: 800;
-		font-size: 25px;
+		font-size: 21px;
 		line-height: 1;
 	}
 
@@ -196,29 +299,27 @@ const photos = [
 	}
 
 	.card h3 {
-		margin: 12px 0 0;
-		font-size: 25px;
+		margin: 10px 0 0;
+		font-size: 20px;
 		font-weight: 900;
-		line-height: 1.45;
+		line-height: 1.5;
 		color: var(--teal-ink);
-	}
-
-	/* 開催日。見出しの 2 行目に送る */
-	.when {
-		display: block;
-		font-size: 0.8em;
-		color: var(--teal-strong);
-	}
-
-	.tone-violet .when {
-		color: var(--violet-strong);
+		/* 文節の途中で折り返さない (対応ブラウザのみ) */
+		word-break: auto-phrase;
 	}
 
 	.card p {
-		margin: 12px 0 0;
-		font-size: 16px;
-		line-height: 2;
+		margin: 8px 0 0;
+		font-size: 15px;
+		line-height: 1.95;
 		color: var(--text-soft);
+	}
+
+	.card a {
+		display: block;
+		margin-top: 6px;
+		font-weight: 700;
+		color: var(--violet-strong);
 	}
 
 	.card strong,
@@ -227,9 +328,80 @@ const photos = [
 		font-weight: 700;
 	}
 
-	.marquee {
-		flex: 2 1 620px;
+	/* ---- 定期の活動 ---- */
+
+	.schedule {
+		margin-top: 96px;
+	}
+
+	.slots {
+		list-style: none;
+		margin: 32px 0 0;
+		padding: 0;
+		display: grid;
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+		gap: 18px;
+	}
+
+	.slot {
 		min-width: 0;
+		border-radius: var(--radius-card-sm);
+		padding: 22px 20px 24px;
+		background: var(--surface);
+		box-shadow: var(--shadow-md);
+	}
+
+	/* 曜日と時刻 */
+	.slot-when {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 6px 10px;
+	}
+
+	.slot-day {
+		padding: 6px 14px;
+		border-radius: var(--radius-pill);
+		background: var(--teal);
+		color: #fff;
+		font-size: 14px;
+		font-weight: 700;
+		line-height: 1.45;
+	}
+
+	.tone-violet .slot-day {
+		background: var(--violet);
+	}
+
+	.slot-time {
+		font-family: var(--font-en);
+		font-size: 16px;
+		font-weight: 800;
+		line-height: 1.45;
+		color: var(--teal-strong);
+	}
+
+	.tone-violet .slot-time {
+		color: var(--violet-strong);
+	}
+
+	.slot h3 {
+		margin: 14px 0 0;
+		font-size: 21px;
+		font-weight: 900;
+		line-height: 1.45;
+		color: var(--teal-ink);
+	}
+
+	.slot p {
+		margin: 8px 0 0;
+		font-size: 15px;
+		line-height: 1.95;
+		color: var(--text-soft);
+	}
+
+	.marquee {
+		margin-top: 20px;
 		display: flex;
 		align-items: center;
 		overflow: hidden;
@@ -261,6 +433,7 @@ const photos = [
 		background: var(--surface);
 	}
 
+	.card-photo :global(img),
 	.shot :global(img),
 	.column-photo :global(img) {
 		display: block;
@@ -362,8 +535,22 @@ const photos = [
 		background: var(--violet-tint);
 	}
 
+	@media (max-width: 980px) {
+		.cards,
+		.slots {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+
 	@media (max-width: 820px) {
 		.column {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	@media (max-width: 560px) {
+		.cards,
+		.slots {
 			grid-template-columns: 1fr;
 		}
 	}
@@ -381,34 +568,26 @@ const photos = [
 		}
 
 		.cards {
-			gap: 16px;
+			gap: 14px;
 			margin-top: 30px;
 		}
 
 		.card {
-			flex-basis: 100%;
-			padding: 24px 22px 26px;
+			padding: 10px 10px 20px;
 			border-width: 4px;
 		}
 
-		.card-num {
-			width: 46px;
-			height: 46px;
-			font-size: 21px;
-			border-radius: 16px;
+		.schedule {
+			margin-top: 68px;
 		}
 
-		.card h3 {
-			font-size: 21px;
-		}
-
-		.card p {
-			font-size: 15px;
-			line-height: 1.95;
+		.slots {
+			gap: 14px;
+			margin-top: 24px;
 		}
 
 		.marquee {
-			flex-basis: 100%;
+			margin-top: 16px;
 			border-radius: var(--radius-card);
 			--shot-w: 78vw;
 			--shot-gap: 12px;
