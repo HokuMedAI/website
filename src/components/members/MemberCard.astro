@@ -3,6 +3,7 @@
  * 部員のカード。4:5 の写真の枠が主役で、枠の左上に番号、右上に役職のステッカー、枠の下の端にコメントの吹き出しが重なり、
  * その下に学科と学年・期・名前が並ぶ。
  * 写真が無いあいだは、枠に人物のシルエットを出す。コメントは Markdown の本文で、空の人は吹き出しを出さない。
+ * マスコットは、枠に絵の全体を収め、番号と学科・学年の代わりに「マスコット」と出す。
  */
 import { Image } from 'astro:assets'
 import { render, type CollectionEntry } from 'astro:content'
@@ -21,6 +22,8 @@ interface Props {
 
 const { member, grade, tone, index } = Astro.props
 const { name, photo, role, entryYear } = member.data
+
+const isMascot = member.data.group === 'マスコット'
 
 const DEFAULT_DEPARTMENT = '医学科'
 const department = member.data.department || DEFAULT_DEPARTMENT
@@ -41,7 +44,17 @@ const { Content } = hasComment ? await render(member) : { Content: null }
 <li class:list={['member', `tone-${tone}`, index % 2 === 1 && 'is-low']} style={`--tilt:${tilt}`}>
 	<div class="member-card">
 		<div class="member-photo">
-			{photo ? (
+			{photo && isMascot ? (
+				<img
+					class="member-mascot"
+					src={photo.src}
+					width={photo.width}
+					height={photo.height}
+					alt={name}
+					loading="lazy"
+					decoding="async"
+				/>
+			) : photo ? (
 				<Image
 					src={photo}
 					alt={name}
@@ -55,9 +68,11 @@ const { Content } = hasComment ? await render(member) : { Content: null }
 					<circle cx="60" cy="64" r="23" />
 				</svg>
 			)}
-			<span class="member-number" aria-hidden="true">
-				{number}
-			</span>
+			{!isMascot && (
+				<span class="member-number" aria-hidden="true">
+					{number}
+				</span>
+			)}
 		</div>
 		{Content && (
 			<Comment>
@@ -66,9 +81,15 @@ const { Content } = hasComment ? await render(member) : { Content: null }
 		)}
 		<div class="member-info">
 			<div class="member-affil">
-				<span>{department}</span>
-				{grade && <span>{grade}年</span>}
-				{classNumber && <span class="member-class">{classNumber}期</span>}
+				{isMascot ? (
+					<span>マスコット</span>
+				) : (
+					<>
+						<span>{department}</span>
+						{grade && <span>{grade}年</span>}
+						{classNumber && <span class="member-class">{classNumber}期</span>}
+					</>
+				)}
 			</div>
 			<div class="member-name">{name}</div>
 		</div>
@@ -127,6 +148,12 @@ const { Content } = hasComment ? await render(member) : { Content: null }
 		max-width: none;
 		max-height: none;
 		object-fit: cover;
+	}
+
+	/* マスコットは切り取らず、枠の中に絵の全体を収める */
+	.member-photo :global(img.member-mascot) {
+		object-fit: contain;
+		padding: 10%;
 	}
 
 	/* 写真が入るまでの人物のシルエット。ナビのアイコンと同じ、白い面に色の線 */

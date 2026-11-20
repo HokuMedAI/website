@@ -1,4 +1,5 @@
 ---
+import Fugu from '../Fugu.astro'
 import { DISCORD_INVITE_URL } from '../../lib/site'
 
 interface Props {
@@ -10,6 +11,7 @@ const { num } = Astro.props
 
 <section id="join" class="join">
 	<div class="panel">
+		<Fugu class="mascot" />
 		<div>
 			<!-- 出現アニメーションは SectionHead.astro の [data-reveal] を借りている -->
 			<div data-reveal>
@@ -54,8 +56,9 @@ const { num } = Astro.props
 				<div>
 					<dt>活動日</dt>
 					<dd>
-						<span>勉強会：毎週水曜日／</span>
-						<span>もくもく会：毎週木曜日</span>
+						<span>勉強会：毎週水曜日 16:30〜18:00／</span>
+						<span>全体ミーティング：第2水曜日 18:00〜／</span>
+						<span>定期レクチャー：第4水曜日 18:00〜</span>
 					</dd>
 				</div>
 				<div>
@@ -87,6 +90,18 @@ const { num } = Astro.props
 		gap: 40px;
 		align-items: center;
 		box-shadow: var(--shadow-violet);
+		position: relative;
+	}
+
+	/* 面の右上の縁から顔を出すふぐ */
+	.mascot {
+		position: absolute;
+		top: -62px;
+		right: 64px;
+		width: 132px;
+		height: auto;
+		transform: rotate(7deg);
+		filter: drop-shadow(0 10px 14px rgba(9, 80, 84, 0.2));
 	}
 
 	.label {
@@ -241,6 +256,12 @@ const { num } = Astro.props
 			border-radius: var(--radius-card);
 			padding: 36px 22px 24px;
 			gap: 30px;
+		}
+
+		.mascot {
+			top: -46px;
+			right: 22px;
+			width: 92px;
 		}
 
 		h2 {

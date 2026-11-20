@@ -74,8 +74,8 @@ export const CATEGORIES = [
 export const POST_CATEGORIES = ['feature', 'report', 'mokumoku', 'seminar', 'meeting'] as const
 export type PostCategory = (typeof POST_CATEGORIES)[number]
 
-/** 部員の区分 */
-export const MEMBER_GROUPS = ['部員', '顧問', 'メンター'] as const
+/** 部員の区分。マスコットは部員の一覧の最後に並び、人数には数えない */
+export const MEMBER_GROUPS = ['部員', '顧問', 'メンター', 'マスコット'] as const
 
 /** 研究の区分 */
 export const RESEARCH_SCOPES = ['学内', '学外'] as const

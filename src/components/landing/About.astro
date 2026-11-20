@@ -1,6 +1,8 @@
 ---
+import { Image } from 'astro:assets'
 import SectionHead from './SectionHead.astro'
-import { PRISM_HU_URL, SITE_NAME, SITE_SHORT_NAME } from '../../lib/site'
+import emblem from '../../assets/landing/emblem.jpg'
+import { PRISM_HU_URL, SITE_SHORT_NAME } from '../../lib/site'
 
 interface Stat {
 	value: number
@@ -18,38 +20,44 @@ interface Props {
 }
 
 const { num, stats } = Astro.props
+
+/** 研究会のアイコンを出す幅。高精細な画面用に 2 倍も用意する */
+const EMBLEM_WIDTH = 168
 ---
 
 <section id="about" class="about">
 	<div class="inner">
 		<SectionHead num={num} en="About" ja="研究会について" />
 
-		<p class="intro">
-			いつの間にか、AIは日常の風景になりました。その波は、医療分野にも確かに届いています。
-			<br />
-			<strong>
-				画像・検査値・カルテ・ゲノム。医療の現場はまだ読み解かれていないデータであふれています。
-			</strong>
-			<br />
-			{SITE_SHORT_NAME}
-			は、北海道大学医学部の学生を中心に、AI（人工知能）の医療応用について学び、研究する場所です。教える人/教わる人がときに入れ替わりながら活動しています。
-		</p>
-
-		<div class="us">
-			<h3>私たちについて</h3>
-			<p>
-				{SITE_NAME}は学生団体です。北海道大学 大学院医学研究院 連携研究センター 医学研究AI支援部門 /{' '}
-				<a href={PRISM_HU_URL} target="_blank" rel="noopener noreferrer">
-					PRISM-HU
-				</a>{' '}
-				の支援のもとで活動しています。
-			</p>
-			<p>
-				医学部の学生が主体的にAIへの理解を深めて活用し、学内外の共同研究の枠組みで最先端の課題に取り組む。北医AI研は、そうした経験を通じて医学とAIに精通した高度な人材を輩出するために発足しました。
-			</p>
-			<p>
-				AIを理解するには、ITだけでなく、統計や数学といった情報科学も必要です。私たちはそうした深い理解から取り組み、その過程で学生同士が切磋琢磨しています。
-			</p>
+		<div class="lead">
+			<div>
+				<p class="intro">
+					いつの間にか、AIは日常の風景になりました。その波は、医療分野にも確かに届いています。
+					<br />
+					<strong>
+						画像・検査値・カルテ・ゲノム。医療の現場はまだ読み解かれていないデータであふれています。
+					</strong>
+					<br />
+					{SITE_SHORT_NAME}
+					は、北海道大学医学部の学生を中心に、AI（人工知能）の医療応用について学び、研究する場所です。教える人/教わる人がときに入れ替わりながら活動しています。
+				</p>
+				<p class="support">
+					北海道大学大学院 医学研究院 連携研究センター 医学研究AI支援部門（
+					<a href={PRISM_HU_URL} target="_blank" rel="noopener noreferrer">
+						PRISM-HU
+					</a>
+					）の支援のもとで活動しています。
+				</p>
+			</div>
+			<Image
+				class="emblem"
+				src={emblem}
+				alt={`${SITE_SHORT_NAME}のアイコン`}
+				width={EMBLEM_WIDTH * 2}
+				widths={[EMBLEM_WIDTH, EMBLEM_WIDTH * 2]}
+				sizes={`(max-width: 640px) 112px, ${EMBLEM_WIDTH}px`}
+				loading="lazy"
+			/>
 		</div>
 
 		{stats.length > 0 && (
@@ -90,8 +98,17 @@ const { num, stats } = Astro.props
 		margin: 0 auto;
 	}
 
+	/* 導入文と、その右に研究会のアイコン */
+	.lead {
+		margin-top: 20px;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 28px 36px;
+	}
+
 	.intro {
-		margin: 20px 0 0;
+		margin: 0;
 		max-width: 44em;
 		font-size: 19px;
 		line-height: 2.1;
@@ -104,46 +121,30 @@ const { num, stats } = Astro.props
 		font-weight: 700;
 	}
 
-	.us {
-		margin-top: 40px;
-		border: 5px solid var(--teal-line);
-		border-radius: var(--radius-card);
-		padding: 34px 36px 36px;
-		background: var(--surface);
-	}
-
-	.us h3 {
-		display: flex;
-		align-items: center;
-		gap: 10px;
-		margin: 0;
-		font-size: 24px;
-		font-weight: 900;
-		line-height: 1.45;
-		color: var(--teal-ink);
-	}
-
-	.us h3::before {
-		content: '';
-		flex: none;
-		width: 12px;
-		height: 12px;
-		border-radius: 50%;
-		background: var(--violet);
-	}
-
-	.us p {
-		margin: 14px 0 0;
-		font-size: 17px;
+	.support {
+		margin: 18px 0 0;
+		font-size: 15px;
 		line-height: 2;
-		color: var(--text-mid);
+		color: var(--text-soft);
 		text-wrap: pretty;
 	}
 
-	.us a {
+	.support a {
 		font-weight: 700;
 		text-decoration: underline;
 		text-underline-offset: 4px;
+	}
+
+	/* 研究会のアイコン。貼ったシールのように少し傾ける */
+	.emblem {
+		flex: none;
+		width: 168px;
+		height: auto;
+		margin-right: 8px;
+		border: 3px solid var(--teal-ink);
+		border-radius: var(--radius-card-sm);
+		box-shadow: var(--shadow-hard-violet-sm);
+		transform: rotate(4deg);
 	}
 
 	.stats {
@@ -257,23 +258,26 @@ const { num, stats } = Astro.props
 			padding: 60px var(--gutter) 64px;
 		}
 
+		.lead {
+			flex-direction: column;
+			align-items: flex-start;
+		}
+
 		.intro {
 			font-size: 16px;
 			line-height: 2;
 		}
 
-		.us {
-			margin-top: 32px;
-			padding: 24px 20px 26px;
-		}
-
-		.us h3 {
-			font-size: 20px;
-		}
-
-		.us p {
-			font-size: 15px;
+		.support {
+			margin-top: 14px;
+			font-size: 14px;
 			line-height: 1.95;
+		}
+
+		.emblem {
+			width: 112px;
+			margin: 0 0 0 6px;
+			border-radius: var(--radius-chip);
 		}
 
 		.stats {

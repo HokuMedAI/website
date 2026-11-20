@@ -1,0 +1,27 @@
+---
+/**
+ * マスコットのふぐ。絵は src/assets/fugu/fugu.svg (研究会のロゴと同じもの)。
+ * 大きさと位置は、置く側が class で決める。飾りとして置くときは alt を省く (読み上げない)。
+ */
+import fugu from '../assets/fugu/fugu.svg'
+
+interface Props {
+	alt?: string
+	class?: string
+	/** 画面の上の方に出るものは eager にする */
+	loading?: 'lazy' | 'eager'
+}
+
+// 置く側の scoped CSS が効くように、class と一緒に渡ってくる属性をそのまま付ける
+const { alt = '', loading = 'lazy', ...rest } = Astro.props
+---
+
+<img
+	src={fugu.src}
+	width={Math.round(fugu.width)}
+	height={Math.round(fugu.height)}
+	alt={alt}
+	loading={loading}
+	decoding="async"
+	{...rest}
+/>

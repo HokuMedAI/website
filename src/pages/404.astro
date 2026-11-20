@@ -3,6 +3,7 @@
  * 存在しない URL に出すページ。
  */
 import Base from '../layouts/Base.astro'
+import Fugu from '../components/Fugu.astro'
 import PageHead from '../components/posts/PageHead.astro'
 import PostsShell from '../components/posts/PostsShell.astro'
 import { POSTS_PATH } from '../lib/posts'
@@ -11,6 +12,7 @@ import { POSTS_PATH } from '../lib/posts'
 <Base title="ページが見つかりません" description="お探しのページは見つかりませんでした。" noindex>
 	<PostsShell>
 		<div class="notfound">
+			<Fugu class="notfound__fugu" loading="eager" />
 			<PageHead index="404" en="Not Found" ja="ページが見つかりません" ghost="404" tone="violet">
 				<p>
 					お探しのページは、移動したか、削除された可能性があります。URL
@@ -31,7 +33,18 @@ import { POSTS_PATH } from '../lib/posts'
 
 <style>
 	.notfound {
+		position: relative;
 		min-height: 36vh;
+	}
+
+	/* 迷子のふぐ。見出しの右で、そっぽを向いて傾いている */
+	.notfound__fugu {
+		position: absolute;
+		top: 8px;
+		right: 12px;
+		width: clamp(120px, 20vw, 210px);
+		height: auto;
+		transform: rotate(-14deg) scaleX(-1);
 	}
 
 	.notfound__actions {
@@ -78,6 +91,13 @@ import { POSTS_PATH } from '../lib/posts'
 	}
 
 	@media (max-width: 600px) {
+		.notfound__fugu {
+			position: static;
+			display: block;
+			width: 108px;
+			margin: 0 0 8px auto;
+		}
+
 		.notfound__actions {
 			margin-top: 28px;
 		}

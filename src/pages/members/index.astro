@@ -1,6 +1,7 @@
 ---
 /**
  * 部員紹介。雑誌の 1 ページに見立てた紙面に、部員 (学年の高い順) と顧問・メンターを並べる。
+ * マスコットは部員の一覧の最後に置く (人数には数えない)。
  * 中身は src/content/members/ の 1 人 1 ファイル。
  */
 import { getCollection, type CollectionEntry } from 'astro:content'
@@ -35,9 +36,13 @@ const students = members
 const grades = [...new Set(students.map((s) => s.grade))]
 const toneOf = (grade: number | null) => (grades.indexOf(grade) % 2 === 0 ? 'teal' : 'violet')
 
+// マスコット。部員の一覧の最後に、最後の学年とは違う色で並べる
+const mascots = members.filter((m) => m.data.group === 'マスコット').sort(byOrder)
+const mascotTone = grades.length % 2 === 0 ? 'teal' : 'violet'
+
 // 顧問 → メンターの順
 const staff = members
-	.filter((m) => m.data.group !== '部員')
+	.filter((m) => m.data.group === '顧問' || m.data.group === 'メンター')
 	.sort(
 		(a, b) =>
 			MEMBER_GROUPS.indexOf(a.data.group) - MEMBER_GROUPS.indexOf(b.data.group) || byOrder(a, b)
@@ -59,12 +64,20 @@ const staff = members
 
 			<Banner count={students.length} volume={volume} year={year} />
 
-			{students.length > 0 && (
+			{students.length + mascots.length > 0 && (
 				<div class="roster">
 					<div class="band" aria-hidden="true" />
 					<ul class="grid">
 						{students.map(({ member, grade }, i) => (
 							<MemberCard member={member} grade={grade} tone={toneOf(grade)} index={i} />
+						))}
+						{mascots.map((member, i) => (
+							<MemberCard
+								member={member}
+								grade={null}
+								tone={mascotTone}
+								index={students.length + i}
+							/>
 						))}
 					</ul>
 				</div>

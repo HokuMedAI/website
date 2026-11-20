@@ -1,6 +1,6 @@
 // サイトの中身 (Markdown / YAML) の定義。項目名の打ち間違いや型の違いは、ここでビルド時にエラーになる。
 //   src/content/posts/<slug>/index.md  … 記事。1 記事 = 1 ディレクトリ。画像は同じディレクトリに置いて相対参照
-//   src/content/members/<id>.md        … 部員・顧問・メンター。1 人 = 1 ファイル。本文がその人のコメント
+//   src/content/members/<id>.md        … 部員・顧問・メンター・マスコット。1 人 = 1 ファイル。本文がその人のコメント
 //   src/content/research.yaml          … 研究テーマの一覧 (画像は src/content/research/)
 //   src/content/authors.yaml           … 記事の署名
 //   src/content/tags.yaml              … 記事のタグ

@@ -1,5 +1,5 @@
 ---
-import { SITE_NAME, SITE_SHORT_NAME } from '../../lib/site'
+import Fugu from '../Fugu.astro'
 import { fiscalYear } from '../../lib/members'
 
 const year = fiscalYear()
@@ -17,8 +17,7 @@ const year = fiscalYear()
 			<span style="--i:2">いっしょに学ぶ。</span>
 		</h1>
 		<p class="lead">
-			北海道大学医学部の学生が中心の学生団体「{SITE_NAME}」（通称：{SITE_SHORT_NAME}
-			）です。プログラミング未経験でも、どの学部・学年でも大丈夫。
+			北海道大学医学部生が中心の学生団体です。プログラミング未経験でも、どの学部・学年でも大丈夫。
 			<em>医療とAIに「なんかおもしろそう」があれば、それが入会条件です。</em>
 		</p>
 		<div class="actions">
@@ -147,6 +146,13 @@ const year = fiscalYear()
 					></circle>
 				</g>
 			</svg>
+		</div>
+		<!-- マスコットのふぐ。枠の右下の、大きく丸めた角の外に浮かべる -->
+		<div class="mascot" aria-hidden="true">
+			<span class="pop" style="--d:0s"></span>
+			<span class="pop" style="--d:1.3s"></span>
+			<span class="pop" style="--d:2.6s"></span>
+			<Fugu class="mascot-fugu" loading="eager" />
 		</div>
 		<div class="note">
 			<div class="note-main">週1回～</div>
@@ -316,6 +322,46 @@ const year = fiscalYear()
 		animation: hero-node-pulse 2.6s var(--d, 0s) ease-in-out infinite;
 	}
 
+	.mascot {
+		position: absolute;
+		right: -30px;
+		bottom: -44px;
+		width: 148px;
+		animation: hero-bob 5s 1.4s ease-in-out infinite;
+	}
+
+	.mascot-fugu {
+		display: block;
+		width: 100%;
+		height: auto;
+		filter: drop-shadow(0 10px 14px rgba(9, 80, 84, 0.22));
+	}
+
+	/* ふぐの口もとから上がる泡 */
+	.pop {
+		position: absolute;
+		top: 30%;
+		left: 4%;
+		width: 14px;
+		height: 14px;
+		border: 2.5px solid var(--surface);
+		border-radius: 50%;
+		opacity: 0;
+		animation: hero-pop 3.9s var(--d, 0s) ease-out infinite;
+	}
+
+	.pop:nth-child(2) {
+		left: -6%;
+		width: 10px;
+		height: 10px;
+	}
+
+	.pop:nth-child(3) {
+		left: 12%;
+		width: 8px;
+		height: 8px;
+	}
+
 	.note {
 		position: absolute;
 		bottom: -26px;
@@ -373,6 +419,30 @@ const year = fiscalYear()
 		}
 		50% {
 			transform: translateY(-14px);
+		}
+	}
+
+	@keyframes hero-bob {
+		0%,
+		100% {
+			transform: translateY(0) rotate(-5deg);
+		}
+		50% {
+			transform: translateY(-10px) rotate(3deg);
+		}
+	}
+
+	@keyframes hero-pop {
+		0% {
+			transform: translate(0, 0) scale(0.4);
+			opacity: 0;
+		}
+		15% {
+			opacity: 0.9;
+		}
+		100% {
+			transform: translate(-22px, -86px) scale(1);
+			opacity: 0;
 		}
 	}
 
@@ -461,6 +531,12 @@ const year = fiscalYear()
 			border-radius: 88px 32px 88px 32px;
 		}
 
+		.mascot {
+			right: -8px;
+			bottom: -36px;
+			width: 112px;
+		}
+
 		.note {
 			bottom: -22px;
 			left: -6px;
@@ -483,8 +559,14 @@ const year = fiscalYear()
 		h1 span,
 		.flow,
 		.scan,
-		.node {
+		.node,
+		.mascot,
+		.pop {
 			animation: none;
+		}
+
+		.mascot {
+			transform: rotate(-5deg);
 		}
 
 		.button {
