@@ -8,8 +8,8 @@
   partner: 北海道大学 腫瘍病理学教室
   scope: 学内
   summary: 髄膜腫と孤在性線維性腫瘍（SFT）は組織像がよく似ていて、確定に使う STAT6 免疫染色は実施できる施設が限られます。病理基盤モデルで標本全体の画像（WSI）から特徴を取り出し、形態だけで両者を見分ける方法を検討しています。第115回日本病理学会総会などで発表しました。
-  image: ./research/meningioma-sft-pipeline.png
-  imageAlt: 全スライド画像をパッチに分け、病理基盤モデル CONCH v1.5 で特徴量を取り出し、集約して線形分類器で評価するまでの流れを示した模式図
+  image: ./research/meningioma-sft-tissue.jpg
+  imageAlt: 髄膜腫の 6 つの組織型（髄膜皮性・線維性・移行性・異型・血管腫性・退形成性）と孤在性線維性腫瘍（SFT）の HE 染色の組織像。上から、院内の標本、それを GAN で公開データの色合いに寄せたもの、公開データ（EBRAINS）の 3 段
   order: 10
 
 - id: hamster-pneumonia
