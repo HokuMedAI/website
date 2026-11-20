@@ -14,6 +14,9 @@ export const FOUNDED_FISCAL_YEAR = 2023
 export const DISCORD_INVITE_URL = 'https://discord.gg/t9kKpVHtyj'
 export const PRISM_HU_URL = 'https://prism-hu.org/'
 
+/** X (旧 Twitter) のアカウント名 (@ は付けない)。共有されたときのカードに、サイトのアカウントとして出る */
+export const X_ACCOUNT = 'HU_med_ai'
+
 /** Instagram のアカウントの URL。空のあいだは、お問い合わせページに Instagram を出さない */
 export const INSTAGRAM_URL = ''
 

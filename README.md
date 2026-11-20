@@ -124,10 +124,14 @@ order: 10
 
 ## その他の設定
 
-サイト名、Discord の招待リンク、Instagram、Google カレンダー、フォームの Turnstile の site key は `src/lib/site.ts` に
+サイト名、Discord の招待リンク、X のアカウント名、Instagram、Google カレンダー、フォームの Turnstile の site key は `src/lib/site.ts` に
 まとめてある。Instagram は、URL を入れるとお問い合わせページに出る（空のあいだは出ない）。
 
 トップページの文章（About・Activities・Join Us）は `src/components/landing/` に直接書いてある。
+
+SNS（X・Instagram・LINE・Discord など）でリンクを共有したときに出る画像は `public/og.png`（1200×630）。
+記事は `thumbnail` があればそれが出て、無い記事とほかのページはこの画像になる。元は `scripts/og-card.html` で、
+撮り直し方はそのファイルの先頭に書いてある。SNS 側は画像をしばらく覚えているので、差し替えてもすぐには変わらない。
 
 ## 構成
 

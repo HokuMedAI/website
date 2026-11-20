@@ -1,0 +1,316 @@
+<!doctype html>
+<!--
+	SNS で共有されたときに出る画像 (public/og.png) の元。1200×630。
+	絵と色はトップページの Hero (src/components/landing/Hero.astro) とナビのロゴに合わせてある。
+	直したら、repo の root で次を実行して撮り直す (書体を Google Fonts から読むので、ネットワークが要る):
+
+	chromium --headless --hide-scrollbars --window-size=1200,630 --virtual-time-budget=8000 \
+		--screenshot=public/og.png scripts/og-card.html
+-->
+<html lang="ja">
+	<head>
+		<meta charset="UTF-8" />
+		<title>og.png の元</title>
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Outfit:wght@700;800&family=Zen+Maru+Gothic:wght@700;900&display=block"
+			rel="stylesheet"
+		/>
+		<style>
+			* {
+				box-sizing: border-box;
+			}
+
+			html,
+			body {
+				margin: 0;
+			}
+
+			body {
+				position: relative;
+				width: 1200px;
+				height: 630px;
+				overflow: hidden;
+				background: #00b4b8;
+				color: #fff;
+				font-family: 'Zen Maru Gothic', sans-serif;
+				-webkit-font-smoothing: antialiased;
+			}
+
+			.glow {
+				position: absolute;
+				border-radius: 50%;
+			}
+
+			.glow.top {
+				top: -230px;
+				right: -150px;
+				width: 560px;
+				height: 560px;
+				background: radial-gradient(
+					circle at 35% 40%,
+					rgba(255, 255, 255, 0.42),
+					rgba(255, 255, 255, 0.1) 70%
+				);
+			}
+
+			.glow.bottom {
+				bottom: -290px;
+				left: -230px;
+				width: 420px;
+				height: 420px;
+				background: rgba(238, 130, 238, 0.45);
+			}
+
+			.copy {
+				position: absolute;
+				top: 66px;
+				left: 76px;
+			}
+
+			.badge {
+				display: inline-flex;
+				align-items: center;
+				gap: 10px;
+				padding: 11px 24px;
+				border-radius: 999px;
+				background: #fff;
+				color: #b23fb2;
+				font-weight: 700;
+				font-size: 25px;
+				line-height: 1.45;
+				box-shadow: 0 6px 16px rgba(9, 80, 84, 0.14);
+			}
+
+			.badge-dot {
+				width: 12px;
+				height: 12px;
+				border-radius: 50%;
+				background: #ee82ee;
+			}
+
+			h1 {
+				margin: 26px 0 0;
+				font-size: 82px;
+				font-weight: 900;
+				line-height: 1.2;
+				letter-spacing: 0.01em;
+				text-shadow: 0 6px 20px rgba(9, 80, 84, 0.18);
+			}
+
+			h1 span {
+				display: block;
+				white-space: nowrap;
+			}
+
+			.sign {
+				position: absolute;
+				left: 76px;
+				bottom: 60px;
+				display: flex;
+				align-items: center;
+				gap: 22px;
+			}
+
+			.logo {
+				display: flex;
+				align-items: center;
+				gap: 12px;
+				padding: 12px 28px 12px 22px;
+				border-radius: 999px;
+				background: #eafcfc;
+				color: #0d4b50;
+				font-weight: 900;
+				font-size: 38px;
+				line-height: 1.2;
+				letter-spacing: 0.02em;
+				box-shadow: 0 10px 30px rgba(9, 80, 84, 0.18);
+			}
+
+			.logo svg {
+				width: 44px;
+				height: 44px;
+			}
+
+			.url {
+				font-family: 'Outfit', sans-serif;
+				font-weight: 700;
+				font-size: 30px;
+				letter-spacing: 0.02em;
+				color: #f2ffff;
+			}
+
+			.visual {
+				position: absolute;
+				top: 112px;
+				right: 78px;
+				width: 400px;
+			}
+
+			.bubble {
+				position: absolute;
+				top: -20px;
+				right: -20px;
+				width: 124px;
+				height: 124px;
+				border-radius: 50%;
+				background: #ee82ee;
+				opacity: 0.9;
+			}
+
+			.frame {
+				position: relative;
+				height: 400px;
+				border-radius: 120px 40px 120px 40px;
+				overflow: hidden;
+				background: #eafcfc;
+				box-shadow: 0 26px 60px rgba(9, 80, 84, 0.28);
+			}
+
+			.frame svg {
+				display: block;
+				width: 100%;
+				height: 100%;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="glow top"></div>
+		<div class="glow bottom"></div>
+
+		<div class="copy">
+			<div class="badge"><span class="badge-dot"></span>北海道大学医学部AI研究会</div>
+			<h1>
+				<span>医学とAIの</span>
+				<span>まんなかで、</span>
+				<span>いっしょに学ぶ。</span>
+			</h1>
+		</div>
+
+		<div class="sign">
+			<div class="logo">
+				<svg viewBox="0 0 48 48" aria-hidden="true">
+					<circle
+						cx="20"
+						cy="24"
+						r="15"
+						fill="#eafcfc"
+						stroke="#00B4B8"
+						stroke-width="2.2"
+					></circle>
+					<circle cx="15" cy="20" r="4.2" fill="none" stroke="#00B4B8" stroke-width="1.6"></circle>
+					<circle cx="15" cy="20" r="1.5" fill="#EE82EE"></circle>
+					<circle cx="24" cy="28" r="5" fill="none" stroke="#00B4B8" stroke-width="1.6"></circle>
+					<circle cx="24" cy="28" r="1.7" fill="#EE82EE"></circle>
+					<circle cx="14" cy="30" r="3" fill="none" stroke="#00B4B8" stroke-width="1.6"></circle>
+					<path
+						d="M33 12 L40 17 M33 12 L40 8 M40 17 L40 8 M40 17 L44 24 M40 8 L44 24"
+						stroke="#EE82EE"
+						stroke-width="1.6"
+						fill="none"
+						stroke-linecap="round"
+					></path>
+					<circle cx="33" cy="12" r="2.6" fill="#EE82EE"></circle>
+					<circle cx="40" cy="17" r="2.2" fill="#EE82EE"></circle>
+					<circle cx="40" cy="8" r="2.2" fill="#EE82EE"></circle>
+					<circle cx="44" cy="24" r="2.2" fill="#EE82EE"></circle>
+				</svg>
+				北医AI研
+			</div>
+			<div class="url">aiken.prism-hu.org</div>
+		</div>
+
+		<div class="visual">
+			<div class="bubble"></div>
+			<div class="frame">
+				<svg viewBox="0 0 420 400" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+					<rect width="420" height="400" fill="#eafcfc"></rect>
+					<g fill="#bdeef0">
+						<circle cx="40" cy="40" r="2.5"></circle>
+						<circle cx="90" cy="40" r="2.5"></circle>
+						<circle cx="140" cy="40" r="2.5"></circle>
+						<circle cx="40" cy="90" r="2.5"></circle>
+						<circle cx="380" cy="330" r="2.5"></circle>
+						<circle cx="340" cy="360" r="2.5"></circle>
+						<circle cx="380" cy="360" r="2.5"></circle>
+						<circle cx="40" cy="360" r="2.5"></circle>
+					</g>
+
+					<!-- スライドガラス -->
+					<g transform="rotate(-12 210 210)">
+						<rect
+							x="66"
+							y="118"
+							width="288"
+							height="176"
+							rx="10"
+							fill="#ffffff"
+							stroke="#9fe4e6"
+							stroke-width="3"
+						></rect>
+						<rect x="66" y="118" width="288" height="30" rx="10" fill="#d6f6f7"></rect>
+						<rect x="84" y="128" width="86" height="10" rx="5" fill="#8bdcdf"></rect>
+					</g>
+
+					<!-- 組織の視野 -->
+					<circle
+						cx="200"
+						cy="212"
+						r="98"
+						fill="#ffffff"
+						stroke="#00B4B8"
+						stroke-width="4"
+					></circle>
+					<clipPath id="hero-field">
+						<circle cx="200" cy="212" r="94"></circle>
+					</clipPath>
+					<g clip-path="url(#hero-field)">
+						<rect x="102" y="114" width="196" height="196" fill="#f6feff"></rect>
+						<g fill="#d9f6f7" stroke="#00B4B8" stroke-width="2.4">
+							<ellipse cx="160" cy="176" rx="26" ry="21"></ellipse>
+							<ellipse cx="228" cy="166" rx="22" ry="26"></ellipse>
+							<ellipse cx="146" cy="240" rx="23" ry="25"></ellipse>
+							<ellipse cx="214" cy="238" rx="30" ry="23"></ellipse>
+							<ellipse cx="256" cy="278" rx="20" ry="18"></ellipse>
+							<ellipse cx="176" cy="292" rx="24" ry="19"></ellipse>
+						</g>
+						<g fill="#EE82EE">
+							<circle cx="160" cy="176" r="7"></circle>
+							<circle cx="228" cy="166" r="6"></circle>
+							<circle cx="146" cy="240" r="7"></circle>
+							<circle cx="214" cy="238" r="8"></circle>
+							<circle cx="256" cy="278" r="5.5"></circle>
+							<circle cx="176" cy="292" r="6"></circle>
+						</g>
+						<g stroke="#EE82EE" stroke-width="2" fill="none" stroke-dasharray="7 7">
+							<path d="M160 176 L228 166 L214 238 L146 240 Z"></path>
+							<path d="M214 238 L256 278 M146 240 L176 292 M176 292 L256 278"></path>
+						</g>
+						<rect x="96" y="204" width="208" height="14" fill="#EE82EE" opacity=".22"></rect>
+					</g>
+
+					<!-- 検出枠 -->
+					<g fill="none" stroke="#b23fb2" stroke-width="3">
+						<path
+							d="M182 210 h-16 v-16 M246 210 h16 v-16 M182 268 h-16 v16 M246 268 h16 v16"
+						></path>
+					</g>
+
+					<!-- AI のグラフ -->
+					<g stroke="#00898c" stroke-width="2.4" fill="none" opacity=".9">
+						<path
+							d="M318 96 L364 128 M318 96 L364 76 M364 128 L364 76 M364 128 L392 176 M364 76 L392 176"
+						></path>
+					</g>
+					<g fill="#00B4B8">
+						<circle cx="318" cy="96" r="9"></circle>
+						<circle cx="364" cy="128" r="7"></circle>
+						<circle cx="364" cy="76" r="7"></circle>
+						<circle cx="392" cy="176" r="8" fill="#EE82EE"></circle>
+					</g>
+				</svg>
+			</div>
+		</div>
+	</body>
+</html>
