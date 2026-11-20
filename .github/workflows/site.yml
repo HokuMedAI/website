@@ -12,6 +12,13 @@ on:
     branches: [master]
   pull_request:
 
+# 同じブランチの実行は 1 本ずつ順に走らせる。並べて走らせると、続けて push したときに古い方のデプロイが後から終わって、
+# 本番が古い内容に戻ることがある。走っている途中のものは止めない (デプロイの途中で切らない)。
+# 待ちが 2 本以上たまったら、GitHub が最新の 1 本だけを残して古い待ちを取り消す
+concurrency:
+  group: site-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   build:
     runs-on: ubuntu-latest
