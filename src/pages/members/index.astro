@@ -1,6 +1,7 @@
 ---
 /**
  * 部員紹介。雑誌の 1 ページに見立てた紙面に、部員 (学年の高い順) と顧問・メンターを並べる。
+ * 顧問・メンターの見出しは、居る区分だけで作る (メンターだけなら「メンター」)。
  * マスコットは部員の一覧の最後に置く (人数には数えない)。
  * 記事を書いている人のカードは、その人の記事一覧 (/author/<id>/) へのリンクになる。
  * 中身は src/content/members/ の 1 人 1 ファイル。
@@ -51,11 +52,15 @@ const staff = members
 		(a, b) =>
 			MEMBER_GROUPS.indexOf(a.data.group) - MEMBER_GROUPS.indexOf(b.data.group) || byOrder(a, b)
 	)
+// 見出しと説明文に出す区分名。居る区分だけ (「顧問・メンター」「メンター」)
+const staffLabel = MEMBER_GROUPS.filter((group) => staff.some((m) => m.data.group === group)).join(
+	'・'
+)
 ---
 
 <Base
 	title="メンバー紹介"
-	description={`${SITE_NAME}（${SITE_SHORT_NAME}）の部員と、顧問・メンターの紹介です。`}
+	description={`${SITE_NAME}（${SITE_SHORT_NAME}）の部員${staffLabel && `と、${staffLabel}`}の紹介です。`}
 >
 	<div class="members-page">
 		<Crumbs crumbs={[{ label: 'ホーム', href: '/' }, { label: 'メンバー' }]} />
@@ -96,7 +101,7 @@ const staff = members
 
 			{staff.length > 0 && (
 				<div class="staff">
-					<h2 class="staff-tag">顧問・メンター</h2>
+					<h2 class="staff-tag">{staffLabel}</h2>
 					<ul class="staff-grid">
 						{staff.map((member, i) => (
 							<StaffCard
