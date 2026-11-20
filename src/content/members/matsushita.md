@@ -5,3 +5,5 @@ position: 研修医
 gender: 男
 order: 10
 ---
+
+シンギュラリティ
