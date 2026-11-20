@@ -2,6 +2,7 @@
 title: 第28回もくもく会
 date: 2025-11-12
 category: mokumoku
+authors: [yamada]
 ---
 
 ## 開催概要

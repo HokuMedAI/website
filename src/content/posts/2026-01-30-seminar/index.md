@@ -2,6 +2,7 @@
 title: 1月定期勉強会開催報告
 date: 2026-01-30
 category: seminar
+authors: [murakami]
 thumbnail: ./feature.jpg
 ---
 

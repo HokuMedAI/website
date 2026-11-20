@@ -3,6 +3,7 @@ title: ８月の研究ミーティング
 date: 2025-08-01
 category: meeting
 tags: [the-leader-has-spoken]
+authors: [yamada]
 thumbnail: ./feature.jpg
 ---
 

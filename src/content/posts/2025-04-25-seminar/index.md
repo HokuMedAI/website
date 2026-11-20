@@ -2,6 +2,7 @@
 title: 4月の勉強会
 date: 2025-04-25
 category: seminar
+authors: [yamada]
 description: 4月の勉強会を開催しました
 thumbnail: ./feature.jpg
 ---

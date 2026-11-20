@@ -2,6 +2,7 @@
 title: １０月第１回研究ミーティング
 date: 2025-10-03
 category: meeting
+authors: [yamada]
 description: １０月第１回研究ミーティングを実施しました
 thumbnail: ./feature.jpg
 ---

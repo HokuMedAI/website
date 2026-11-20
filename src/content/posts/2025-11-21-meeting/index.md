@@ -2,6 +2,7 @@
 title: 11月研究ミーティング
 date: 2025-11-21
 category: meeting
+authors: [enda]
 description: 11月第1回研究ミーティング
 ---
 

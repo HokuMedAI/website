@@ -2,6 +2,7 @@
 title: 第１９回もくもく会
 date: 2025-09-10
 category: mokumoku
+authors: [yamada]
 thumbnail: ./feature.png
 ---
 

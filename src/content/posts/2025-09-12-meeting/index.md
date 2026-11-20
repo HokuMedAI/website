@@ -2,6 +2,7 @@
 title: ９月第１回定期ミーティング
 date: 2025-09-12
 category: meeting
+authors: [yamada]
 description: ９月第１回定期ミーティングを開催しました
 thumbnail: ./feature.jpg
 ---

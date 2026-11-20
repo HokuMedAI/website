@@ -2,6 +2,7 @@
 title: 第26回もくもく会
 date: 2025-10-29
 category: mokumoku
+authors: [yamaguchi]
 ---
 
 ## 開催概要

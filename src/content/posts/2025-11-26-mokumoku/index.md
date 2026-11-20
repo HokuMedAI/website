@@ -2,6 +2,7 @@
 title: 第29回もくもく会
 date: 2025-11-26
 category: mokumoku
+authors: [yamada]
 ---
 
 ## 開催概要

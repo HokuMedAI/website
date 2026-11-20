@@ -3,6 +3,7 @@ title: 12月定期ミーティング
 date: 2025-12-19
 category: meeting
 tags: [the-leader-has-spoken]
+authors: [yamada]
 description: 12月定期ミーティング開催しました
 ---
 

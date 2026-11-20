@@ -2,6 +2,7 @@
 title: 第15回もくもく会
 date: 2025-08-13
 category: mokumoku
+authors: [enda]
 thumbnail: ./feature.jpg
 ---
 

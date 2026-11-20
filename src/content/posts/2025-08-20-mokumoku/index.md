@@ -2,6 +2,7 @@
 title: 第１６回もくもく会
 date: 2025-08-20
 category: mokumoku
+authors: [yamada]
 ---
 
 ## 開催概要

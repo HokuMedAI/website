@@ -2,6 +2,7 @@
 title: 第5回もくもく会
 date: 2025-06-04
 category: mokumoku
+authors: [yamada]
 ---
 
 ## 開催概要

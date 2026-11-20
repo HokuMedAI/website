@@ -2,6 +2,7 @@
 title: 5月定例ミーティング
 date: 2025-05-22
 category: meeting
+authors: [yamada]
 description: ５月の定例ミーティングを行いました
 ---
 

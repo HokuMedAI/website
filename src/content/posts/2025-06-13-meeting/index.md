@@ -2,6 +2,7 @@
 title: ６月研究ミーティング②
 date: 2025-06-13
 category: meeting
+authors: [yamada]
 thumbnail: ./feature.jpg
 ---
 

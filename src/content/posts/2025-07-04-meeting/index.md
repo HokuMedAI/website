@@ -2,6 +2,7 @@
 title: ７月研究ミーティング①
 date: 2025-07-04
 category: meeting
+authors: [yamada]
 description: ７月研究ミーティングを開催しました
 thumbnail: ./feature.jpg
 ---

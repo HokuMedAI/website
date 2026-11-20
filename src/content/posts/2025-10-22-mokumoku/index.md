@@ -2,6 +2,7 @@
 title: 第２５回もくもく会
 date: 2025-10-22
 category: mokumoku
+authors: [yamada]
 ---
 
 ## 開催概要

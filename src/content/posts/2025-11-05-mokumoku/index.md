@@ -2,6 +2,7 @@
 title: 第27回もくもく会
 date: 2025-11-05
 category: mokumoku
+authors: [yamada]
 description: 第27回もくもく会を開催しました！
 thumbnail: ./feature.jpg
 ---

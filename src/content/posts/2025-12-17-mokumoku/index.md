@@ -2,6 +2,7 @@
 title: 第32回もくもく会
 date: 2025-12-17
 category: mokumoku
+authors: [yamada]
 ---
 
 ## 開催概要

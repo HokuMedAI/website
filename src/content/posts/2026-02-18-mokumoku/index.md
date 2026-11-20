@@ -2,6 +2,7 @@
 title: 第39回もくもく回・北医AI研究会
 date: 2026-02-18
 category: mokumoku
+authors: [yamaguchi]
 description: 第39回もくもく回
 ---
 

@@ -2,6 +2,7 @@
 title: １０月定期勉強会開催報告
 date: 2025-10-25
 category: seminar
+authors: [murakami]
 ---
 
 ## 開催概要

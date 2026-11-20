@@ -2,6 +2,7 @@
 title: ９月定期勉強会開催報告
 date: 2025-09-19
 category: seminar
+authors: [yamada]
 thumbnail: ./feature.jpg
 ---
 

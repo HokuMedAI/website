@@ -2,6 +2,7 @@
 title: ６月定期ミーティング①
 date: 2025-06-06
 category: meeting
+authors: [yamada]
 description: ６月の定期ミーティング①
 ---
 

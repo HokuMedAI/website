@@ -2,6 +2,7 @@
 title: 第１８回もくもく会
 date: 2025-09-03
 category: mokumoku
+authors: [yamada]
 thumbnail: ./feature.jpg
 ---
 

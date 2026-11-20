@@ -2,6 +2,7 @@
 title: 第33回もくもく会
 date: 2025-12-24
 category: mokumoku
+authors: [yamada]
 thumbnail: ./feature.jpg
 ---
 

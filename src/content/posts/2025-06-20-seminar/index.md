@@ -2,6 +2,7 @@
 title: ６月勉強会開催報告：メディカルAI学会の予行
 date: 2025-06-20
 category: seminar
+authors: [yamada]
 description: ６月勉強会開催報告
 thumbnail: ./feature.jpg
 ---

@@ -2,6 +2,7 @@
 title: 2月定期勉強会開催報告
 date: 2026-03-17
 category: seminar
+authors: [murakami]
 ---
 
 ## 開催概要

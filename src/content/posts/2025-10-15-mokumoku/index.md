@@ -2,6 +2,7 @@
 title: 第２４回もくもく会
 date: 2025-10-15
 category: mokumoku
+authors: [yamada]
 thumbnail: ./feature.jpg
 ---
 

@@ -2,6 +2,7 @@
 title: 第２回もくもく会
 date: 2025-05-14
 category: mokumoku
+authors: [yamada]
 description: 第２回もくもく会を開催しました
 ---
 

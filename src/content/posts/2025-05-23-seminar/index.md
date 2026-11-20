@@ -2,6 +2,7 @@
 title: ５月勉強会開催報告：ニューラルネットワークの基礎
 date: 2025-05-23
 category: seminar
+authors: [yamada]
 thumbnail: ./feature.jpg
 ---
 先日、「**ニューラルネットワークの基礎**」と題した勉強会を開催し、多くの方にご参加いただきました。誠にありがとうございます。

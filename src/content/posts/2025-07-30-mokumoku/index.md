@@ -2,6 +2,7 @@
 title: 第13回もくもく会
 date: 2025-07-30
 category: mokumoku
+authors: [yamada]
 thumbnail: ./feature.jpg
 ---
 

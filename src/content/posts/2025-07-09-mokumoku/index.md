@@ -2,6 +2,7 @@
 title: 第１０回もくもく会
 date: 2025-07-09
 category: mokumoku
+authors: [yamada]
 thumbnail: ./feature.jpg
 ---
 

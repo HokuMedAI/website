@@ -2,6 +2,7 @@
 title: 11月定期勉強会開催報告
 date: 2025-11-28
 category: seminar
+authors: [murakami]
 thumbnail: ./feature.jpg
 ---
 

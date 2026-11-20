@@ -2,6 +2,7 @@
 title: 第３回もくもく会
 date: 2025-05-21
 category: mokumoku
+authors: [yamada]
 description: 第３回もくもく会を開催しました
 thumbnail: ./featured.jpg
 ---

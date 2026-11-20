@@ -2,6 +2,7 @@
 title: 第２０回もくもく会
 date: 2025-09-17
 category: mokumoku
+authors: [yamada]
 ---
 
 ## 開催概要

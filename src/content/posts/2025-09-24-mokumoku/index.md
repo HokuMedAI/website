@@ -2,6 +2,7 @@
 title: 第２１回もくもく会
 date: 2025-09-24
 category: mokumoku
+authors: [yamada]
 ---
 
 ## 開催概要

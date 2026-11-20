@@ -2,6 +2,7 @@
 title: 10月第2回定例ミーティング
 date: 2025-10-31
 category: meeting
+authors: [yamada]
 ---
 
 ## 開催概要
