@@ -279,6 +279,9 @@ const year = fiscalYear()
 		position: relative;
 		flex: 1 1 340px;
 		min-width: 0;
+		/* 横に広がりすぎると、絵の中央だけが大きく切り取られる */
+		max-width: 480px;
+		margin-inline: auto;
 		animation:
 			hero-rise-in 0.9s 0.3s var(--ease-out) both,
 			hero-float 7s 1.2s ease-in-out infinite;
@@ -474,6 +477,18 @@ const year = fiscalYear()
 		}
 	}
 
+	/* コピーの下に折り返す幅では、イラストを小さめにして中央に置く */
+	@media (max-width: 860px) {
+		.visual {
+			flex: 0 1 360px;
+		}
+
+		.frame {
+			height: auto;
+			aspect-ratio: 21 / 20;
+		}
+	}
+
 	@media (max-width: 640px) {
 		.hero {
 			padding: 28px var(--gutter) 88px;
@@ -514,8 +529,7 @@ const year = fiscalYear()
 		}
 
 		.visual {
-			flex-basis: 100%;
-			margin-inline: 6px;
+			flex-basis: min(100% - 12px, 360px);
 		}
 
 		.bubble {
