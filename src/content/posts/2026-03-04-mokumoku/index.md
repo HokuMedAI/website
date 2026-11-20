@@ -2,7 +2,7 @@
 title: 第41回もくもく会
 date: 2026-03-04
 category: mokumoku
-authors: [hokumedai, mbyamaguchi]
+authors: [hokumedai, yamaguchi]
 description: 第41回スーパーウルトラもくもくタイム
 ---
 

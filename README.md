@@ -51,7 +51,7 @@ title: 第47回もくもく会
 date: 2026-04-22
 category: mokumoku
 tags: [the-leader-has-spoken]
-authors: [ymd000]
+authors: [yamada]
 description: 一覧に出る短い説明（省略すると本文の先頭から作る）
 thumbnail: ./feature.jpg
 ---
@@ -73,6 +73,12 @@ thumbnail: ./feature.jpg
 | `draft`       |      | `true` の間はサイトに出ない                               |
 
 項目名を打ち間違えたり、定義に無いカテゴリ・タグ・署名を書いたりすると、`pnpm check` とビルドがエラーで止まる。
+
+署名（`src/content/authors.yaml`）に `member`（`src/content/members/` のファイル名）を書くと、その署名は部員と結びつく。
+記事の署名はメンバー紹介のその人へのリンクになり、メンバー紹介のカードからはその人の記事一覧（`/author/<id>/`）へ行ける。
+団体名義や、卒業・退部して部員のファイルが無い人の署名には `member` を書かない（署名を押すと、その署名の記事一覧が開く）。
+
+AI エージェント（Hermes = マスコットのふぐ）で書いた記事は、指示した人とふぐの連名にする（`authors: [yamada, fugu]`）。
 
 | `category` | 表示                    | 使いどころ                                     |
 | ---------- | ----------------------- | ---------------------------------------------- |

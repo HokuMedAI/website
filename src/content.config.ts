@@ -2,7 +2,7 @@
 //   src/content/posts/<slug>/index.md  … 記事。1 記事 = 1 ディレクトリ。画像は同じディレクトリに置いて相対参照
 //   src/content/members/<id>.md        … 部員・顧問・メンター・マスコット。1 人 = 1 ファイル。本文がその人のコメント
 //   src/content/research.yaml          … 研究テーマの一覧 (画像は src/content/research/)
-//   src/content/authors.yaml           … 記事の署名
+//   src/content/authors.yaml           … 記事の署名 (部員との対応もここ)
 //   src/content/tags.yaml              … 記事のタグ
 import { defineCollection, reference } from 'astro:content'
 import { file, glob } from 'astro/loaders'
@@ -85,7 +85,10 @@ const authors = defineCollection({
 	schema: z.strictObject({
 		id: z.string(),
 		name: z.string(),
-		bio: z.string().optional(),
+		// その署名の部員 (任意)。src/content/members/<名前>.md の <名前>
+		member: reference('members').optional(),
+		// その署名の記事一覧の先頭に出す説明 (任意)
+		description: z.string().optional(),
 	}),
 })
 

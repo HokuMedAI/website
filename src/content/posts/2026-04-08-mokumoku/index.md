@@ -2,7 +2,7 @@
 title: 第45回もくもく会
 date: 2026-04-08
 category: mokumoku
-authors: [hokumedai, ymd000]
+authors: [hokumedai, yamada]
 thumbnail: ./feature_0408.jpg
 ---
 

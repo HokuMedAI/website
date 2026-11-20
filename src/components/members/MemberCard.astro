@@ -5,6 +5,8 @@
  * 写真が無いあいだは、枠に人物のシルエットを出す。コメントは Markdown の本文で、空の人は吹き出しを出さない。
  * マスコットは、枠に絵の全体を収め、番号と学科・学年の代わりに「マスコット」と出す。
  * 学生でない部員 (肩書きのある人。研修医など) は、学科・学年の代わりに肩書きを出す。
+ * 記事を書いている人は、カードのどこを押しても、その人の記事一覧へ行く。
+ * 記事の署名から来たとき (/members/#<名前>) は、そのカードを目立たせる。
  */
 import { Image } from 'astro:assets'
 import { render, type CollectionEntry } from 'astro:content'
@@ -19,9 +21,11 @@ interface Props {
 	tone: 'teal' | 'violet'
 	/** 一覧の中での位置 (0 始まり)。枠の番号と、傾き・上下のずらしを決める */
 	index: number
+	/** その人の記事一覧の URL と本数 (署名が紐づいている人だけ) */
+	posts?: { href: string; count: number }
 }
 
-const { member, grade, tone, index } = Astro.props
+const { member, grade, tone, index, posts } = Astro.props
 const { name, photo, role, entryYear, position } = member.data
 
 const isMascot = member.data.group === 'マスコット'
@@ -42,7 +46,11 @@ const hasComment = Boolean(member.body?.trim())
 const { Content } = hasComment ? await render(member) : { Content: null }
 ---
 
-<li class:list={['member', `tone-${tone}`, index % 2 === 1 && 'is-low']} style={`--tilt:${tilt}`}>
+<li
+	id={member.id}
+	class:list={['member', `tone-${tone}`, index % 2 === 1 && 'is-low']}
+	style={`--tilt:${tilt}`}
+>
 	<div class="member-card">
 		<div class="member-photo">
 			{photo && isMascot ? (
@@ -95,6 +103,11 @@ const { Content } = hasComment ? await render(member) : { Content: null }
 				)}
 			</div>
 			<div class="member-name">{name}</div>
+			{posts && posts.count > 0 && (
+				<a class="member-posts" href={posts.href}>
+					記事 {posts.count}本<span aria-hidden="true">→</span>
+				</a>
+			)}
 		</div>
 	</div>
 	{role && <div class:list={['sticker', [...role].length >= 4 && 'is-long']}>{role}</div>}
@@ -102,7 +115,9 @@ const { Content } = hasComment ? await render(member) : { Content: null }
 
 <style>
 	.member {
+		--card-shadow: var(--shadow-hard-teal);
 		position: relative;
+		scroll-margin-top: 130px;
 		transform: rotate(var(--tilt)) translateY(var(--drop, 0px));
 		transition: transform 0.35s var(--ease-bounce);
 	}
@@ -120,11 +135,33 @@ const { Content } = hasComment ? await render(member) : { Content: null }
 		border: 3px solid var(--teal-ink);
 		border-radius: var(--radius-card-sm);
 		padding: 14px 14px 22px;
-		box-shadow: var(--shadow-hard-teal);
+		box-shadow: var(--card-shadow);
 	}
 
-	.tone-violet .member-card {
-		box-shadow: var(--shadow-hard-violet);
+	.member.tone-violet {
+		--card-shadow: var(--shadow-hard-violet);
+	}
+
+	/* 記事の署名から来たとき: 傾きを戻して少し大きくし、蛍光ペンで囲んだように縁取る */
+	.member:target {
+		z-index: 1;
+		transform: rotate(0deg) translateY(var(--drop, 0px)) scale(1.05);
+	}
+
+	.member:target .member-card {
+		box-shadow:
+			0 0 0 8px var(--highlight),
+			var(--card-shadow);
+		animation: member-pop 0.7s var(--ease-bounce) both;
+	}
+
+	@keyframes member-pop {
+		from {
+			transform: scale(0.9);
+		}
+		to {
+			transform: scale(1);
+		}
 	}
 
 	/* 写真の枠 (4:5)。水玉の地は、写真が無いあいだと読み込み中に見える */
@@ -235,6 +272,36 @@ const { Content } = hasComment ? await render(member) : { Content: null }
 		color: var(--teal-ink);
 	}
 
+	/* その人の記事一覧へのリンク。カード全体を押せる範囲にする */
+	.member-posts {
+		display: inline-flex;
+		gap: 0.3em;
+		margin-top: 8px;
+		padding: 3px 12px;
+		border-radius: var(--radius-pill);
+		background: var(--teal-tint);
+		color: var(--teal-strong);
+		font-size: 13px;
+		font-weight: 900;
+		line-height: 1.6;
+	}
+
+	.tone-violet .member-posts {
+		background: var(--violet-tint);
+		color: var(--violet-strong);
+	}
+
+	.member-posts::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+	}
+
+	.member-posts:focus-visible {
+		outline: 3px solid var(--violet);
+		outline-offset: 3px;
+	}
+
 	.sticker {
 		position: absolute;
 		top: -20px;
@@ -276,11 +343,20 @@ const { Content } = hasComment ? await render(member) : { Content: null }
 		.member-card {
 			padding: 9px 9px 14px;
 			border-radius: 22px;
-			box-shadow: var(--shadow-hard-teal-sm);
 		}
 
-		.tone-violet .member-card {
-			box-shadow: var(--shadow-hard-violet-sm);
+		.member {
+			--card-shadow: var(--shadow-hard-teal-sm);
+		}
+
+		.member.tone-violet {
+			--card-shadow: var(--shadow-hard-violet-sm);
+		}
+
+		.member-posts {
+			margin-top: 6px;
+			padding: 2px 10px;
+			font-size: 12px;
 		}
 
 		.member-photo {
@@ -339,6 +415,10 @@ const { Content } = hasComment ? await render(member) : { Content: null }
 
 		.member:hover {
 			transform: rotate(var(--tilt)) translateY(var(--drop, 0px));
+		}
+
+		.member:target .member-card {
+			animation: none;
 		}
 	}
 </style>

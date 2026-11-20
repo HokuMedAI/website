@@ -1,25 +1,36 @@
-# 記事の署名。記事の frontmatter の authors にここの id を書く
+# 記事の署名。記事の frontmatter の authors にここの id を書く。
+# member は、その署名の部員 (src/content/members/<名前>.md の <名前>)。書くと、記事の署名がメンバー紹介の
+# その人へのリンクになり、メンバー紹介からその人の記事一覧 (/author/<id>/) へ行けるようになる。
+# 団体名義や、部員のファイルが無い人 (卒業・退部した人) は member を書かない。
+# 部員の署名の id は、部員のファイル名と同じにしている
+# description は、その署名の記事一覧の先頭に出す説明 (任意)
 
 - id: hokumedai
   name: 北医AI研究会
-  bio: 北医AI研究会は、北海道大学医学部を中心に、AIについて学び、研究する団体です。
 
-- id: ymd000
+- id: yamada
   name: 山田
-  bio: 好きな食べ物：えんがわ
+  member: yamada
 
 - id: murakami
   name: 村上
-  bio: 「やるかやらぬかだ。『やってみる』などない」
+  member: murakami
 
-- id: shogo
+- id: sato-shogo
   name: 佐藤
-  bio: つけだし
+  member: sato-shogo
 
-- id: mbyamaguchi
-  name: ヤマグチ
-  bio: ラーメンとピザが好きです。
+- id: yamaguchi
+  name: 山口
+  member: yamaguchi
 
 - id: enda
   name: 遠田
-  bio: 名誉会長
+  member: enda
+
+# マスコットのふぐ = AI エージェント (Hermes)。Hermes で書いた記事は、指示した人とふぐの連名にする
+# (例: authors: [yamada, fugu])
+- id: fugu
+  name: ふぐ
+  member: fugu
+  description: AI エージェントの「ふぐ」（Hermes）で書いた記事です。指示した人との連名で載せています。

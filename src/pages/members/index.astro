@@ -2,6 +2,7 @@
 /**
  * 部員紹介。雑誌の 1 ページに見立てた紙面に、部員 (学年の高い順) と顧問・メンターを並べる。
  * マスコットは部員の一覧の最後に置く (人数には数えない)。
+ * 記事を書いている人のカードは、その人の記事一覧 (/author/<id>/) へのリンクになる。
  * 中身は src/content/members/ の 1 人 1 ファイル。
  */
 import { getCollection, type CollectionEntry } from 'astro:content'
@@ -13,6 +14,7 @@ import MemberCard from '../../components/members/MemberCard.astro'
 import Paper from '../../components/members/Paper.astro'
 import StaffCard from '../../components/members/StaffCard.astro'
 import { fiscalYear, gradeOf } from '../../lib/members'
+import { getAuthorIndex, getPostViews } from '../../lib/posts'
 import { FOUNDED_FISCAL_YEAR, MEMBER_GROUPS, SITE_NAME, SITE_SHORT_NAME } from '../../lib/site'
 
 type Member = CollectionEntry<'members'>
@@ -31,6 +33,10 @@ const students = members
 	.filter((m) => m.data.group === '部員')
 	.map((m) => ({ member: m, grade: gradeOf(m.data.entryYear) }))
 	.sort((a, b) => (b.grade ?? 0) - (a.grade ?? 0) || byOrder(a.member, b.member))
+
+// 記事を書いている人の、記事一覧の URL と本数 (署名と部員の対応は src/content/authors.yaml)
+const { byMember: postsByMember } = await getAuthorIndex(await getPostViews())
+const postsOf = (member: Member) => postsByMember.get(member.id)
 
 // カードの色は性別で決める (男 = 青、女 = ピンク。入っていない人は青)
 const toneOf = (member: Member) => (member.data.gender === '女' ? 'violet' : 'teal')
@@ -67,7 +73,13 @@ const staff = members
 					<div class="band" aria-hidden="true" />
 					<ul class="grid">
 						{students.map(({ member, grade }, i) => (
-							<MemberCard member={member} grade={grade} tone={toneOf(member)} index={i} />
+							<MemberCard
+								member={member}
+								grade={grade}
+								tone={toneOf(member)}
+								index={i}
+								posts={postsOf(member)}
+							/>
 						))}
 						{mascots.map((member, i) => (
 							<MemberCard
@@ -86,7 +98,11 @@ const staff = members
 					<h2 class="staff-tag">顧問・メンター</h2>
 					<ul class="staff-grid">
 						{staff.map((member, i) => (
-							<StaffCard member={member} tone={i % 2 === 0 ? 'violet' : 'teal'} />
+							<StaffCard
+								member={member}
+								tone={i % 2 === 0 ? 'violet' : 'teal'}
+								posts={postsOf(member)}
+							/>
 						))}
 					</ul>
 				</div>

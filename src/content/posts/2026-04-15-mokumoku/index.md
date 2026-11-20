@@ -2,7 +2,7 @@
 title: 第46回もくもく会
 date: 2026-04-15
 category: mokumoku
-authors: [hokumedai, ymd000]
+authors: [hokumedai, yamada]
 ---
 
 ## 開催概要

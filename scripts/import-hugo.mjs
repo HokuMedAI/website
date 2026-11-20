@@ -71,8 +71,13 @@ const SECTIONS = [
 	{ dir: 'activities/seminar', category: 'seminar', kind: 'seminar' },
 	{ dir: 'articles', category: 'report', kind: null },
 ]
-/** 旧サイトの著者キー → authors.yaml の id（綴りの直し） */
-const AUTHOR_ID_FIX = { hokuimedai: 'hokumedai' }
+/** 旧サイトの著者キー → authors.yaml の id（綴りの直しと、部員のファイル名に合わせた読み替え） */
+const AUTHOR_ID_FIX = {
+	hokuimedai: 'hokumedai',
+	ymd000: 'yamada',
+	shogo: 'sato-shogo',
+	mbyamaguchi: 'yamaguchi',
+}
 /** archetype の雛形のまま残っている description */
 const TEMPLATE_DESCRIPTIONS = new Set(['ここに説明を入力'])
 /** ASCII でないファイル名の読み替え。無いものは内容ハッシュで名前を付ける */

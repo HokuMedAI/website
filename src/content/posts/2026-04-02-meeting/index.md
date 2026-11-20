@@ -3,7 +3,7 @@ title: 4月定期ミーティング
 date: 2026-04-02
 category: meeting
 tags: [the-leader-has-spoken]
-authors: [hokumedai, ymd000]
+authors: [hokumedai, yamada]
 thumbnail: ./feature_0402.jpg
 ---
 

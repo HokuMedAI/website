@@ -10,6 +10,8 @@ import Base from '../../layouts/Base.astro'
 import PostsShell from '../../components/posts/PostsShell.astro'
 import {
 	POSTS_PATH,
+	authorLinkHref,
+	authorNameOf,
 	authorsOf,
 	categoryHref,
 	englishLabel,
@@ -40,6 +42,13 @@ const { title, date, thumbnail } = post.data
 const view = toPostView(post)
 const { Content } = await render(post)
 const [tags, authors] = await Promise.all([tagsOf(post), authorsOf(post)])
+// 署名。部員に紐づく署名は氏名で出し、メンバー紹介のその人へ飛ばす
+const bylines = await Promise.all(
+	authors.map(async (author) => ({
+		name: await authorNameOf(author),
+		href: authorLinkHref(author),
+	}))
+)
 
 // OGP 用の画像。SNS のクローラが読める形式（JPEG / PNG）で、幅 1200px までに縮めて出す
 const ogImage =
@@ -86,13 +95,18 @@ const near = [
 					</ul>
 				</div>
 				<h1 class="article__title">{title}</h1>
-				{authors.length > 0 && (
+				{bylines.length > 0 && (
 					<p class="article__byline">
 						<span class="article__byline-label" lang="en" aria-hidden="true">
 							By
 						</span>
 						<span class="article__byline-names">
-							{authors.map((author) => author.data.name).join('、')}
+							{bylines.map((byline, i) => (
+								<>
+									{i > 0 && '、'}
+									<a href={byline.href}>{byline.name}</a>
+								</>
+							))}
 						</span>
 					</p>
 				)}
@@ -287,6 +301,22 @@ const near = [
 		letter-spacing: 0.16em;
 		text-transform: uppercase;
 		color: var(--text-faint);
+	}
+
+	.article__byline-names a {
+		color: inherit;
+		text-decoration: underline;
+		text-decoration-color: var(--teal-line);
+		text-decoration-thickness: 2px;
+		text-underline-offset: 5px;
+		transition:
+			color 0.2s,
+			text-decoration-color 0.2s;
+	}
+
+	.article__byline-names a:hover {
+		color: var(--violet-strong);
+		text-decoration-color: var(--violet);
 	}
 
 	/* ---------- アイキャッチ ---------- */

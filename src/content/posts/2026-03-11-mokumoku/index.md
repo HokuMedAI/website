@@ -2,7 +2,7 @@
 title: 第42回もくもく会
 date: 2026-03-11
 category: mokumoku
-authors: [shogo]
+authors: [sato-shogo]
 ---
 
 ## 開催概要

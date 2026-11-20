@@ -7,7 +7,7 @@
  *   背が伸びたときは、この日付の面が伸びて余白を吸う。
  */
 import { Image } from 'astro:assets'
-import { englishLabel, excerptOf, type PostView } from '../../lib/posts'
+import { authorNameOf, authorsOf, englishLabel, excerptOf, type PostView } from '../../lib/posts'
 import { formatDate } from '../../lib/site'
 
 interface Props {
@@ -28,6 +28,7 @@ const isoDate = post.data.date.toISOString()
 const [year, ...monthDay] = date.split('.')
 const excerpt = excerptOf(post, variant === 'compact' ? 80 : 140)
 const ghost = englishLabel(category.slug, 'Post')
+const byline = (await Promise.all((await authorsOf(post)).map(authorNameOf))).join('、')
 // カードに収まる大きさの画像を何段階か作り、表示される幅に合ったものをブラウザに選ばせる
 // （元の画像より大きい幅は作られない）
 const widths = variant === 'compact' ? [200, 400, 640] : [500, 750, 1000]
@@ -74,6 +75,14 @@ const sizes = {
 				)}
 			</div>
 			<Heading class="card__title">{post.data.title}</Heading>
+			{byline && (
+				<p class="card__byline">
+					<span class="card__byline-label" lang="en" aria-hidden="true">
+						By
+					</span>
+					{byline}
+				</p>
+			)}
 			{excerpt && <p class="card__excerpt">{excerpt}</p>}
 			{variant !== 'compact' && (
 				<span class="card__more" aria-hidden="true">
@@ -257,6 +266,27 @@ const sizes = {
 		color: var(--teal-ink);
 		overflow-wrap: anywhere;
 		word-break: auto-phrase;
+	}
+
+	.card__byline {
+		display: flex;
+		align-items: baseline;
+		gap: 8px;
+		margin: 6px 0 0;
+		font-size: 13px;
+		font-weight: 700;
+		line-height: 1.6;
+		color: var(--text-mid);
+	}
+
+	.card__byline-label {
+		flex: none;
+		font-family: var(--font-en);
+		font-size: 11px;
+		font-weight: 800;
+		letter-spacing: 0.16em;
+		text-transform: uppercase;
+		color: var(--text-faint);
 	}
 
 	.card__excerpt {

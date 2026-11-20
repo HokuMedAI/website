@@ -2,7 +2,7 @@
 title: 第43回もくもく会
 date: 2026-03-18
 category: mokumoku
-authors: [hokumedai, ymd000]
+authors: [hokumedai, yamada]
 ---
 
 ## 開催概要

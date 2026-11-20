@@ -3,7 +3,7 @@ title: 3月第1回定期ミーティング
 date: 2026-03-13
 category: meeting
 tags: [the-leader-has-spoken]
-authors: [hokumedai, ymd000]
+authors: [hokumedai, yamada]
 description: 3月第1回定期ミーティングを実施しました
 thumbnail: ./feature.jpg
 ---

@@ -2,7 +2,7 @@
 title: 第40回もくもく会
 date: 2026-02-25
 category: mokumoku
-authors: [hokumedai, ymd000]
+authors: [hokumedai, yamada]
 description: 第40回もくもく会開催しました
 ---
 

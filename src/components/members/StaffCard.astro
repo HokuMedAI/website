@@ -1,6 +1,8 @@
 ---
 /**
  * 顧問・メンターのカード。区分・名前・所属と、あれば丸い写真とコメントの吹き出し。
+ * 記事を書いている人は、カードのどこを押しても、その人の記事一覧へ行く。
+ * 記事の署名から来たとき (/members/#<名前>) は、そのカードを目立たせる。
  */
 import { Image } from 'astro:assets'
 import { render, type CollectionEntry } from 'astro:content'
@@ -9,9 +11,11 @@ import Comment from './Comment.astro'
 interface Props {
 	member: CollectionEntry<'members'>
 	tone: 'teal' | 'violet'
+	/** その人の記事一覧の URL と本数 (署名が紐づいている人だけ) */
+	posts?: { href: string; count: number }
 }
 
-const { member, tone } = Astro.props
+const { member, tone, posts } = Astro.props
 const { name, group, affiliation, photo } = member.data
 
 /** 写真の枠は 84px。高精細な画面用に 2 倍の幅で出す */
@@ -21,7 +25,7 @@ const hasComment = Boolean(member.body?.trim())
 const { Content } = hasComment ? await render(member) : { Content: null }
 ---
 
-<li class:list={['staff-card', `tone-${tone}`]}>
+<li id={member.id} class:list={['staff-card', `tone-${tone}`]}>
 	<div class="staff-main">
 		{photo && (
 			<div class="staff-photo">
@@ -39,10 +43,18 @@ const { Content } = hasComment ? await render(member) : { Content: null }
 			<Content />
 		</Comment>
 	)}
+	{posts && posts.count > 0 && (
+		<a class="staff-posts" href={posts.href}>
+			記事 {posts.count}本<span aria-hidden="true">→</span>
+		</a>
+	)}
 </li>
 
 <style>
 	.staff-card {
+		--card-shadow: var(--shadow-hard-teal);
+		position: relative;
+		scroll-margin-top: 130px;
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
@@ -50,11 +62,18 @@ const { Content } = hasComment ? await render(member) : { Content: null }
 		border: 3px solid var(--teal-ink);
 		border-radius: var(--radius-card-sm);
 		padding: 22px 26px;
-		box-shadow: var(--shadow-hard-teal);
+		box-shadow: var(--card-shadow);
 	}
 
 	.staff-card.tone-violet {
-		box-shadow: var(--shadow-hard-violet);
+		--card-shadow: var(--shadow-hard-violet);
+	}
+
+	/* 記事の署名から来たとき: 蛍光ペンで囲んだように縁取る */
+	.staff-card:target {
+		box-shadow:
+			0 0 0 8px var(--highlight),
+			var(--card-shadow);
 	}
 
 	.staff-main {
@@ -115,15 +134,41 @@ const { Content } = hasComment ? await render(member) : { Content: null }
 		text-wrap: pretty;
 	}
 
+	/* その人の記事一覧へのリンク。カード全体を押せる範囲にする */
+	.staff-posts {
+		display: inline-flex;
+		align-self: flex-start;
+		gap: 0.3em;
+		margin-top: 12px;
+		padding: 3px 12px;
+		border-radius: var(--radius-pill);
+		background: var(--teal-tint);
+		color: var(--teal-strong);
+		font-size: 13px;
+		font-weight: 900;
+		line-height: 1.6;
+	}
+
+	.staff-posts::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+	}
+
+	.staff-posts:focus-visible {
+		outline: 3px solid var(--violet);
+		outline-offset: 3px;
+	}
+
 	@media (max-width: 640px) {
 		.staff-card {
 			padding: 18px 20px;
 			border-radius: 22px;
-			box-shadow: var(--shadow-hard-teal-sm);
+			--card-shadow: var(--shadow-hard-teal-sm);
 		}
 
 		.staff-card.tone-violet {
-			box-shadow: var(--shadow-hard-violet-sm);
+			--card-shadow: var(--shadow-hard-violet-sm);
 		}
 
 		.staff-name {

@@ -2,7 +2,7 @@
 title: 第47回もくもく会
 date: 2026-04-22
 category: mokumoku
-authors: [ymd000]
+authors: [yamada]
 ---
 
 ## 開催概要

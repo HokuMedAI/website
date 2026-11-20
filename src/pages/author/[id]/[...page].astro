@@ -1,0 +1,104 @@
+---
+/**
+ * 署名別の記事一覧。src/content/authors.yaml にある全署名について作る（記事が無い署名は空表示）。
+ * /author/<id>/ が 1 ページ目、2 ページ目以降は /author/<id>/page/<n>/。
+ * 部員に紐づく署名は、メンバー紹介のその人へのリンクを出す。
+ */
+import type { GetStaticPaths, InferGetStaticPropsType } from 'astro'
+import Base from '../../../layouts/Base.astro'
+import CategoryNav from '../../../components/posts/CategoryNav.astro'
+import EmptyState from '../../../components/posts/EmptyState.astro'
+import PageHead from '../../../components/posts/PageHead.astro'
+import Pager from '../../../components/posts/Pager.astro'
+import PostGrid from '../../../components/posts/PostGrid.astro'
+import PostsShell from '../../../components/posts/PostsShell.astro'
+import {
+	POSTS_PATH,
+	POSTS_PER_PAGE,
+	authorHref,
+	authorNameOf,
+	getAuthorIndex,
+	getPostViews,
+	memberHref,
+	pageParam,
+	paginate,
+	withAuthor,
+} from '../../../lib/posts'
+
+export const getStaticPaths = (async () => {
+	const views = await getPostViews()
+	const { authors } = await getAuthorIndex(views)
+	return authors.flatMap((author) =>
+		paginate(withAuthor(views, author.id), POSTS_PER_PAGE).map(({ items, page, totalPages }) => ({
+			params: { id: author.id, page: pageParam(page) },
+			props: { author, views: items, page, totalPages },
+		}))
+	)
+}) satisfies GetStaticPaths
+
+type Props = InferGetStaticPropsType<typeof getStaticPaths>
+
+const { author, views, page, totalPages } = Astro.props
+const { member } = author.data
+const name = await authorNameOf(author)
+const basePath = authorHref(author.id)
+const pageLabel = String(page).padStart(2, '0')
+const heading = `${name}の記事`
+const lead = author.data.description ?? `${name}が書いた記事です。`
+---
+
+<Base title={page > 1 ? `${heading}（${page} ページ目）` : heading} description={lead}>
+	<PostsShell
+		crumbs={[
+			{ label: 'ホーム', href: '/' },
+			{ label: '記事', href: POSTS_PATH },
+			{ label: heading, href: basePath },
+		]}
+	>
+		<PageHead index={pageLabel} en="Author" ja={heading} tone="violet">
+			<p>
+				{lead}
+				{member && (
+					<a class="to-member" href={memberHref(member.id)}>
+						メンバー紹介で見る →
+					</a>
+				)}
+			</p>
+		</PageHead>
+		<CategoryNav active={null} />
+
+		<div class="posts-body">
+			{views.length === 0 ? (
+				<EmptyState
+					title={`${heading}はまだありません`}
+					action={{ label: 'すべての記事を見る', href: POSTS_PATH }}
+				>
+					<p>ほかの記事は、記事一覧から読めます。</p>
+				</EmptyState>
+			) : (
+				<>
+					<PostGrid views={views} layout="log" />
+					<Pager basePath={basePath} page={page} totalPages={totalPages} />
+				</>
+			)}
+		</div>
+	</PostsShell>
+</Base>
+
+<style>
+	.posts-body {
+		margin-top: 48px;
+	}
+
+	.to-member {
+		margin-left: 0.8em;
+		font-weight: 700;
+		white-space: nowrap;
+	}
+
+	@media (max-width: 600px) {
+		.posts-body {
+			margin-top: 36px;
+		}
+	}
+</style>

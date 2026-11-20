@@ -3,7 +3,7 @@ title: 3月第2回定期ミーティング
 date: 2026-03-27
 category: meeting
 tags: [the-leader-has-spoken]
-authors: [hokumedai, ymd000]
+authors: [hokumedai, yamada]
 thumbnail: ./feature.jpg
 ---
 

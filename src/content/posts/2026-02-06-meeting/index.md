@@ -2,7 +2,7 @@
 title: 2月第1回研究ミーティング
 date: 2026-02-06
 category: meeting
-authors: [hokumedai, ymd000]
+authors: [hokumedai, yamada]
 ---
 
 ## 開催概要

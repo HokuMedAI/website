@@ -2,7 +2,7 @@
 title: 第34回もくもく会
 date: 2026-01-07
 category: mokumoku
-authors: [hokumedai, ymd000]
+authors: [hokumedai, yamada]
 thumbnail: ./feature.jpg
 ---
 
