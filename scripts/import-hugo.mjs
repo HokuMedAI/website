@@ -41,8 +41,8 @@
  *   - 先頭の BOM を除き、末尾の改行を 1 つにそろえる
  *
  * 画像の加工（既定。git に入れるので軽くする）:
- *   - 長辺が 2400px を超えるものは 2400px に縮小
- *   - 透過の無い PNG のうち大きいもの（長辺 2400px 超 または 1MB 以上 = 写真）は JPEG（品質 85）へ
+ *   - 長辺が 1640px を超えるものは 1640px に縮小（記事で出す最大の幅 820px の 2 倍）
+ *   - 透過の無い PNG のうち大きいもの（長辺 1640px 超 または 1MB 以上 = 写真）は JPEG（品質 80）へ
  *   - EXIF などのメタデータは、回転を画素へ反映してから削除（GPS 位置情報を落とす）
  *   - 小さくてメタデータも無い画像（ロゴ・図・スクリーンショット）は原本のバイト列のまま
  *   - ファイル名は ASCII の小文字、拡張子は加工後の形式に合わせる
@@ -78,8 +78,8 @@ const TEMPLATE_DESCRIPTIONS = new Set(['ここに説明を入力'])
 /** ASCII でないファイル名の読み替え。無いものは内容ハッシュで名前を付ける */
 const ASCII_NAMES = { カルビ丼: 'karubidon' }
 
-const MAX_EDGE = 2400
-const JPEG_QUALITY = 85
+const MAX_EDGE = 1640
+const JPEG_QUALITY = 80
 /** 透過の無い PNG を「写真」とみなして JPEG にする下限（これ未満で長辺も MAX_EDGE 以下なら PNG のまま） */
 const PNG_PHOTO_MIN_BYTES = 1024 * 1024
 const IMAGE_EXT = /\.(png|jpe?g|gif|webp|avif)$/i
