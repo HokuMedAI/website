@@ -219,6 +219,7 @@ import { DISCORD_INVITE_URL, SITE_SHORT_NAME, TURNSTILE_SITE_KEY } from '../../l
 			options: {
 				sitekey: string
 				action: string
+				theme: 'light'
 				size: 'flexible'
 				callback: (token: string) => void
 				'expired-callback': () => void
@@ -244,6 +245,8 @@ import { DISCORD_INVITE_URL, SITE_SHORT_NAME, TURNSTILE_SITE_KEY } from '../../l
 			widgetId = api.render(container, {
 				sitekey: container.dataset.sitekey ?? '',
 				action: container.dataset.action ?? '',
+				// 既定 (auto) は OS のダークモードに合わせて黒くなる。このサイトは明るい配色だけなので、白に固定する
+				theme: 'light',
 				size: 'flexible',
 				callback: (value) => {
 					token = value
