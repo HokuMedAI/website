@@ -34,7 +34,7 @@ export const RELATED_LINKS = [
  * 空のあいだは、フォームに Turnstile を出さない (スクリプトも読み込まない)。
  * 入れるときは、対になる secret key を Worker に入れる (`pnpm wrangler secret put TURNSTILE_SECRET_KEY`。README の「公開」)
  */
-export const TURNSTILE_SITE_KEY: string = ''
+export const TURNSTILE_SITE_KEY: string = '0x4AAAAAAGOioEjzSDCZ_U2b'
 
 /** 活動予定の Google カレンダー (公開設定のカレンダー ID) */
 export const GOOGLE_CALENDAR_ID =
