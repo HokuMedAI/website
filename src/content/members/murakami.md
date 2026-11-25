@@ -5,6 +5,7 @@ entryYear: 2022
 role: 部長
 gender: 男
 order: 10
+photo: ./photos/murakami.jpg
 ---
 
-やるかやらぬかだ。『やってみる』などない
+やる気があります
