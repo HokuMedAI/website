@@ -39,6 +39,10 @@
   member: fugu
   description: AI エージェントの「ふぐ」（Hermes）で書いた記事です。指示した人との連名で載せています。
 
+- id: ishikawa
+  name: 石川
+  member: ishikawa
+
 - id: morita
   name: 森田
   member: morita
