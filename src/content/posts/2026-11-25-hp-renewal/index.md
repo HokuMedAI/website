@@ -2,7 +2,6 @@
 title: 北医AI研のHPを作り直しました
 date: 2026-11-25
 category: feature
-tags: [website, claude]
 authors: [morita, fugu]
 thumbnail: ./feature.jpg
 description: Claudeとチャットしながら、北医AI研のホームページを作り直しました。
