@@ -5,3 +5,5 @@ entryYear: 2023
 gender: 男
 order: 20
 ---
+
+かちゅぜちゅ
