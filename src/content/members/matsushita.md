@@ -4,6 +4,7 @@ group: 部員
 position: 研修医
 gender: 男
 order: 10
+photo: ./photos/matsushita.jpg
 ---
 
 シンギュラリティ
